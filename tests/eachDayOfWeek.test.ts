@@ -182,7 +182,7 @@ describe("eachDayOfWeek", () => {
 		});
 
 		describe("with offset options", () => {
-			test("length of the extended array is equal default array plus offset options", () => {
+			test("length of the extended array is equal default array plus offset", () => {
 				const startOffset = 2;
 				const endOffset = 2;
 
@@ -212,58 +212,62 @@ describe("eachDayOfWeek", () => {
 				);
 			});
 
-			test("with startOffset option, the range is extended by adding extra days at the beginning of the array, with a one-day interval between each day", () => {
-				const startOffset = 2;
-				const refDate = DateTime.fromISO("2020-01-01");
+			describe("with startOffset", () => {
+				test("the range is extended by adding extra days at the beginning of the array, with a one-day interval between each day", () => {
+					const startOffset = 5;
+					const refDate = DateTime.fromISO("2020-01-01");
 
-				const defaultWeekRange = new DateRange().eachDayOfWeek({
-					refDate,
-				}).dates;
-				const extendedWeekRange = new DateRange().eachDayOfWeek({
-					refDate,
-					startOffset,
-				}).dates;
+					const defaultWeekRange = new DateRange().eachDayOfWeek({
+						refDate,
+					}).dates;
+					const extendedWeekRange = new DateRange().eachDayOfWeek({
+						refDate,
+						startOffset,
+					}).dates;
 
-				// find the index of the first element of the default array in the extended range
-				const defaultRangeFirstIndex = extendedWeekRange.findIndex((date) =>
-					date.equals(defaultWeekRange[0]),
-				);
-
-				// loop over the extended range from the first element of the
-				// default array to the first element of the extended range
-				for (let i = defaultRangeFirstIndex; i > 0; i--) {
-					// check if the current element equals to the previous element plus one unit of time
-					expect(extendedWeekRange[i].valueOf()).toEqual(
-						extendedWeekRange[i - 1].plus({ days: 1 }).valueOf(),
+					// find the index of the first element of the default range in the extended range
+					const defaultRangeFirstIndex = extendedWeekRange.findIndex((date) =>
+						date.equals(defaultWeekRange[0]),
 					);
-				}
+
+					// loop over the extended range from the first element of the
+					// default range to the first element of the extended range
+					for (let i = defaultRangeFirstIndex; i > 0; i--) {
+						// check if the current element equals to the previous element plus one unit of time
+						expect(extendedWeekRange[i].valueOf()).toEqual(
+							extendedWeekRange[i - 1].plus({ days: 1 }).valueOf(),
+						);
+					}
+				});
 			});
 
-			test("with endOffset option, the range is extended by adding extra days at the end of the array, with a one-day interval between each day", () => {
-				const endOffset = 2;
-				const refDate = DateTime.fromISO("2020-01-01");
+			describe("with endOffset", () => {
+				test("the range is extended by adding extra days at the end of the array, with a one-day interval between each day", () => {
+					const endOffset = 2;
+					const refDate = DateTime.fromISO("2020-01-01");
 
-				const defaultWeekRange = new DateRange().eachDayOfWeek({
-					refDate,
-				}).dates;
-				const extendedWeekRange = new DateRange().eachDayOfWeek({
-					refDate,
-					endOffset,
-				}).dates;
+					const defaultWeekRange = new DateRange().eachDayOfWeek({
+						refDate,
+					}).dates;
+					const extendedWeekRange = new DateRange().eachDayOfWeek({
+						refDate,
+						endOffset,
+					}).dates;
 
-				// find the index of the last element of the default range in the extended range
-				const defaultRangeEndIndex = extendedWeekRange.findIndex((date) =>
-					date.equals(defaultWeekRange[defaultWeekRange.length - 1]),
-				);
-
-				// loop over the extended range from the first element of the
-				// default array to the first element of the extended range
-				for (let i = defaultRangeEndIndex; i > 0; i--) {
-					// check if the current element equals to the previous element plus one unit of time
-					expect(extendedWeekRange[i].valueOf()).toEqual(
-						extendedWeekRange[i - 1].plus({ days: 1 }).valueOf(),
+					// find the index of the last element of the default range in the extended range
+					const defaultRangeEndIndex = extendedWeekRange.findIndex((date) =>
+						date.equals(defaultWeekRange[defaultWeekRange.length - 1]),
 					);
-				}
+
+					// loop over the extended range from the first element of the
+					// default array to the first element of the extended range
+					for (let i = defaultRangeEndIndex; i > 0; i--) {
+						// check if the current element equals to the previous element plus one unit of time
+						expect(extendedWeekRange[i].valueOf()).toEqual(
+							extendedWeekRange[i - 1].plus({ days: 1 }).valueOf(),
+						);
+					}
+				});
 			});
 		});
 	});
