@@ -1,0 +1,15 @@
+export const invalidInputValues = [
+	{ invalidInput: null },
+	{ invalidInput: undefined },
+	{ invalidInput: [] },
+	{ invalidInput: {} },
+	{ invalidInput: 1 },
+	{ invalidInput: 2.5 },
+	{ invalidInput: -1 },
+	{ invalidInput: [1] },
+	{ invalidInput: "test" },
+	{ invalidInput: "2021-12-25" },
+	{ invalidInput: ["test"] },
+	{ invalidInput: true },
+	{ invalidInput: false },
+];
