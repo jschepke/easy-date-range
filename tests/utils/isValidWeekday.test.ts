@@ -1,19 +1,24 @@
 import { describe, expect, test } from "vitest";
 
 import { isValidWeekday } from "../../src/utils/isValidWeekday";
+import { weekdayTestValues } from "../testUtils";
 
 describe("isValidWeekday", () => {
-	test("should return true for valid weekdays", () => {
-		expect(isValidWeekday(1)).toBe(true);
-		expect(isValidWeekday(3)).toBe(true);
-		expect(isValidWeekday(7)).toBe(true);
+	describe("Given valid weekday", () => {
+		test.each(weekdayTestValues.valid)(
+			"returns true for valid weekday value: %d",
+			(value) => {
+				expect(isValidWeekday(value)).toBe(true);
+			},
+		);
 	});
 
-	test("should return false for invalid weekdays", () => {
-		expect(isValidWeekday(0)).toBe(false);
-		expect(isValidWeekday(8)).toBe(false);
-		expect(isValidWeekday("Monday")).toBe(false);
-		expect(isValidWeekday(null)).toBe(false);
-		expect(isValidWeekday(undefined)).toBe(false);
+	describe("Given invalid weekday", () => {
+		test.each(weekdayTestValues.invalid)(
+			"returns false for invalid weekday value: $invalidInput",
+			({ invalidInput }) => {
+				expect(isValidWeekday(invalidInput)).toBe(false);
+			},
+		);
 	});
 });
