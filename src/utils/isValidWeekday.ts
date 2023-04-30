@@ -7,5 +7,10 @@ import { isNumber } from "./isNumber";
  * @returns True if weekday is a number from 1 to 7, false otherwise.
  */
 export function isValidWeekday(weekday: unknown): boolean {
-	return isNumber(weekday) && weekday >= 1 && weekday <= 7;
+	return (
+		isNumber(weekday) &&
+		Number.isInteger(weekday) &&
+		weekday >= 1 &&
+		weekday <= 7
+	);
 }
