@@ -1,9 +1,9 @@
 import { DateTime } from "luxon";
 
 import { WEEKDAY } from "./constants";
+import { InvalidParameterError } from "./errors";
 import { extendRange } from "./extendRange";
-import { isValidRefDate } from "./utils/isValidRefDate";
-import { isValidWeekday } from "./utils/isValidWeekday";
+import { isValidRefDate, isValidWeekday } from "./utils";
 import { validateDateRangeOptions } from "./validators/validateDateRangeOptions";
 
 /**
@@ -97,7 +97,13 @@ export class DateRange {
 	constructor() {
 		// rome-ignore lint/style/noArguments: <explanation>
 		if (arguments.length > 0) {
-			throw new Error("DateRange constructor does not accept any parameters");
+			throw new InvalidParameterError(
+				"parameter passed to DateRange instance",
+				// rome-ignore lint/style/noArguments: <explanation>
+				arguments.length === 1 ? arguments[0] : [...arguments],
+				"no parameters",
+				"Option parameters should be specified whitin DateRange methods.",
+			);
 		}
 
 		this._refDate = DateTime.now();
