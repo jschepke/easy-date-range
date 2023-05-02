@@ -43,7 +43,7 @@ export function validateDateRangeOptions(value: unknown): void {
 		throw new InvalidParameterError(
 			"options parameter",
 			value,
-			`no parameters or an object with at least one of the following properties: ${expectedProperties.join(
+			`either no arguments or an object with one or more of these properties: ${expectedProperties.join(
 				", ",
 			)}`,
 		);
@@ -58,7 +58,7 @@ export function validateDateRangeOptions(value: unknown): void {
 		throw new InvalidParameterError(
 			"options parameter",
 			value,
-			`an object with specified only the following properties: ${expectedProperties.join(
+			`an object with the following properties only: ${expectedProperties.join(
 				", ",
 			)}`,
 		);
