@@ -49,9 +49,10 @@ export class InvalidParameterError extends CalendarRangeError {
 		expected: string,
 		description?: string,
 	) {
-		const message = `The value of the ${paramName} is invalid. You passed ${JSON.stringify(
+		const message = `The value of the ${paramName} is invalid. \nYou passed ${JSON.stringify(
 			paramValue,
-		)}, but ${expected} is expected. ${description ? `${description}` : ""}`;
+		)}, but ${expected} is expected.${description ? ` \n${description}` : ""}`;
+
 		super("validation", message);
 		this.paramName = paramName;
 		this.paramValue = paramValue;
