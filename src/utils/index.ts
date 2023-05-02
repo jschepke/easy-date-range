@@ -6,7 +6,7 @@ export { isValidDateTime } from "./isValidDateTime";
 export { isValidDateTimeArray } from "./isValidDateTimeArray";
 export { isValidOffset } from "./isValidOffset";
 export { isValidRefDate } from "./isValidRefDate";
-export { durationUnitKeys, isValidTimeUnit } from "./isValidTimeUnit";
+export { isValidTimeUnit } from "./isValidTimeUnit";
 export { isValidWeekday } from "./isValidWeekday";
 export type { PropertiesMap } from "./types";
 export { getRandomDateTime } from "./getRandomDateTime";

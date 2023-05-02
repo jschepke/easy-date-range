@@ -5,8 +5,9 @@ import { DateTime } from "luxon";
 
 import type { ExtendRangeOptions } from "../../src/extendRange";
 
+import { DURATION_UNITS } from "../../src/constants";
 import { InvalidParameterError } from "../../src/errors";
-import { durationUnitKeys, isObject, isValidOffset } from "../../src/utils";
+import { isObject, isValidOffset } from "../../src/utils";
 import { invalidInputValues } from "../testUtils";
 
 describe("validateExtendRangeOptions", () => {
@@ -101,7 +102,7 @@ describe("validateExtendRangeOptions", () => {
 
 		describe("timeUnit property", () => {
 			describe("Given a valid timeUnit value", () => {
-				test.each(durationUnitKeys)(
+				test.each(DURATION_UNITS)(
 					"doesn't throw error if timeUnit is %s",
 					(timeUnit) => {
 						expect(() =>

@@ -1,8 +1,8 @@
 import { DateTime, DurationUnit } from "luxon";
 import { describe, expect, test } from "vitest";
 
+import { DURATION_UNITS } from "../src/constants";
 import { extendRange } from "../src/extendRange";
-import { durationUnitKeys } from "../src/utils";
 
 describe("extendRange", () => {
 	describe("general functionality", () => {
@@ -133,7 +133,7 @@ describe("extendRange", () => {
 
 	describe("endOffset option", () => {
 		// const timeUnits: DurationUnit[] = [`day`, 'days', 'hours', 'seconds'];
-		const timeUnits: DurationUnit[] = durationUnitKeys;
+		const timeUnits: DurationUnit[] = DURATION_UNITS;
 
 		test("the extended range has the correct length and each element matches the expected date when timeUnit is days", () => {
 			// arrange
@@ -204,7 +204,7 @@ describe("extendRange", () => {
 
 	describe("startOffset option", () => {
 		// const timeUnits: DurationUnit[] = [`day`, 'days', 'hours', 'seconds'];
-		const timeUnits: DurationUnit[] = durationUnitKeys;
+		const timeUnits: DurationUnit[] = DURATION_UNITS;
 
 		test("the extended range has the correct length and each element matches the expected date when timeUnit is days", () => {
 			// arrange
