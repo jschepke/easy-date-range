@@ -1,33 +1,24 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 
 import { isObject } from "../../src/utils/isObject";
+import { isObjectTestValues } from "../testUtils";
 
 describe("isObject", () => {
-	const nonObjectValues = [
-		null,
-		undefined,
-		[],
-		123,
-		-123,
-		"123abc",
-		true,
-		false,
-		new Date(),
-		() => {
-			return {};
-		},
-	];
+	describe("Given a non object values", () => {
+		test.each(isObjectTestValues.invalid)(
+			"returns false for value: $invalidInput",
+			({ invalidInput }) => {
+				expect(isObject(invalidInput)).toBe(false);
+			},
+		);
+	});
 
-	it.each(nonObjectValues)(
-		"should return false for non object value: %s",
-		(value) => {
-			expect(isObject(value)).toBe(false);
-		},
-	);
-	it.each([{}, { prop: 123, prop2: "abc" }])(
-		"should return true for object: %s",
-		(value) => {
-			expect(isObject(value)).toBe(true);
-		},
-	);
+	describe("Given an object", () => {
+		test.each(isObjectTestValues.valid)(
+			"returns true for value: %d",
+			(value) => {
+				expect(isObject(value)).toBe(true);
+			},
+		);
+	});
 });

@@ -1,36 +1,24 @@
-import { DateTime } from 'luxon';
-import { describe, expect, it } from 'vitest';
+import { DateTime } from "luxon";
+import { describe, expect, it, test } from "vitest";
 
-import { isValidDateTime } from '../../src/utils/isValidDateTime';
+import { isValidDateTime } from "../../src/utils/isValidDateTime";
+import { isValidDateTestValues, isValidDateTimeTestValues } from "../testUtils";
 
-describe('isValidDateTime', () => {
-  it('returns true for valid DateTime', () => {
-    const date = DateTime.local(2022, 1, 1);
-    const result = isValidDateTime(date);
-    expect(result).toBe(true);
-  });
-
-  it('returns false for invalid DateTime', () => {
-    const date = DateTime.fromObject({ year: 2022, month: 13, day: 32 });
-    const result = isValidDateTime(date);
-    expect(result).toBe(false);
-  });
-
-  it('returns false for non-DateTime object', () => {
-    const date = new Date('2022-01-01');
-    const result = isValidDateTime(date);
-    expect(result).toBe(false);
-  });
-
-  it('returns false for null', () => {
-    const date = null;
-    const result = isValidDateTime(date);
-    expect(result).toBe(false);
-  });
-
-  it('returns false for undefined', () => {
-    const date = undefined;
-    const result = isValidDateTime(date);
-    expect(result).toBe(false);
-  });
+describe("isValidDateTime", () => {
+	describe("Given a valid DateTime", () => {
+		test.each(isValidDateTimeTestValues.valid)(
+			"returns true for valid DateTime: %s",
+			(dateTime) => {
+				expect(isValidDateTime(dateTime)).toBe(true);
+			},
+		);
+	});
+	describe("Given a non-valid DateTime", () => {
+		test.each(isValidDateTimeTestValues.invalid)(
+			"returns false for value: $invalidInput",
+			({ invalidInput }) => {
+				expect(isValidDateTime(invalidInput)).toBe(false);
+			},
+		);
+	});
 });
