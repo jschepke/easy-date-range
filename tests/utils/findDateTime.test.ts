@@ -13,7 +13,7 @@ const array2 = [date2, date3];
 const array3 = [date3];
 const array4: DateTime[] = [];
 const array5 = [date1, "", 1, {}];
-const arrray6 = [date1, date2, date3, date4];
+const array6 = [date1, date2, date3, date4];
 
 describe("isDateTimeInArray", () => {
 	test("date1 is in array1", () => {
