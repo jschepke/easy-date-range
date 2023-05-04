@@ -1,8 +1,7 @@
-import { DateTime } from "luxon";
-import { describe, expect, it, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { isValidDateTime } from "../../src/utils/isValidDateTime";
-import { isValidDateTestValues, isValidDateTimeTestValues } from "../testUtils";
+import { isValidDateTimeTestValues } from "../testUtils";
 
 describe("isValidDateTime", () => {
 	describe("Given a valid DateTime", () => {

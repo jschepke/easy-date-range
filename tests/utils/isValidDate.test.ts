@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { isValidDate } from "../../src/utils/isValidDate";
 import { isValidDateTestValues } from "../testUtils";
