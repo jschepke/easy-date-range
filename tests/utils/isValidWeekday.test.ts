@@ -15,9 +15,9 @@ describe("isValidWeekday", () => {
 
 	describe("Given invalid weekday", () => {
 		test.each(weekdayTestValues.invalid)(
-			"returns false for invalid weekday value: $invalidInput",
-			({ invalidInput }) => {
-				expect(isValidWeekday(invalidInput)).toBe(false);
+			"returns false for invalid weekday value: $name",
+			({ value }) => {
+				expect(isValidWeekday(value)).toBe(false);
 			},
 		);
 	});
