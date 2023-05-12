@@ -14,9 +14,9 @@ describe("isValidDateTime", () => {
 	});
 	describe("Given a non-valid DateTime", () => {
 		test.each(isValidDateTimeTestValues.invalid)(
-			"returns false for value: $invalidInput",
-			({ invalidInput }) => {
-				expect(isValidDateTime(invalidInput)).toBe(false);
+			"returns false for value: $name",
+			({ value }) => {
+				expect(isValidDateTime(value)).toBe(false);
 			},
 		);
 	});

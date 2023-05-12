@@ -12,9 +12,9 @@ describe("isEmptyObject", () => {
 
 	describe("Given non object and non empty object values", () => {
 		test.each(isEmptyObjectTestValues.invalid)(
-			"returns false for value of: $invalidInput",
-			({ invalidInput }) => {
-				expect(isEmptyObject(invalidInput)).toBe(false);
+			"returns false for value of: $name",
+			({ value }) => {
+				expect(isEmptyObject(value)).toBe(false);
 			},
 		);
 	});

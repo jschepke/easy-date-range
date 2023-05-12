@@ -6,9 +6,9 @@ import { isObjectTestValues } from "../testUtils";
 describe("isObject", () => {
 	describe("Given a non object values", () => {
 		test.each(isObjectTestValues.invalid)(
-			"returns false for value: $invalidInput",
-			({ invalidInput }) => {
-				expect(isObject(invalidInput)).toBe(false);
+			"returns false for value: $name",
+			({ value }) => {
+				expect(isObject(value)).toBe(false);
 			},
 		);
 	});

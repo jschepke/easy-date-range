@@ -7,8 +7,8 @@ import type { ExtendRangeOptions } from "../../src/extendRange";
 
 import { DURATION_UNITS } from "../../src/constants";
 import { InvalidParameterError } from "../../src/errors";
-import { isObject, isValidOffset } from "../../src/utils";
-import { invalidInputValues } from "../testUtils";
+import { isValidOffsetTestValues } from "../testUtils";
+import { TestValues } from "../testUtils";
 
 describe("validateExtendRangeOptions", () => {
 	const validExtendRangeOptions: ExtendRangeOptions = {
@@ -26,13 +26,10 @@ describe("validateExtendRangeOptions", () => {
 	});
 
 	describe("Given a non-object as input", () => {
-		const nonObjectValues = invalidInputValues.filter(
-			(value) => !isObject(value.invalidInput),
-		);
-		test.each(nonObjectValues)(
-			"throws an error if input is $invalidInput",
-			({ invalidInput }) => {
-				expect(() => validateExtendRangeOptions(invalidInput)).toThrowError();
+		test.each(new TestValues().getAll())(
+			"throws an error if input is $name",
+			({ value }) => {
+				expect(() => validateExtendRangeOptions(value)).toThrowError();
 			},
 		);
 	});
@@ -72,26 +69,31 @@ describe("validateExtendRangeOptions", () => {
 			});
 
 			describe("Given a non-valid rangeToExtend value", () => {
-				// invalid values with some additional ones specific for rangeToExtend
 				const values = [
-					...invalidInputValues,
-					{ invalidInput: [DateTime.local(), "bar"] },
-					{ invalidInput: [DateTime.invalid("invalid"), DateTime.local()] },
+					...new TestValues().getAll(),
+					{ value: [DateTime.local(), "bar"], name: "invalid arr1" },
+					{
+						value: [DateTime.invalid("invalid"), DateTime.local()],
+						name: "invalid arr2",
+					},
 					// valid JS Date objects
-					{ invalidInput: [new Date(), new Date(2021, 0, 1)] },
+					{
+						value: [new Date(), new Date(2021, 0, 1)],
+						name: "invalid arr3",
+					},
 				];
 
 				test.each(values)(
-					"throws an error if rangeToExtend is $invalidInput",
-					(value) => {
+					"throws an error if rangeToExtend is $name",
+					({ value }) => {
 						expect(() =>
 							validateExtendRangeOptions({
-								rangeToExtend: value.invalidInput,
+								rangeToExtend: value,
 							}),
 						).toThrowError(
 							new InvalidParameterError(
 								"rangeToExtend",
-								value.invalidInput,
+								value,
 								"an array of DateTime",
 							),
 						);
@@ -109,51 +111,47 @@ describe("validateExtendRangeOptions", () => {
 							validateExtendRangeOptions({
 								...validExtendRangeOptions,
 								timeUnit,
-							}),
+							} as ExtendRangeOptions),
 						).not.toThrowError();
 					},
 				);
 			});
 			describe("Given a non-valid timeUnit value", () => {
-				test.each(invalidInputValues)(
-					"throws an error if timeUnit is $invalidInput",
-					({ invalidInput }) => {
-						expect(() =>
-							validateExtendRangeOptions(invalidInput),
-						).toThrowError();
+				test.each(new TestValues().getAll())(
+					"throws an error if timeUnit is $name",
+					({ value }) => {
+						expect(() => validateExtendRangeOptions(value)).toThrowError();
 					},
 				);
 			});
 		});
 
 		describe("Offset properties", () => {
-			const invalidOffsetValues = invalidInputValues.filter(
-				(item) =>
-					!isValidOffset(item.invalidInput) && item.invalidInput !== undefined,
-			);
-			const validOffsetValues = [0, 1, 123];
+			const { invalid, valid } = isValidOffsetTestValues;
 
 			describe("startOffset property", () => {
 				describe("Given a valid startOffset", () => {
-					test.each(validOffsetValues)(
+					test.each(valid)(
 						"doesn't throw error if startOffset is %d",
 						(startOffset) => {
 							expect(() =>
 								validateExtendRangeOptions({
 									...validExtendRangeOptions,
 									startOffset,
-								}),
+								} as ExtendRangeOptions),
 							).not.toThrowError();
 						},
 					);
 				});
 
 				describe("Given a non valid startOffset", () => {
-					test.each(invalidOffsetValues)(
-						"throws an error if startOffset is $invalidInput",
-						({ invalidInput }) => {
+					test.each(invalid)(
+						"throws an error if startOffset is $name",
+						({ value }) => {
 							expect(() =>
-								validateExtendRangeOptions({ startOffset: invalidInput }),
+								validateExtendRangeOptions({
+									startOffset: value,
+								} as ExtendRangeOptions),
 							).toThrowError();
 						},
 					);
@@ -162,24 +160,26 @@ describe("validateExtendRangeOptions", () => {
 
 			describe("endOffset property", () => {
 				describe("Given a valid endOffset", () => {
-					test.each(validOffsetValues)(
+					test.each(valid)(
 						"doesn't throw error if endOffset is %d",
-						(endOffset) => {
+						(value) => {
 							expect(() =>
 								validateExtendRangeOptions({
 									...validExtendRangeOptions,
-									endOffset,
-								}),
+									endOffset: value,
+								} as ExtendRangeOptions),
 							).not.toThrowError();
 						},
 					);
 				});
 				describe("Given a non valid endOffset", () => {
-					test.each(invalidOffsetValues)(
-						"throws an error if endOffset is $invalidInput",
-						({ invalidInput }) => {
+					test.each(invalid)(
+						"throws an error if endOffset is $name",
+						({ value }) => {
 							expect(() =>
-								validateExtendRangeOptions({ endOffset: invalidInput }),
+								validateExtendRangeOptions({
+									endOffset: value,
+								} as ExtendRangeOptions),
 							).toThrowError();
 						},
 					);

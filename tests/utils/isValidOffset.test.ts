@@ -14,9 +14,9 @@ describe("isValidOffset", () => {
 	});
 	describe("Given a non-valid offset values", () => {
 		test.each(isValidOffsetTestValues.invalid)(
-			"returns false for $invalidInput",
-			({ invalidInput }) => {
-				expect(isValidOffset(invalidInput)).toBe(false);
+			"returns false for $name",
+			({ value }) => {
+				expect(isValidOffset(value)).toBe(false);
 			},
 		);
 	});

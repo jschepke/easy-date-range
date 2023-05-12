@@ -15,9 +15,9 @@ describe("isNumber", () => {
 
 	describe("Given invalid number", () => {
 		test.each(isNumberTestValues.invalid)(
-			"returns false for invalid number: $invalidInput",
-			({ invalidInput }) => {
-				expect(isNumber(invalidInput)).toBe(false);
+			"returns false for invalid number: $name",
+			({ value }) => {
+				expect(isNumber(value)).toBe(false);
 			},
 		);
 	});

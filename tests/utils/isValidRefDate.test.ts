@@ -15,9 +15,9 @@ describe("isValidRefDate", () => {
 
 	describe("Given invalid refDate values", () => {
 		test.each(isValidRefDateTestValues.invalid)(
-			"returns false for value: $invalidInput",
-			({ invalidInput }) => {
-				expect(isValidRefDate(invalidInput)).toBe(false);
+			"returns false for value: $name",
+			({ value }) => {
+				expect(isValidRefDate(value)).toBe(false);
 			},
 		);
 	});
