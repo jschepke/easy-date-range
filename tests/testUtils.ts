@@ -1,6 +1,5 @@
 import { WEEKDAY } from "../src/constants";
 import { DateTime } from "luxon";
-import { test } from "vitest";
 
 type TestValueName =
 	| "null"
@@ -66,6 +65,41 @@ function getTestValues(valuesToFilter?: TestValueName[]) {
 	}
 }
 
+/**
+ * A class that encapsulates a collection of test values and provides methods to access and filter them.
+ */
+export class TestValues {
+	private values: TestValue[];
+
+	/**
+	 * Creates a new instance of TestValues with the given values or the default ones if none are provided.
+	 * @param values - An optional array of test values to initialize the instance with.
+	 */
+	constructor(values?: TestValue[]) {
+		// assuming testValues is a global variable or imported from another module
+		this.values = values ?? testValues;
+	}
+
+	/**
+	 * Returns all the test values in the instance.
+	 * @returns An array of test values.
+	 */
+	public getAll(): TestValue[] {
+		return this.values;
+	}
+
+	/**
+	 * Returns the test values in the instance that do not match the given names to filter.
+	 * @param namesToFilter - An array of test value names to exclude from the result.
+	 * @returns An array of filtered test values.
+	 */
+	public excludeByName(namesToFilter: TestValueName[]): TestValue[] {
+		return this.values.filter(
+			(testValue) => !namesToFilter.includes(testValue.name),
+		);
+	}
+}
+
 // some JS Date objects
 const date1 = new Date(); // current date and time
 const date2 = new Date(2022, 0, 1); // January 1st, 2022
@@ -83,234 +117,72 @@ const dt3 = DateTime.fromISO("2021-12-25T12:00:00Z"); // December 25th, 2021 at 
 const invalidDt1 = DateTime.invalid("wrong format");
 const invalidDt2 = DateTime.fromISO("2021-13-01");
 
-export const invalidInputValues = [
-	{ invalidInput: null },
-	{ invalidInput: undefined },
-	{ invalidInput: NaN },
-	{ invalidInput: Infinity },
-	{ invalidInput: [] },
-	{ invalidInput: {} },
-	{ invalidInput: { a: 1, b: "" } },
-	{ invalidInput: 1 },
-	{ invalidInput: 2.5 },
-	{ invalidInput: -1 },
-	{ invalidInput: [1] },
-	{ invalidInput: "test" },
-	{ invalidInput: "2021-12-25" },
-	{ invalidInput: ["test"] },
-	{ invalidInput: true },
-	{ invalidInput: false },
-	{ invalidInput: date1 },
-	{ invalidInput: dt1 },
-];
-
 export const weekdayTestValues = {
 	valid: [1, 2, 3, 4, 5, 6, 7],
-	invalid: getTestValues(["integer (1)"]),
+	invalid: new TestValues().excludeByName(["integer (1)"]),
 };
 
 export const isNumberTestValues = {
 	valid: [0, 1, -1, 0.5, -0.5],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		// { invalidInput: 1 },
-		// { invalidInput: 2.5 },
-		// { invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-	],
+	invalid: new TestValues().excludeByName([
+		"integer (1)",
+		"negative integer (-1)",
+		"decimal (2.5)",
+		"negative decimal (-2.5)",
+	]),
 };
 
 export const isEmptyObjectTestValues = {
 	valid: [],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		// { invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-	],
+	invalid: new TestValues().excludeByName(["empty object {}"]),
 };
 
 export const isValidRefDateTestValues = {
 	valid: [date1, date2, date3, dt1, dt2, dt3],
 	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		// { invalidInput: date1 },
-		// { invalidInput: dt1 },
-		// additional invalid inputs
-		{ invalidInput: invalidDate1 },
-		{ invalidInput: invalidDate2 },
-		{ invalidInput: invalidDate3 },
+		...new TestValues().excludeByName([
+			"Date object (new Date())",
+			"DateTime object (DateTime.now())",
+		]),
+		// additional invalid dates
+		{ value: invalidDate1, name: "invalid Date 1" },
+		{ value: invalidDate2, name: "invalid Date 2" },
+		{ value: invalidDate3, name: "invalid Date 3" },
+		{ value: invalidDt1, name: "invalid DateTime 1" },
+		{ value: invalidDt2, name: "invalid DateTime 2" },
 	],
 };
 
 export const isObjectTestValues = {
 	valid: [{}, { a: 1, b: "" }],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		// { invalidInput: {} },
-		// { invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		{ invalidInput: date1 },
-		{ invalidInput: dt1 },
-	],
+	invalid: new TestValues().excludeByName([
+		"object { a: 1, b: 'foo' }",
+		"empty object {}",
+	]),
 };
 
 export const isValidDateTestValues = {
 	valid: [date1, date2, date3],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		// { invalidInput: date1 },
-		// { invalidInput: dt1 },
-	],
+	invalid: new TestValues().excludeByName(["Date object (new Date())"]),
 };
 export const isValidDateTimeTestValues = {
 	valid: [dt1, dt2, dt3],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		{ invalidInput: date1 },
-		// { invalidInput: dt1 },
-	],
+	invalid: new TestValues().excludeByName(["DateTime object (DateTime.now())"]),
 };
 
 export const isValidDateTimeArrayTestValues = {
-	valid: [
-		{ validInput: [dt1, dt2, dt3] },
-		{ validInput: [dt1, dt2] },
-		{ validInput: [dt1] },
-	],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		{ invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		{ invalidInput: date1 },
-		// { invalidInput: dt1 },
-		// additional invalid inputs
-		{ invalidInput: date2 },
-		{ invalidInput: invalidDt1 },
-		{ invalidInput: invalidDt2 },
-	],
+	valid: [{ value: [dt1, dt2, dt3] }, { value: [dt1, dt2] }, { value: [dt1] }],
+	invalid: new TestValues().getAll(),
 };
 
 export const isValidOffsetTestValues = {
 	valid: [0, 1, 123, 10000],
-	invalid: [
-		{ invalidInput: null },
-		{ invalidInput: undefined },
-		{ invalidInput: NaN },
-		{ invalidInput: Infinity },
-		{ invalidInput: [] },
-		{ invalidInput: {} },
-		{ invalidInput: { a: 1, b: "" } },
-		// { invalidInput: 1 },
-		{ invalidInput: 2.5 },
-		{ invalidInput: -1 },
-		{ invalidInput: [1] },
-		{ invalidInput: "test" },
-		{ invalidInput: "2021-12-25" },
-		{ invalidInput: ["test"] },
-		{ invalidInput: true },
-		{ invalidInput: false },
-		{ invalidInput: date1 },
-		{ invalidInput: dt1 },
-	],
+	invalid: new TestValues().excludeByName(["integer (1)"]),
 };
 
 interface Assertion {
 	refWeekday: WEEKDAY;
-	lastWeekday: WEEKDAY;
+	lastWeekday?: WEEKDAY;
 	firstDate: DateTime | Date;
 	lastDate: DateTime | Date;
 	numberOfDates: number;
@@ -323,7 +195,7 @@ interface DateRangeTestSet {
 	assertions: Assertion[];
 }
 
-const eachDayOfMonth_refWeekday_testValues: DateRangeTestSet[] = [
+const month_refWeekday_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({ year: 2023, month: 6, day: 4 }),
 		assertions: [
@@ -441,7 +313,7 @@ const eachDayOfMonth_refWeekday_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-const eachDayOfMonth_refDate_testValues: DateRangeTestSet[] = [
+const month_refDate_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({
 			year: 2023,
@@ -547,7 +419,7 @@ const eachDayOfMonth_refDate_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-const eachDayOfMonth_startOffset_testValues: DateRangeTestSet[] = [
+const month_startOffset_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({
 			year: 2023,
@@ -658,7 +530,113 @@ const eachDayOfMonth_startOffset_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-export const eachDayOfMonthTestValues = {
+const month_endOffset_testValues: DateRangeTestSet[] = [
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 5,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({
+					year: 2023,
+					month: 5,
+					day: 1,
+				}),
+				lastDate: DateTime.fromObject({
+					year: 2023,
+					month: 6,
+					day: 11,
+				}),
+				numberOfDates: 5 * 7 + 7,
+				refWeekday: 1,
+				endOffset: 7,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 12,
+			day: 3,
+			hour: 23,
+			minute: 12,
+			second: 34,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2023, month: 11, day: 27 }),
+				lastDate: DateTime.fromObject({ year: 2024, month: 1, day: 4 }),
+				numberOfDates: 5 * 7 + 4,
+				refWeekday: 1,
+				endOffset: 4,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2010,
+			month: 2,
+			day: 17,
+			hour: 4,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2010, month: 2, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2010, month: 3, day: 10 }),
+				numberOfDates: 4 * 7 + 10,
+				refWeekday: 1,
+				endOffset: 10,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2036,
+			month: 2,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2036, month: 1, day: 28 }),
+				lastDate: DateTime.fromObject({ year: 2036, month: 3, day: 3 }),
+				numberOfDates: 5 * 7 + 1,
+				refWeekday: 1,
+				endOffset: 1,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 1905,
+			month: 11,
+			day: 3,
+			hour: 4,
+			minute: 45,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 1905, month: 10, day: 30 }),
+				lastDate: DateTime.fromObject({ year: 1906, month: 1, day: 2 }),
+				numberOfDates: 5 * 7 + 30,
+				refWeekday: 1,
+				endOffset: 30,
+			},
+		],
+	},
+];
+
+export const monthTestValues = {
 	invalid: {
 		arbitraryParams: getTestValues(["undefined"]),
 		refDate: getTestValues([
@@ -671,9 +649,9 @@ export const eachDayOfMonthTestValues = {
 		endOffset: getTestValues(["undefined", "integer (1)"]),
 	},
 	valid: {
-		refDate: eachDayOfMonth_refDate_testValues,
-		refWeekday: eachDayOfMonth_refWeekday_testValues,
-		startOffset: eachDayOfMonth_startOffset_testValues,
-		endOffset: "todo",
+		refDate: month_refDate_testValues,
+		refWeekday: month_refWeekday_testValues,
+		startOffset: month_startOffset_testValues,
+		endOffset: month_endOffset_testValues,
 	},
 };
