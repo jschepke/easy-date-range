@@ -1,10 +1,15 @@
-class CalendarRangeError extends Error {
+enum ErrorCode {
+	INVALID_PARAMS = "INVALID_PARAMS",
+	// Add more codes as needed
+}
+
+class CalendarGridError extends Error {
 	code: string;
 
 	/**
 	 * Creates a new instance of CalendarRangeError.
 	 *
-	 * @param code - The code of the error. //TODO implement code enum for other scenarios
+	 * @param code - The {@link ErrorCode} of the error.
 	 * @param message - The message of the error.
 	 */
 	constructor(code: string, message: string) {
@@ -15,7 +20,7 @@ class CalendarRangeError extends Error {
 	}
 }
 
-export class InvalidParameterError extends CalendarRangeError {
+export class InvalidParameterError extends CalendarGridError {
 	paramName: string;
 	paramValue: unknown;
 	expected: string;
@@ -53,10 +58,60 @@ export class InvalidParameterError extends CalendarRangeError {
 			paramValue,
 		)}, but ${expected} is expected.${description ? ` \n${description}` : ""}`;
 
-		super("validation", message);
+		super(ErrorCode.INVALID_PARAMS, message);
 		this.paramName = paramName;
 		this.paramValue = paramValue;
 		this.expected = expected;
 		this.description = description;
 	}
 }
+
+export class InvalidStartOffsetError extends InvalidParameterError {
+	/**
+	 * Represents an error that occurs when the startOffset parameter is invalid.
+	 * @param paramValue - The value of the startOffset parameter that caused the error.
+	 */
+	constructor(paramValue: unknown) {
+		const paramName = "startOffset";
+		const expected = "a number >= 0";
+		super(paramName, paramValue, expected);
+	}
+}
+
+export class InvalidEndOffsetError extends InvalidParameterError {
+	/**
+	 * Represents an error that occurs when the endOffset parameter is invalid.
+	 * @param paramValue - The value of the endOffset parameter that caused the error.
+	 */
+	constructor(paramValue: unknown) {
+		const paramName = "endOffset";
+		const expected = "a number >= 0";
+		super(paramName, paramValue, expected);
+	}
+}
+
+export class InvalidRefWeekdayError extends InvalidParameterError {
+	/**
+	 * Represents an error that occurs when the refWeekday parameter is invalid.
+	 * @param paramValue - The value of the refWeekday parameter that caused the error.
+	 */
+	constructor(paramValue: unknown) {
+		const paramName = "refWeekday";
+		const expected = "a number between 1 and 7.";
+		super(paramName, paramValue, expected);
+	}
+}
+
+export class InvalidRefDateError extends InvalidParameterError {
+	/**
+	 * Represents an error that occurs when the refDate parameter is invalid.
+	 * @param paramValue - The value of the refDate parameter that caused the error.
+	 */
+	constructor(paramValue: unknown) {
+		const paramName = "refDate";
+		const expected = "Date object or luxon DateTime object.";
+		super(paramName, paramValue, expected);
+	}
+}
+
+// console.log(new InvalidRefDateError("test"))
