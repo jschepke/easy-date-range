@@ -10,6 +10,13 @@ export enum WEEKDAY {
 	Sunday = 7,
 }
 
+export enum RANGE_TYPE {
+	Week = "week",
+	MonthExact = "month-exact",
+	MonthWeekExtended = "month-week-extended",
+	Days = "days",
+}
+
 export const DURATION_UNITS: DurationUnit[] = [
 	"day",
 	"days",
