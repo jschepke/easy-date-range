@@ -1,17 +1,17 @@
 import { describe, expect, test } from "vitest";
 
-import { validateExtendRangeOptions } from "../../src/validators";
+import { validateExtendRangeOpts } from "../../src/validators";
 import { DateTime } from "luxon";
 
-import type { ExtendRangeOptions } from "../../src/extendRange";
+import type { ExtendRangeOpts } from "../../src/extendRange";
 
 import { DURATION_UNITS } from "../../src/constants";
 import { InvalidParameterError } from "../../src/errors";
-import { isValidOffsetTestValues } from "../testUtils";
+import { offsetTestValues } from "../testUtils";
 import { TestValues } from "../testUtils";
 
-describe("validateExtendRangeOptions", () => {
-	const validExtendRangeOptions: ExtendRangeOptions = {
+describe("validateExtendRangeOpts", () => {
+	const validExtendRangeOptions: ExtendRangeOpts = {
 		rangeToExtend: [DateTime.fromISO("2021-01-01")],
 		timeUnit: "days",
 		endOffset: 1,
@@ -21,7 +21,7 @@ describe("validateExtendRangeOptions", () => {
 	describe("Given no input", () => {
 		test("throws an error if input is not specified", () => {
 			// @ts-expect-error: testing invalid input
-			expect(() => validateExtendRangeOptions()).toThrowError();
+			expect(() => validateExtendRangeOpts()).toThrowError();
 		});
 	});
 
@@ -29,7 +29,7 @@ describe("validateExtendRangeOptions", () => {
 		test.each(new TestValues().getAll())(
 			"throws an error if input is $name",
 			({ value }) => {
-				expect(() => validateExtendRangeOptions(value)).toThrowError();
+				expect(() => validateExtendRangeOpts(value)).toThrowError();
 			},
 		);
 	});
@@ -38,7 +38,7 @@ describe("validateExtendRangeOptions", () => {
 		test.each([{ test: "test" }, { test: "test", refDate: "test" }])(
 			"throws an error if input is %o ",
 			(object) => {
-				expect(() => validateExtendRangeOptions(object)).toThrowError();
+				expect(() => validateExtendRangeOpts(object)).toThrowError();
 			},
 		);
 	});
@@ -59,7 +59,7 @@ describe("validateExtendRangeOptions", () => {
 					"doesn't throw error if rangeToExtend is $rangeToExtend",
 					({ rangeToExtend }) => {
 						expect(() =>
-							validateExtendRangeOptions({
+							validateExtendRangeOpts({
 								...validExtendRangeOptions,
 								rangeToExtend,
 							}),
@@ -87,7 +87,7 @@ describe("validateExtendRangeOptions", () => {
 					"throws an error if rangeToExtend is $name",
 					({ value }) => {
 						expect(() =>
-							validateExtendRangeOptions({
+							validateExtendRangeOpts({
 								rangeToExtend: value,
 							}),
 						).toThrowError(
@@ -108,10 +108,10 @@ describe("validateExtendRangeOptions", () => {
 					"doesn't throw error if timeUnit is %s",
 					(timeUnit) => {
 						expect(() =>
-							validateExtendRangeOptions({
+							validateExtendRangeOpts({
 								...validExtendRangeOptions,
 								timeUnit,
-							} as ExtendRangeOptions),
+							} as ExtendRangeOpts),
 						).not.toThrowError();
 					},
 				);
@@ -120,14 +120,14 @@ describe("validateExtendRangeOptions", () => {
 				test.each(new TestValues().getAll())(
 					"throws an error if timeUnit is $name",
 					({ value }) => {
-						expect(() => validateExtendRangeOptions(value)).toThrowError();
+						expect(() => validateExtendRangeOpts(value)).toThrowError();
 					},
 				);
 			});
 		});
 
 		describe("Offset properties", () => {
-			const { invalid, valid } = isValidOffsetTestValues;
+			const { invalid, valid } = offsetTestValues;
 
 			describe("startOffset property", () => {
 				describe("Given a valid startOffset", () => {
@@ -135,10 +135,10 @@ describe("validateExtendRangeOptions", () => {
 						"doesn't throw error if startOffset is %d",
 						(startOffset) => {
 							expect(() =>
-								validateExtendRangeOptions({
+								validateExtendRangeOpts({
 									...validExtendRangeOptions,
 									startOffset,
-								} as ExtendRangeOptions),
+								} as ExtendRangeOpts),
 							).not.toThrowError();
 						},
 					);
@@ -149,9 +149,9 @@ describe("validateExtendRangeOptions", () => {
 						"throws an error if startOffset is $name",
 						({ value }) => {
 							expect(() =>
-								validateExtendRangeOptions({
+								validateExtendRangeOpts({
 									startOffset: value,
-								} as ExtendRangeOptions),
+								} as ExtendRangeOpts),
 							).toThrowError();
 						},
 					);
@@ -164,10 +164,10 @@ describe("validateExtendRangeOptions", () => {
 						"doesn't throw error if endOffset is %d",
 						(value) => {
 							expect(() =>
-								validateExtendRangeOptions({
+								validateExtendRangeOpts({
 									...validExtendRangeOptions,
 									endOffset: value,
-								} as ExtendRangeOptions),
+								} as ExtendRangeOpts),
 							).not.toThrowError();
 						},
 					);
@@ -177,9 +177,9 @@ describe("validateExtendRangeOptions", () => {
 						"throws an error if endOffset is $name",
 						({ value }) => {
 							expect(() =>
-								validateExtendRangeOptions({
+								validateExtendRangeOpts({
 									endOffset: value,
-								} as ExtendRangeOptions),
+								} as ExtendRangeOpts),
 							).toThrowError();
 						},
 					);
