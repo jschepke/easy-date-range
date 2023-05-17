@@ -1,13 +1,16 @@
-import { DateRangeOptions } from "../dateRange";
+import { DateRangeOpts } from "../dateRange";
 import { InvalidParameterError } from "../errors";
 import { isEmptyObject } from "../utils/isEmptyObject";
 import { isObject } from "../utils/isObject";
-import { isValidOffset } from "../utils/isValidOffset";
-import { isValidRefDate } from "../utils/isValidRefDate";
-import { isValidWeekday } from "../utils/isValidWeekday";
 import { PropertiesMap } from "../utils/types";
+import {
+	validateEndOffset,
+	validateRefDate,
+	validateRefWeekday,
+	validateStartOffset,
+} from "./common";
 
-const dateRangeOptionsKeysMap: PropertiesMap<DateRangeOptions> = {
+const dateRangeOptionsKeysMap: PropertiesMap<DateRangeOpts> = {
 	endOffset: "endOffset",
 	refDate: "refDate",
 	refWeekday: "refWeekday",
@@ -20,7 +23,7 @@ const dateRangeOptionsKeysMap: PropertiesMap<DateRangeOptions> = {
  * Throws an error if any properties of options object are
  * invalid or the parameter itself is invalid.
  */
-export function validateDateRangeOptions(value: unknown): void {
+export function validateDateRangeOpts(value: unknown): void {
 	// rome-ignore lint/style/noArguments: <explanation>
 	if (arguments.length === 0) {
 		throw new InvalidParameterError(
@@ -66,38 +69,17 @@ export function validateDateRangeOptions(value: unknown): void {
 
 	// get the expected properties from the input value
 	const { refDate, refWeekday, startOffset, endOffset } =
-		value as DateRangeOptions;
+		value as DateRangeOpts;
 
 	// handle refDate property
-	if (refDate !== undefined && !isValidRefDate(refDate)) {
-		// if (!isValidRefDate(refDate)) {
-		throw new InvalidParameterError(
-			"refDate",
-			refDate,
-			"Date object or luxon DateTime object.",
-		);
-	}
+	refDate !== undefined && validateRefDate(refDate);
 
 	// handle refWeekday property
-	if (refWeekday !== undefined && !isValidWeekday(refWeekday)) {
-		throw new InvalidParameterError(
-			"refWeekday",
-			refWeekday,
-			"a number between 1 and 7.",
-		);
-	}
+	refWeekday !== undefined && validateRefWeekday(refWeekday);
 
 	// handle startOffset property
-	if (startOffset !== undefined && !isValidOffset(startOffset)) {
-		throw new InvalidParameterError(
-			"startOffset",
-			startOffset,
-			"a number >= 0",
-		);
-	}
+	startOffset !== undefined && validateStartOffset(startOffset);
 
 	// handle endOffset property
-	if (endOffset !== undefined && !isValidOffset(endOffset)) {
-		throw new InvalidParameterError("endOffset", endOffset, "a number >= 0");
-	}
+	endOffset !== undefined && validateEndOffset(endOffset);
 }
