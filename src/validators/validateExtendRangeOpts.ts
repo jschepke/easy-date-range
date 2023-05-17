@@ -1,13 +1,16 @@
 import { InvalidParameterError } from "../errors";
-import type { ExtendRangeOptions } from "../extendRange";
-import { isEmptyObject } from "../utils/isEmptyObject";
-import { isObject } from "../utils/isObject";
-import { isValidDateTimeArray } from "../utils/isValidDateTimeArray";
-import { isValidOffset } from "../utils/isValidOffset";
-import { isValidTimeUnit } from "../utils/isValidTimeUnit";
-import { PropertiesMap } from "../utils/types";
+import type { ExtendRangeOpts } from "../extendRange";
+import type { PropertiesMap } from "../utils";
+import {
+	isEmptyObject,
+	isObject,
+	isValidDateTimeArray,
+	isValidTimeUnit,
+} from "../utils";
 
-const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOptions> = {
+import { validateEndOffset, validateStartOffset } from "./common";
+
+const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOpts> = {
 	rangeToExtend: "rangeToExtend",
 	startOffset: "startOffset",
 	endOffset: "endOffset",
@@ -15,7 +18,7 @@ const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOptions> = {
 };
 const expectedProperties = Object.values(extendRangeOptionsKeysMap);
 
-export function validateExtendRangeOptions(value: unknown): void {
+export function validateExtendRangeOpts(value: unknown): void {
 	// check if value is an object and has any properties
 	if (!isObject(value) || isEmptyObject(value)) {
 		throw new InvalidParameterError(
@@ -34,9 +37,9 @@ export function validateExtendRangeOptions(value: unknown): void {
 
 	if (notMatchingProperties.length > 0) {
 		throw new InvalidParameterError(
-			"options parameter",
+			"ExtendDateRange options parameter",
 			value,
-			`an object with all and only the following properties: ${expectedProperties.join(
+			`an object with the following properties: ${expectedProperties.join(
 				", ",
 			)}`,
 		);
@@ -44,7 +47,7 @@ export function validateExtendRangeOptions(value: unknown): void {
 
 	// get the expected properties from the input value
 	const { endOffset, rangeToExtend, startOffset, timeUnit } =
-		value as ExtendRangeOptions;
+		value as ExtendRangeOpts;
 
 	// handle rangeToExtend
 	if (!isValidDateTimeArray(rangeToExtend)) {
@@ -66,16 +69,8 @@ export function validateExtendRangeOptions(value: unknown): void {
 	}
 
 	//handle startOffset
-	if (!isValidOffset(startOffset)) {
-		throw new InvalidParameterError(
-			"startOffset",
-			startOffset,
-			"a number >= 0",
-		);
-	}
+	validateStartOffset(startOffset);
 
 	// handle endOffset
-	if (!isValidOffset(endOffset)) {
-		throw new InvalidParameterError("endOffset", endOffset, "a number >= 0");
-	}
+	validateEndOffset(endOffset);
 }
