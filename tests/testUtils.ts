@@ -1,4 +1,4 @@
-import { WEEKDAY } from "../src/constants";
+import { RANGE_TYPE, WEEKDAY } from "../src/constants";
 import { DateTime } from "luxon";
 
 type TestValueName =
@@ -9,18 +9,19 @@ type TestValueName =
 	| "empty array []"
 	| "empty object {}"
 	| "object { a: 1, b: 'foo' }"
-	| "integer (1)"
-	| "decimal (2.5)"
-	| "negative integer (-1)"
-	| "negative decimal (-2.5)"
+	| "integer 0"
+	| "integer 1"
+	| "decimal 2.5"
+	| "negative integer -1"
+	| "negative decimal -2.5"
 	| "array of integers [1, 2, 3]"
-	| "string ('test')"
+	| "string 'test'"
 	| "ISO date string ('2021-12-25')"
 	| 'array of strings ["test", "test2"]'
 	| "boolean true"
 	| "boolean false"
-	| "Date object (new Date())"
-	| "DateTime object (DateTime.now())";
+	| "Date object - new Date()"
+	| "DateTime object - DateTime.now()";
 
 // rome-ignore lint/suspicious/noExplicitAny: <explanation>
 type TestValue = { name: TestValueName; value: any };
@@ -33,18 +34,19 @@ const testValues: TestValue[] = [
 	{ value: [], name: "empty array []" },
 	{ value: {}, name: "empty object {}" },
 	{ value: { a: 1, b: "foo" }, name: "object { a: 1, b: 'foo' }" },
-	{ value: 1, name: "integer (1)" },
-	{ value: 2.5, name: "decimal (2.5)" },
-	{ value: -1, name: "negative integer (-1)" },
-	{ value: -2.5, name: "negative decimal (-2.5)" },
+	{ value: 0, name: "integer 0" },
+	{ value: 1, name: "integer 1" },
+	{ value: 2.5, name: "decimal 2.5" },
+	{ value: -1, name: "negative integer -1" },
+	{ value: -2.5, name: "negative decimal -2.5" },
 	{ value: [1, 2, 3], name: "array of integers [1, 2, 3]" },
-	{ value: "test", name: "string ('test')" },
+	{ value: "test", name: "string 'test'" },
 	{ value: "2021-12-25", name: "ISO date string ('2021-12-25')" },
 	{ value: ["test", "test2"], name: 'array of strings ["test", "test2"]' },
 	{ value: true, name: "boolean true" },
 	{ value: false, name: "boolean false" },
-	{ value: new Date(), name: "Date object (new Date())" },
-	{ value: DateTime.now(), name: "DateTime object (DateTime.now())" },
+	{ value: new Date(), name: "Date object - new Date()" },
+	{ value: DateTime.now(), name: "DateTime object - DateTime.now()" },
 ];
 
 /**
@@ -117,18 +119,26 @@ const dt3 = DateTime.fromISO("2021-12-25T12:00:00Z"); // December 25th, 2021 at 
 const invalidDt1 = DateTime.invalid("wrong format");
 const invalidDt2 = DateTime.fromISO("2021-13-01");
 
-export const weekdayTestValues = {
+export const weekdayTestValues: {
+	valid: number[];
+	invalid: (TestValue | { name: string; value: number })[];
+} = {
 	valid: [1, 2, 3, 4, 5, 6, 7],
-	invalid: new TestValues().excludeByName(["integer (1)"]),
+	invalid: [
+		...new TestValues().excludeByName(["integer 1"]),
+		// add the first integer greater than 7 to the invalid test values
+		{ name: "integer 8", value: 8 },
+	],
 };
 
 export const isNumberTestValues = {
 	valid: [0, 1, -1, 0.5, -0.5],
 	invalid: new TestValues().excludeByName([
-		"integer (1)",
-		"negative integer (-1)",
-		"decimal (2.5)",
-		"negative decimal (-2.5)",
+		"integer 0",
+		"integer 1",
+		"negative integer -1",
+		"decimal 2.5",
+		"negative decimal -2.5",
 	]),
 };
 
@@ -141,8 +151,8 @@ export const isValidRefDateTestValues = {
 	valid: [date1, date2, date3, dt1, dt2, dt3],
 	invalid: [
 		...new TestValues().excludeByName([
-			"Date object (new Date())",
-			"DateTime object (DateTime.now())",
+			"Date object - new Date()",
+			"DateTime object - DateTime.now()",
 		]),
 		// additional invalid dates
 		{ value: invalidDate1, name: "invalid Date 1" },
@@ -163,11 +173,11 @@ export const isObjectTestValues = {
 
 export const isValidDateTestValues = {
 	valid: [date1, date2, date3],
-	invalid: new TestValues().excludeByName(["Date object (new Date())"]),
+	invalid: new TestValues().excludeByName(["Date object - new Date()"]),
 };
 export const isValidDateTimeTestValues = {
 	valid: [dt1, dt2, dt3],
-	invalid: new TestValues().excludeByName(["DateTime object (DateTime.now())"]),
+	invalid: new TestValues().excludeByName(["DateTime object - DateTime.now()"]),
 };
 
 export const isValidDateTimeArrayTestValues = {
@@ -175,19 +185,20 @@ export const isValidDateTimeArrayTestValues = {
 	invalid: new TestValues().getAll(),
 };
 
-export const isValidOffsetTestValues = {
+export const offsetTestValues = {
 	valid: [0, 1, 123, 10000],
-	invalid: new TestValues().excludeByName(["integer (1)"]),
+	invalid: new TestValues().excludeByName(["integer 0", "integer 1"]),
 };
 
 interface Assertion {
-	refWeekday: WEEKDAY;
+	refWeekday?: WEEKDAY;
 	lastWeekday?: WEEKDAY;
 	firstDate: DateTime | Date;
 	lastDate: DateTime | Date;
 	numberOfDates: number;
 	startOffset?: number;
 	endOffset?: number;
+	rangeType?: RANGE_TYPE;
 }
 
 interface DateRangeTestSet {
@@ -195,7 +206,7 @@ interface DateRangeTestSet {
 	assertions: Assertion[];
 }
 
-const month_refWeekday_testValues: DateRangeTestSet[] = [
+const monthDefault_refWeekday_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({ year: 2023, month: 6, day: 4 }),
 		assertions: [
@@ -313,7 +324,7 @@ const month_refWeekday_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-const month_refDate_testValues: DateRangeTestSet[] = [
+const monthDefault_refDate_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({
 			year: 2023,
@@ -419,7 +430,7 @@ const month_refDate_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-const month_startOffset_testValues: DateRangeTestSet[] = [
+const monthDefault_startOffset_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({
 			year: 2023,
@@ -530,7 +541,7 @@ const month_startOffset_testValues: DateRangeTestSet[] = [
 	},
 ];
 
-const month_endOffset_testValues: DateRangeTestSet[] = [
+const monthDefault_endOffset_testValues: DateRangeTestSet[] = [
 	{
 		refDate: DateTime.fromObject({
 			year: 2023,
@@ -636,22 +647,340 @@ const month_endOffset_testValues: DateRangeTestSet[] = [
 	},
 ];
 
+// month exact test values
+
+const monthExact_refDate_testValues: DateRangeTestSet[] = [
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 5,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({
+					year: 2023,
+					month: 5,
+					day: 1,
+				}),
+				lastDate: DateTime.fromObject({
+					year: 2023,
+					month: 5,
+					day: 31,
+				}),
+				numberOfDates: 31,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 12,
+			day: 3,
+			hour: 23,
+			minute: 12,
+			second: 34,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2023, month: 12, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2023, month: 12, day: 31 }),
+				numberOfDates: 31,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2010,
+			month: 2,
+			day: 17,
+			hour: 4,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2010, month: 2, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2010, month: 2, day: 28 }),
+				numberOfDates: 28,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2036,
+			month: 2,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2036, month: 2, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2036, month: 2, day: 29 }),
+				numberOfDates: 29,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 1905,
+			month: 11,
+			day: 3,
+			hour: 4,
+			minute: 45,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 1905, month: 11, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 1905, month: 11, day: 30 }),
+				numberOfDates: 30,
+			},
+		],
+	},
+];
+
+const monthExact_startOffset_testValues: DateRangeTestSet[] = [
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 5,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({
+					year: 2023,
+					month: 4,
+					day: 24,
+				}),
+				lastDate: DateTime.fromObject({
+					year: 2023,
+					month: 5,
+					day: 31,
+				}),
+				numberOfDates: 31 + 7,
+				startOffset: 7,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 12,
+			day: 3,
+			hour: 23,
+			minute: 12,
+			second: 34,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2023, month: 11, day: 27 }),
+				lastDate: DateTime.fromObject({ year: 2023, month: 12, day: 31 }),
+				numberOfDates: 31 + 4,
+				startOffset: 4,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2010,
+			month: 2,
+			day: 17,
+			hour: 4,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2010, month: 1, day: 22 }),
+				lastDate: DateTime.fromObject({ year: 2010, month: 2, day: 28 }),
+				numberOfDates: 28 + 10,
+				startOffset: 10,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2036,
+			month: 2,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2036, month: 1, day: 31 }),
+				lastDate: DateTime.fromObject({ year: 2036, month: 2, day: 29 }),
+				numberOfDates: 29 + 1,
+				startOffset: 1,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 1905,
+			month: 11,
+			day: 3,
+			hour: 4,
+			minute: 45,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 1905, month: 10, day: 2 }),
+				lastDate: DateTime.fromObject({ year: 1905, month: 11, day: 30 }),
+				numberOfDates: 30 + 30,
+				startOffset: 30,
+			},
+		],
+	},
+];
+
+const monthExact_endOffset_testValues: DateRangeTestSet[] = [
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 5,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({
+					year: 2023,
+					month: 5,
+					day: 1,
+				}),
+				lastDate: DateTime.fromObject({
+					year: 2023,
+					month: 6,
+					day: 7,
+				}),
+				numberOfDates: 31 + 7,
+				endOffset: 7,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2023,
+			month: 12,
+			day: 3,
+			hour: 23,
+			minute: 12,
+			second: 34,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2023, month: 12, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2024, month: 1, day: 4 }),
+				numberOfDates: 31 + 4,
+				endOffset: 4,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2010,
+			month: 2,
+			day: 17,
+			hour: 4,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2010, month: 2, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2010, month: 3, day: 10 }),
+				numberOfDates: 28 + 10,
+				endOffset: 10,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 2036,
+			month: 2,
+			day: 17,
+			hour: 12,
+			minute: 34,
+			second: 17,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 2036, month: 2, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 2036, month: 3, day: 1 }),
+				numberOfDates: 29 + 1,
+				endOffset: 1,
+			},
+		],
+	},
+	{
+		refDate: DateTime.fromObject({
+			year: 1905,
+			month: 11,
+			day: 3,
+			hour: 4,
+			minute: 45,
+			second: 56,
+		}),
+		assertions: [
+			{
+				firstDate: DateTime.fromObject({ year: 1905, month: 11, day: 1 }),
+				lastDate: DateTime.fromObject({ year: 1905, month: 12, day: 30 }),
+				numberOfDates: 30 + 30,
+				endOffset: 30,
+			},
+		],
+	},
+];
+
 export const monthTestValues = {
 	invalid: {
 		arbitraryParams: getTestValues(["undefined"]),
 		refDate: getTestValues([
 			"undefined",
-			"Date object (new Date())",
-			"DateTime object (DateTime.now())",
+			"Date object - new Date()",
+			"DateTime object - DateTime.now()",
 		]),
-		refWeekday: getTestValues(["undefined", "integer (1)"]),
-		startOffset: getTestValues(["undefined", "integer (1)"]),
-		endOffset: getTestValues(["undefined", "integer (1)"]),
+		refWeekday: getTestValues(["undefined", "integer 1"]),
+		startOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
+		endOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
 	},
 	valid: {
-		refDate: month_refDate_testValues,
-		refWeekday: month_refWeekday_testValues,
-		startOffset: month_startOffset_testValues,
-		endOffset: month_endOffset_testValues,
+		refDate: monthDefault_refDate_testValues,
+		refWeekday: monthDefault_refWeekday_testValues,
+		startOffset: monthDefault_startOffset_testValues,
+		endOffset: monthDefault_endOffset_testValues,
+	},
+};
+
+export const monthExactTestValues = {
+	invalid: {
+		arbitraryParams: getTestValues(["undefined"]),
+		refDate: getTestValues([
+			"undefined",
+			"Date object - new Date()",
+			"DateTime object - DateTime.now()",
+		]),
+		startOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
+		endOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
+	},
+	valid: {
+		refDate: monthExact_refDate_testValues,
+		startOffset: monthExact_startOffset_testValues,
+		endOffset: monthExact_endOffset_testValues,
 	},
 };
