@@ -514,7 +514,7 @@ export class DateRange {
 
 	next() {
 		switch (this.rangeType) {
-			case "week": {
+			case RANGE_TYPE.Week: {
 				const nextRefDate = this.refDate.plus({ days: 7 });
 
 				const options: Required<DateRangeOpts> = {
@@ -527,7 +527,7 @@ export class DateRange {
 				this.getWeek(options);
 				break;
 			}
-			case "month-week-extended": {
+			case RANGE_TYPE.MonthWeekExtended: {
 				const { year, month } = this.refDate;
 				const nextRefDate = DateTime.fromObject({
 					year,
@@ -543,7 +543,7 @@ export class DateRange {
 				this.getMonth(options);
 				break;
 			}
-			case "month-exact": {
+			case RANGE_TYPE.MonthExact: {
 				const { year, month } = this.refDate;
 				const nextRefDate = DateTime.fromObject({
 					year,
@@ -558,7 +558,7 @@ export class DateRange {
 				this.getMonthExact(options);
 				break;
 			}
-			case "days": {
+			case RANGE_TYPE.Days: {
 				//todo
 				throw new Error("not implemented");
 			}
