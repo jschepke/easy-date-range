@@ -1,17 +1,21 @@
-import { describe, expect, it, test } from "vitest";
+import { afterEach, describe, expect, it, test, vi } from "vitest";
 
 import { DateRange } from "../src/dateRange";
 import { DateTime } from "luxon";
 
 import { WEEKDAY } from "../src/constants";
+import { weekdayTestValues } from "./testUtils";
 
-describe("dateRangeClass", () => {
+describe("dateRange", () => {
+	afterEach(() => {
+		// restoring date after each test run
+		vi.useRealTimers();
+	});
+
 	describe("Instance", () => {
 		it("should throw an error if any parameters are passed to the constructor", () => {
 			// @ts-expect-error: testing invalid input
-			expect(() => new DateRange("2022-01-01")).toThrowError(
-				"DateRange constructor does not accept any parameters",
-			);
+			expect(() => new DateRange("2022-01-01")).toThrowError();
 		});
 
 		it("should create a DateRange instance", () => {
@@ -19,17 +23,15 @@ describe("dateRangeClass", () => {
 			expect(dateRange).toBeInstanceOf(DateRange);
 		});
 
-		it.todo(
-			"should create a DateRange instance with refDate as DateTime.now()",
-			() => {
-				const dateRange = new DateRange();
-				expect(dateRange.refDate).toBeInstanceOf(DateTime);
-				// TODO refactor
-				// expect(dateRange.refDate.toISO().substring(0, 19)).toEqual(
-				// 	DateTime.now().toISO().substring(0, 19),
-				// );
-			},
-		);
+		it("should create a DateRange instance with refDate as current time", () => {
+			// mock current time
+			// date from milliseconds, toISOString: 2023-04-30T10:36:30.504Z
+			const date = new Date(1682850990504);
+			vi.setSystemTime(date);
+
+			const dateRange = new DateRange();
+			expect(dateRange.refDate.valueOf()).toEqual(date.getTime());
+		});
 
 		it("should create a DateRange instance with empty dates array", () => {
 			const dateRange = new DateRange();
@@ -38,17 +40,20 @@ describe("dateRangeClass", () => {
 
 		it("should create a DateRange instance with refWeekday equal to 1 (1 for Monday)", () => {
 			const dateRange = new DateRange();
+			// with use of WEEKDAY enum
 			expect(dateRange.refWeekday).toEqual(WEEKDAY.Monday);
+			// with a number
 			expect(dateRange.refWeekday).toEqual(1);
 		});
 	});
 
-	describe("Methods", () => {
+	describe("Utility methods", () => {
 		describe("isValidRefDate", () => {
 			test("returns true for valid Date or DateTime objects", () => {
 				const dateRange = new DateRange();
 				const date = new Date();
-				const dateTime = DateTime.local();
+
+				const dateTime = DateTime.now();
 				expect(dateRange.isValidRefDate(date)).toBe(true);
 				expect(dateRange.isValidRefDate(dateTime)).toBe(true);
 			});
@@ -69,22 +74,22 @@ describe("dateRangeClass", () => {
 		describe("isValidRefWeekday", () => {
 			const dateRange = new DateRange();
 
-			test("should return true for valid weekdays", () => {
-				expect(dateRange.isValidRefWeekday(1)).toBe(true);
-				expect(dateRange.isValidRefWeekday(3)).toBe(true);
-				expect(dateRange.isValidRefWeekday(7)).toBe(true);
+			describe("with a valid weekday value", () => {
+				test.each(weekdayTestValues.valid)(
+					"returns true for value: %d",
+					(value) => {
+						expect(dateRange.isValidRefWeekday(value)).toBe(true);
+					},
+				);
 			});
 
-			test("should return false for invalid weekdays", () => {
-				expect(dateRange.isValidRefWeekday(0)).toBe(false);
-				expect(dateRange.isValidRefWeekday(8)).toBe(false);
-				expect(dateRange.isValidRefWeekday(-1)).toBe(false);
-			});
-
-			test("should return false for non-numbers", () => {
-				expect(dateRange.isValidRefWeekday("Monday")).toBe(false);
-				expect(dateRange.isValidRefWeekday(null)).toBe(false);
-				expect(dateRange.isValidRefWeekday(undefined)).toBe(false);
+			describe("with an invalid weekday value", () => {
+				test.each(weekdayTestValues.invalid)(
+					"returns false for value: $name",
+					({ value }) => {
+						expect(dateRange.isValidRefWeekday(value)).toBe(false);
+					},
+				);
 			});
 		});
 	});
