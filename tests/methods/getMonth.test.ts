@@ -4,10 +4,10 @@ import { DateRange } from "../../src/dateRange";
 import { monthTestValues } from "../testUtils";
 import { DateTime, Info } from "luxon";
 
-describe("eachDayOfMonth", () => {
+describe("getMonth", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
-			test("doesn't throw error if no parameters are speciefied", () => {
+			test("doesn't throw error if no parameters are specified", () => {
 				expect(() => new DateRange().getMonth()).not.toThrowError();
 			});
 		});
@@ -64,7 +64,7 @@ describe("eachDayOfMonth", () => {
 	});
 
 	describe("Functionality", () => {
-		describe("Given no parameters", () => {
+		describe("Given no options parameter", () => {
 			afterEach(() => {
 				// restoring date after each test run
 				vi.useRealTimers();
@@ -82,7 +82,7 @@ describe("eachDayOfMonth", () => {
 						lastDate,
 						lastWeekday,
 						numberOfDates,
-						refWeekday,
+						refWeekday = 1,
 					} = assertions[0];
 
 					if (lastWeekday === undefined) {
@@ -147,7 +147,7 @@ describe("eachDayOfMonth", () => {
 			);
 		});
 
-		describe("Given options parameters", () => {
+		describe("Given options parameter", () => {
 			describe("refDate", () => {
 				describe.each(monthTestValues.valid.refDate)(
 					"Given date $refDate",
@@ -157,7 +157,7 @@ describe("eachDayOfMonth", () => {
 							lastDate,
 							lastWeekday,
 							numberOfDates,
-							refWeekday,
+							refWeekday = 1,
 						} = assertions[0];
 
 						if (lastWeekday === undefined) {
@@ -253,7 +253,7 @@ describe("eachDayOfMonth", () => {
 									firstDate,
 									lastDate,
 									lastWeekday,
-									refWeekday,
+									refWeekday = 1,
 									numberOfDates,
 								}) => {
 									if (lastWeekday === undefined) {
@@ -437,7 +437,7 @@ describe("eachDayOfMonth", () => {
 								({
 									firstDate,
 									lastDate,
-									refWeekday,
+									refWeekday = 1,
 									numberOfDates,
 									endOffset,
 								}) => {
