@@ -10,7 +10,7 @@ import { TestValues } from "../testUtils";
 describe("eachDayOfWeek", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
-			test("doesn't throw error if no parameters are speciefied", () => {
+			test("doesn't throw error if no parameters are specified", () => {
 				expect(() => new DateRange().getWeek()).not.toThrowError();
 			});
 		});
