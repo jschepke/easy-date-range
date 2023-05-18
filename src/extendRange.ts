@@ -1,10 +1,10 @@
-import { validateExtendRangeOptions } from "./validators/validateExtendRangeOptions";
+import { validateExtendRangeOpts } from "./validators/validateExtendRangeOpts";
 import { DateTime, type DurationUnit } from "luxon";
 
 /**
  * Options for `extendRange` function.
  */
-export interface ExtendRangeOptions {
+export interface ExtendRangeOpts {
 	/**
 	 * The range of DateTime objects to extend.
 	 */
@@ -31,13 +31,13 @@ export interface ExtendRangeOptions {
  * Works by adding or subtracting a specified number of time units to the
  * start or end of the range.
  *
- * @param options - The {@link ExtendRangeOptions} for extending the range.
+ * @param options - The {@link ExtendRangeOpts} for extending the range.
  * @returns A new array of DateTime objects that represents the extended range.
  * @throws ValidationError - If any of the options are invalid.
  */
-export function extendRange(options: ExtendRangeOptions): DateTime[] {
+export function extendRange(options: ExtendRangeOpts): DateTime[] {
 	//validate input options
-	validateExtendRangeOptions(options);
+	validateExtendRangeOpts(options);
 
 	const { rangeToExtend, timeUnit, endOffset, startOffset } = options;
 
