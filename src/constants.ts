@@ -11,10 +11,10 @@ export enum WEEKDAY {
 }
 
 export enum RANGE_TYPE {
-	Week = "week",
-	MonthExact = "month-exact",
-	MonthWeekExtended = "month-week-extended",
-	Days = "days",
+	Week = "WEEK",
+	MonthExact = "MONTH-EXACT",
+	MonthWeekExtended = "MONTH-WEEK-EXTENDED",
+	Days = "DAYS",
 }
 
 export const DURATION_UNITS: DurationUnit[] = [
