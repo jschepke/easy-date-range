@@ -23,14 +23,15 @@ describe("dateRange", () => {
 			expect(dateRange).toBeInstanceOf(DateRange);
 		});
 
-		it("should create a DateRange instance with refDate as current time", () => {
+		it("should create a DateRange instance with refDate undefined", () => {
+			//todo remove mocking time from instance test, no longer applicable
 			// mock current time
 			// date from milliseconds, toISOString: 2023-04-30T10:36:30.504Z
 			const date = new Date(1682850990504);
 			vi.setSystemTime(date);
 
 			const dateRange = new DateRange();
-			expect(dateRange.refDate.valueOf()).toEqual(date.getTime());
+			expect(dateRange.refDate).toBe(undefined);
 		});
 
 		it("should create a DateRange instance with empty dates array", () => {
