@@ -87,14 +87,13 @@ describe("getMonth", () => {
 
 					if (lastWeekday === undefined) {
 						throw new Error(
-							"lastWeekday prop is not defined in test values, but required in the tests",
+							"lastWeekday prop is not defined in test values, but required in the test suite",
 						);
 					}
 
 					test(`creates range of ${numberOfDates} dates`, () => {
-						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
-						expect(dates.length).toBe(numberOfDates);
+						const dr = new DateRange().getMonth();
+						expect(dr.dates.length).toBe(numberOfDates);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
@@ -102,8 +101,8 @@ describe("getMonth", () => {
 						const dates = dateRange.getMonth().dates;
 
 						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].valueOf()).toEqual(
-								dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+							expect(dates[i].toISO()).toEqual(
+								dates[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
@@ -181,8 +180,8 @@ describe("getMonth", () => {
 							}).dates;
 
 							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].valueOf()).toEqual(
-									dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+								expect(dates[i].toISO()).toEqual(
+									dates[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -277,8 +276,8 @@ describe("getMonth", () => {
 										}).dates;
 
 										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].valueOf()).toEqual(
-												dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+											expect(dates[i].toISO()).toEqual(
+												dates[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -375,8 +374,8 @@ describe("getMonth", () => {
 										}).dates;
 
 										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].valueOf()).toEqual(
-												dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+											expect(dates[i].toISO()).toEqual(
+												dates[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -456,8 +455,8 @@ describe("getMonth", () => {
 										}).dates;
 
 										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].valueOf()).toEqual(
-												dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+											expect(dates[i].toISO()).toBe(
+												dates[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -481,6 +480,11 @@ describe("getMonth", () => {
 											endOffset,
 										}).dates;
 
+										console.log(
+											dates[dates.length - 1].toLocaleString(
+												DateTime.DATETIME_MED_WITH_WEEKDAY,
+											),
+										);
 										expect(dates[dates.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);

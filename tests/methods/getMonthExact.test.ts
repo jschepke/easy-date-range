@@ -81,8 +81,8 @@ describe("getMonthExact", () => {
 						const dates = dateRange.getMonthExact().dates;
 
 						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].valueOf()).toEqual(
-								dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+							expect(dates[i].toISO()).toEqual(
+								dates[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
@@ -130,8 +130,8 @@ describe("getMonthExact", () => {
 							}).dates;
 
 							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].valueOf()).toEqual(
-									dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+								expect(dates[i].toISO()).toEqual(
+									dates[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -190,8 +190,8 @@ describe("getMonthExact", () => {
 										}).dates;
 
 										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].valueOf()).toEqual(
-												dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+											expect(dates[i].toISO()).toEqual(
+												dates[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -252,8 +252,8 @@ describe("getMonthExact", () => {
 										}).dates;
 
 										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].valueOf()).toEqual(
-												dates[i - 1].valueOf() + 24 * 60 * 60 * 1000,
+											expect(dates[i].toISO()).toEqual(
+												dates[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});

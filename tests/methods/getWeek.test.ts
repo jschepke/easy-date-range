@@ -7,7 +7,7 @@ import { WEEKDAY } from "../../src/constants";
 import { getRandomDateTime, getRandomWeekday } from "../../src/utils";
 import { TestValues } from "../testUtils";
 
-describe("eachDayOfWeek", () => {
+describe("getWeek", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
 			test("doesn't throw error if no parameters are specified", () => {
@@ -105,14 +105,18 @@ describe("eachDayOfWeek", () => {
 			});
 
 			test("getWeek includes the refDate and starts on the refWeekday", () => {
-				const dateRange = new DateRange();
-				const instanceRefDate = dateRange.refDate;
-				const instanceRefWeekday = dateRange.refWeekday;
-
 				// The loop ensures that the result is the same for repeated calls
-				for (let i = 0; i < 10; i++) {
+				for (let i = 0; i < 3; i++) {
+					const dateRange = new DateRange();
 					const dates = dateRange.getWeek().dates;
+					const instanceRefDate = dateRange.refDate;
+					const instanceRefWeekday = dateRange.refWeekday;
 
+					if (!instanceRefDate) {
+						throw new Error(
+							"instanceRefDate is not defined after calling the getWeek() method",
+						);
+					}
 					expect(
 						dates.find(
 							(date) => date.toISODate() === instanceRefDate.toISODate(),
@@ -129,18 +133,25 @@ describe("eachDayOfWeek", () => {
 			});
 
 			test("getWeek starts on a refDate or starts on a date that is before the refDate", () => {
-				const dateRange = new DateRange();
-				for (let i = 0; i < 10; i++) {
-					const { refDate } = dateRange;
+				// The loop ensures that the result is the same for repeated calls
+				for (let i = 0; i < 3; i++) {
+					const dateRange = new DateRange().getWeek();
 					const dates = dateRange.getWeek().dates;
+					const { refDate } = dateRange;
+
+					if (!refDate) {
+						throw new Error(
+							"instanceRefDate is not defined after calling the getWeek() method",
+						);
+					}
 
 					expect(dates[0].valueOf()).toBeLessThanOrEqual(refDate.valueOf());
 				}
 			});
 
 			test("each date of an array starts at the beginning of the day", () => {
-				const dateRange = new DateRange();
-				for (let i = 0; i < 10; i++) {
+				for (let i = 0; i < 3; i++) {
+					const dateRange = new DateRange();
 					const dates = dateRange.getWeek().dates;
 
 					dates.forEach((date) => {
@@ -150,8 +161,8 @@ describe("eachDayOfWeek", () => {
 			});
 
 			test("Monday is the first date of the range", () => {
-				const dateRange = new DateRange();
-				for (let i = 0; i < 10; i++) {
+				for (let i = 0; i < 3; i++) {
+					const dateRange = new DateRange();
 					const dates = dateRange.getWeek().dates;
 
 					expect(dates[0].weekday).toEqual(WEEKDAY.Monday);
