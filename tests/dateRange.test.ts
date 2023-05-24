@@ -1,54 +1,80 @@
-import { afterEach, describe, expect, it, test, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 
-import { DateRange } from "../src/dateRange";
+import { DateRange, DateRangeMembers } from "../src/dateRange";
 import { DateTime } from "luxon";
 
-import { WEEKDAY } from "../src/constants";
+import { RANGE_TYPE, WEEKDAY } from "../src/constants";
 import { weekdayTestValues } from "./testUtils";
 
 describe("dateRange", () => {
-	afterEach(() => {
-		// restoring date after each test run
-		vi.useRealTimers();
-	});
-
-	describe("Instance", () => {
-		it("should throw an error if any parameters are passed to the constructor", () => {
+	const dateRangeMembersKeys: (keyof DateRangeMembers)[] = [
+		"dates",
+		"daysCount",
+		"endOffset",
+		"isNext",
+		"rangeType",
+		"refDate",
+		"refWeekday",
+		"startOffset",
+	];
+	describe("Given a new DateRange instance", () => {
+		it("throws an error if any parameters are passed to the constructor", () => {
 			// @ts-expect-error: testing invalid input
 			expect(() => new DateRange("2022-01-01")).toThrowError();
 		});
 
-		it("should create a DateRange instance", () => {
+		it("creates a DateRange instance", () => {
 			const dateRange = new DateRange();
 			expect(dateRange).toBeInstanceOf(DateRange);
 		});
 
-		it("should create a DateRange instance with refDate undefined", () => {
-			//todo remove mocking time from instance test, no longer applicable
-			// mock current time
-			// date from milliseconds, toISOString: 2023-04-30T10:36:30.504Z
-			const date = new Date(1682850990504);
-			vi.setSystemTime(date);
-
-			const dateRange = new DateRange();
-			expect(dateRange.refDate).toBe(undefined);
+		test("all the instance members are undefined", () => {
+			const dr = new DateRange();
+			const values = Object.values(dr);
+			values.forEach((val) => expect(val).toBe(undefined));
 		});
 
-		it("should create a DateRange instance with empty dates array", () => {
-			const dateRange = new DateRange();
-			expect(dateRange.dates).toEqual([]);
-		});
+		test.each(dateRangeMembersKeys)(
+			"throws an error when accessing %s",
+			(key) => {
+				const dr = new DateRange();
+				expect(() => dr[key]).toThrowError();
+			},
+		);
+	});
 
-		it("should create a DateRange instance with refWeekday equal to 1 (1 for Monday)", () => {
-			const dateRange = new DateRange();
-			// with use of WEEKDAY enum
-			expect(dateRange.refWeekday).toEqual(WEEKDAY.Monday);
-			// with a number
-			expect(dateRange.refWeekday).toEqual(1);
+	describe("After calling methods", () => {
+		describe("getDays", () => {
+			const dr = new DateRange().getDays();
+			const drMembers: DateRangeMembers = {
+				dates: dr.dates,
+				daysCount: dr.daysCount,
+				endOffset: dr.endOffset,
+				isNext: dr.isNext,
+				rangeType: dr.rangeType,
+				refDate: dr.refDate,
+				refWeekday: dr.refWeekday,
+				startOffset: dr.startOffset,
+			};
+
+			test("all instance members are initialized", () => {
+				const values = Object.values(drMembers);
+				values.forEach((val) => expect(val).toBeDefined());
+			});
+			test(`rangeType is "${RANGE_TYPE.Days}"`, () => {
+				expect(dr.rangeType).toBe(RANGE_TYPE.Days);
+			});
 		});
+		describe.todo("getMonth");
+		describe.todo("getMonthExact");
+		describe.todo("getMonthExact");
+		describe.todo("getWeek");
+		describe.todo("next");
 	});
 
 	describe("Utility methods", () => {
+		describe.todo("isValidOffset");
+
 		describe("isValidRefDate", () => {
 			test("returns true for valid Date or DateTime objects", () => {
 				const dateRange = new DateRange();
