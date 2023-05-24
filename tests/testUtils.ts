@@ -199,9 +199,10 @@ interface Assertion {
 	startOffset?: number;
 	endOffset?: number;
 	rangeType?: RANGE_TYPE;
+	daysCount?: number;
 }
 
-interface DateRangeTestSet {
+export interface DateRangeTestSet {
 	refDate: DateTime;
 	assertions: Assertion[];
 }
@@ -619,10 +620,10 @@ const monthDefault_endOffset_testValues: DateRangeTestSet[] = [
 		assertions: [
 			{
 				firstDate: DateTime.fromObject({ year: 2036, month: 1, day: 28 }),
-				lastDate: DateTime.fromObject({ year: 2036, month: 3, day: 3 }),
-				numberOfDates: 5 * 7 + 1,
+				lastDate: DateTime.fromObject({ year: 2037, month: 3, day: 2 }),
+				numberOfDates: 5 * 7 + 365,
 				refWeekday: 1,
-				endOffset: 1,
+				endOffset: 365,
 			},
 		],
 	},
