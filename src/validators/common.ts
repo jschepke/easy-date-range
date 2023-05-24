@@ -49,3 +49,18 @@ export const validateRangeType = (rangeType: unknown) => {
 		);
 	}
 };
+
+export const validateDaysCount = (daysCount: unknown) => {
+	// Check if the rangeType param is a string
+	if (typeof daysCount !== "number") {
+		throw new InvalidParameterError("daysCount param", daysCount, "a number");
+	}
+
+	if (!Number.isInteger(daysCount) || daysCount < 0) {
+		throw new InvalidParameterError(
+			"daysCount param",
+			daysCount,
+			"a non-negative integer",
+		);
+	}
+};
