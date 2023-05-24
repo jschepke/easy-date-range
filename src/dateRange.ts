@@ -6,6 +6,35 @@ import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
 import { validateDateRangeOptions_monthExact } from "./validators";
 import { validateDateRangeOpts } from "./validators/validateDateRangeOpts";
+import { validateDateRangeOptions_days } from "./validators/validateDateRangeOpts_days";
+
+interface DateRangeAllOpts
+	extends DateRangeOpts,
+		DateRangeOpts_Days,
+		DateRangeOpts_MonthExact {}
+
+export interface DateRangeMembers extends Required<DateRangeAllOpts> {
+	rangeType: RANGE_TYPE;
+	dates: DateTime[];
+	isNext: boolean;
+}
+
+interface DateRangeDefaults
+	extends Omit<DateRangeMembers, "rangeType">,
+		Partial<Pick<DateRangeMembers, "rangeType">> {}
+
+const dateRangeDefaults: DateRangeDefaults = {
+	rangeType: undefined,
+	daysCount: 0,
+	endOffset: 0,
+	get refDate() {
+		return DateTime.now();
+	},
+	refWeekday: WEEKDAY.Monday,
+	startOffset: 0,
+	dates: [],
+	isNext: false,
+};
 
 /**
  * Options for the DateRange methods.
@@ -108,36 +137,61 @@ export interface DateRangeOpts {
  */
 export type DateRangeOpts_MonthExact = Omit<DateRangeOpts, "refWeekday">;
 
+/**
+ * Options for the DateRange `getDays()` method.
+ */
+export type DateRangeOpts_Days = Omit<DateRangeOpts, "refWeekday"> & {
+	daysCount?: number;
+};
+
 export class DateRange {
 	/**
-	 * @remarks Default value for DateRange instance is to current time.
+	 * refDate of the instance.
+	 *
+	 * @remarks Default to current time.
 	 */
-	private _refDate: DateTime;
+	private _refDate: DateTime | undefined;
 
 	/**
-	 * @remarks Default value for DateRange instance is 1 (Monday)
+	 * refWeekday of the instance.
+	 *
+	 * @remarks Default to 1 (Monday)
 	 */
-	private _refWeekday: WEEKDAY;
+	private _refWeekday: WEEKDAY | undefined;
 
 	/**
-	 * Default value for startOffset
+	 * startOffset of the instance.
+	 *
+	 * @remarks Default to 0
 	 */
-	private _startOffset: number;
+	private _startOffset: number | undefined;
 
 	/**
-	 * Default value for endOffset
+	 * endOffset of the instance.
+	 *
+	 * @remarks Default to 0
 	 */
-	private _endOffset: number;
+	private _endOffset: number | undefined;
 
 	/**
 	 * Instance date storage.
 	 */
-	private _dates: DateTime[];
+	private _dates: DateTime[] | undefined;
 
 	/**
 	 * Type of current generated date range.
 	 */
 	private _rangeType: RANGE_TYPE | undefined;
+
+	/**
+	 * Count of days used with getDays() method.
+	 */
+	private _daysCount: number | undefined;
+
+	/**
+	 * Indicates whether the `next()` method should be applied to the range.
+	 */
+	private _isNext: boolean | undefined;
 
 	/**
 	 * DateRange is an entry point for creating and storing a range of dates.
@@ -158,71 +212,171 @@ export class DateRange {
 				"Option parameters should be specified within DateRange methods.",
 			);
 		}
-
-		// default values for the instance
-		this._refDate = DateTime.now();
-		this._refWeekday = WEEKDAY.Monday;
-		this._startOffset = 0;
-		this._endOffset = 0;
-		this._dates = [];
-		this._rangeType = undefined;
 	}
 
 	/**
 	 * Gets the reference date for this instance.
+	 *
 	 * @returns The reference date.
 	 */
 	get refDate(): DateTime {
+		if (this._refDate === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access refDate before it has been initialized. Call one of the getMethods to generate the range and set the refDate.",
+			);
+		}
 		return this._refDate;
 	}
 
 	/**
 	 * Gets the reference weekday for this instance.
+	 *
 	 * @returns The reference weekday.
 	 */
 	get refWeekday(): WEEKDAY {
+		if (this._refWeekday === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access refWeekday before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
 		return this._refWeekday;
 	}
 
 	/**
 	 * Gets the array of dates for this instance.
+	 *
 	 * @returns The array of dates as Luxon DateTime objects.
 	 */
 	get dates(): DateTime[] {
+		if (this._dates === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access dates before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
 		return this._dates;
 	}
 
 	/**
 	 * Gets the start offset for this instance.
+	 *
 	 * @returns The start offset.
 	 */
 	get startOffset(): number {
+		if (this._startOffset === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access startOffset before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
 		return this._startOffset;
 	}
 
 	/**
 	 * Gets the end offset for this instance.
+	 *
 	 * @returns The end offset.
 	 */
 	get endOffset(): number {
+		if (this._endOffset === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access endOffset before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
 		return this._endOffset;
 	}
 
 	/**
-	 * Gets the type of the current-range generated for the instance.
+	 * Gets the days count used with `getDays()` method for this instance.
+	 *
+	 * @returns Number of days applied on `getDays()`.
+	 */
+	get daysCount(): number {
+		if (this._daysCount === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access daysCount before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
+		return this._daysCount;
+	}
+
+	/**
+	 * Gets the type of the current date range generated for the instance.
 	 *
 	 * @remarks
 	 * The type is a {@link RANGE_TYPE} that represents the duration of the range.
 	 *
 	 * If `undefined`, that means the range has not been created yet.
 	 *
-	 * @returns The type of the current-range or undefined if no range is created.
+	 * @returns The type of the current date range or undefined if no range is created.
 	 */
-	get rangeType(): RANGE_TYPE | undefined {
+	get rangeType(): RANGE_TYPE {
+		if (this._rangeType === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access rangeType before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
 		return this._rangeType;
 	}
 
-	/*================================ VALIDATION METHODS ==============================*/
+	// todo: add description
+	get isNext() {
+		if (this._isNext === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access isNext before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
+		return this._isNext;
+	}
+
+	private _setMembers(members: DateRangeMembers) {
+		const {
+			rangeType,
+			refDate,
+			refWeekday,
+			startOffset,
+			endOffset,
+			daysCount,
+			dates,
+			isNext,
+		} = members;
+
+		// Update instance members if different from current one
+
+		// this._rangeType = rangeType;
+		if (rangeType !== this._rangeType) {
+			this._rangeType = rangeType;
+		}
+		if (refDate !== this._refDate) {
+			this._refDate =
+				refDate instanceof Date ? DateTime.fromJSDate(refDate) : refDate;
+		}
+		if (refWeekday !== this._refWeekday) {
+			this._refWeekday = refWeekday;
+		}
+		if (startOffset !== this._startOffset) {
+			this._startOffset = startOffset;
+		}
+		if (endOffset !== this._endOffset) {
+			this._endOffset = endOffset;
+		}
+		if (daysCount !== this._daysCount) {
+			this._daysCount = daysCount;
+		}
+		if (isNext !== this._isNext) {
+			this._isNext = isNext;
+		}
+
+		this._dates = dates;
+	}
+
+	/*================================ Utility METHODS ==============================*/
 
 	/**
 	 * Checks if a given value is a valid reference date.
@@ -262,14 +416,14 @@ export class DateRange {
 	 * Returns an array of Luxon DateTime objects
 	 */
 	toDateTimes(): DateTime[] {
-		return this._dates;
+		return this.dates;
 	}
 
 	/**
 	 * Returns an array of JavaScript Date objects
 	 */
 	toDates(): Date[] {
-		return this._dates.map((date) => date.toJSDate());
+		return this.dates.map((date) => date.toJSDate());
 	}
 
 	/*================================ TIME RANGE METHODS ==============================*/
@@ -292,32 +446,23 @@ export class DateRange {
 	public getWeek(options?: DateRangeOpts): DateRange {
 		validateDateRangeOpts(options);
 
-		const rangeType = RANGE_TYPE.Week;
-
 		const {
-			refDate = this.refDate,
-			refWeekday = this.refWeekday,
-			startOffset = this.startOffset,
-			endOffset = this.endOffset,
+			refDate = dateRangeDefaults.refDate,
+			refWeekday = dateRangeDefaults.refWeekday,
+			startOffset = dateRangeDefaults.startOffset,
+			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		// Update instance members if specified and different from current one
-		if (refWeekday !== this.refWeekday) {
-			this._refWeekday = refWeekday;
-		}
-		if (refDate !== this.refDate) {
-			this._refDate =
-				refDate instanceof Date ? DateTime.fromJSDate(refDate) : refDate;
-		}
-		if (startOffset !== this.startOffset) {
-			this._startOffset = startOffset;
-		}
-		if (endOffset !== this.endOffset) {
-			this._endOffset = endOffset;
-		}
-		if (rangeType !== this.rangeType) {
-			this._rangeType = rangeType;
-		}
+		const dateRangeMembers: DateRangeMembers = {
+			rangeType: RANGE_TYPE.Week,
+			dates: [],
+			refDate,
+			refWeekday,
+			endOffset,
+			startOffset,
+			isNext: dateRangeDefaults.isNext,
+			daysCount: dateRangeDefaults.daysCount,
+		};
 
 		// Set date at the beginning of a day
 		let firstDayOfRange: DateTime;
@@ -332,28 +477,29 @@ export class DateRange {
 			firstDayOfRange = firstDayOfRange.minus({ days: 1 });
 		}
 
-		const dateRange: DateTime[] = [];
+		const dates = dateRangeMembers.dates;
 
 		let currentDay = firstDayOfRange;
-		while (dateRange.length < 7) {
-			dateRange.push(currentDay);
+		while (dates.length < 7) {
+			dates.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// apply offset if specified
 		if (startOffset || endOffset) {
 			const extendedDateRange = extendRange({
-				rangeToExtend: dateRange,
+				rangeToExtend: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
 			});
 
-			this._dates = [...extendedDateRange];
+			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
 
 			return this;
 		} else {
-			this._dates = [...dateRange];
+			this._setMembers(dateRangeMembers);
+
 			return this;
 		}
 	}
@@ -362,32 +508,23 @@ export class DateRange {
 	public getMonth(options?: DateRangeOpts): DateRange {
 		validateDateRangeOpts(options);
 
-		const rangeType = RANGE_TYPE.MonthWeekExtended;
-
 		const {
-			refDate = this._refDate,
-			refWeekday = this._refWeekday,
-			startOffset = this._startOffset,
-			endOffset = this._endOffset,
+			refDate = dateRangeDefaults.refDate,
+			refWeekday = dateRangeDefaults.refWeekday,
+			startOffset = dateRangeDefaults.startOffset,
+			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		// Update instance members if specified and different from current one
-		if (refWeekday !== this._refWeekday) {
-			this._refWeekday = refWeekday;
-		}
-		if (refDate !== this._refDate) {
-			this._refDate =
-				refDate instanceof Date ? DateTime.fromJSDate(refDate) : refDate;
-		}
-		if (startOffset !== this._startOffset) {
-			this._startOffset = startOffset;
-		}
-		if (endOffset !== this._endOffset) {
-			this._endOffset = endOffset;
-		}
-		if (rangeType !== this.rangeType) {
-			this._rangeType = rangeType;
-		}
+		const dateRangeMembers: DateRangeMembers = {
+			rangeType: RANGE_TYPE.MonthWeekExtended,
+			dates: [],
+			refDate,
+			refWeekday,
+			endOffset,
+			startOffset,
+			isNext: dateRangeDefaults.isNext,
+			daysCount: dateRangeDefaults.daysCount,
+		};
 
 		// Find the last weekday of the range
 		const lastWeekday = refWeekday - 1 === 0 ? 7 : refWeekday - 1;
@@ -404,7 +541,7 @@ export class DateRange {
 			lastDayOfMonth = refDate.endOf("month");
 		}
 
-		const dateRange: DateTime[] = [];
+		const dates = dateRangeMembers.dates;
 
 		// Find the first date of a range aligned with a begging of a week
 		let firstDayOfRange: DateTime = firstDayOfMonth;
@@ -415,29 +552,30 @@ export class DateRange {
 		// Loop over the dates to the last day of month
 		let currentDay = firstDayOfRange;
 		while (currentDay.valueOf() < lastDayOfMonth.valueOf()) {
-			dateRange.push(currentDay);
+			dates.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// Find the last date of a range aligned with an ending of a week
-		while (dateRange[dateRange.length - 1].weekday !== lastWeekday) {
-			dateRange.push(dateRange[dateRange.length - 1].plus({ days: 1 }));
+		while (dates[dates.length - 1].weekday !== lastWeekday) {
+			dates.push(dates[dates.length - 1].plus({ days: 1 }));
 		}
 
 		// Apply offset if specified
 		if (startOffset || endOffset) {
 			const extendedDateRange = extendRange({
-				rangeToExtend: dateRange,
+				rangeToExtend: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
 			});
 
-			this._dates = [...extendedDateRange];
+			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
 
 			return this;
 		} else {
-			this._dates = [...dateRange];
+			this._setMembers(dateRangeMembers);
+
 			return this;
 		}
 	}
@@ -445,28 +583,22 @@ export class DateRange {
 	getMonthExact(options?: DateRangeOpts_MonthExact): DateRange {
 		validateDateRangeOptions_monthExact(options);
 
-		const rangeType = RANGE_TYPE.MonthExact;
-
 		const {
-			refDate = this._refDate,
-			startOffset = this._startOffset,
-			endOffset = this._endOffset,
+			refDate = dateRangeDefaults.refDate,
+			startOffset = dateRangeDefaults.startOffset,
+			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		// Update instance members if specified and different from current one
-		if (refDate !== this._refDate) {
-			this._refDate =
-				refDate instanceof Date ? DateTime.fromJSDate(refDate) : refDate;
-		}
-		if (startOffset !== this._startOffset) {
-			this._startOffset = startOffset;
-		}
-		if (endOffset !== this._endOffset) {
-			this._endOffset = endOffset;
-		}
-		if (rangeType !== this.rangeType) {
-			this._rangeType = rangeType;
-		}
+		const dateRangeMembers: DateRangeMembers = {
+			rangeType: RANGE_TYPE.MonthExact,
+			dates: [],
+			refDate,
+			refWeekday: dateRangeDefaults.refWeekday,
+			endOffset,
+			startOffset,
+			isNext: dateRangeDefaults.isNext,
+			daysCount: dateRangeDefaults.daysCount,
+		};
 
 		// Find the first and the last day of the month
 		let firstDayOfMonth: DateTime;
@@ -480,71 +612,129 @@ export class DateRange {
 			lastDayOfMonth = refDate.endOf("month");
 		}
 
-		const dateRange: DateTime[] = [];
+		const dates = dateRangeMembers.dates;
 
 		let currentDay = firstDayOfMonth;
 		while (currentDay.valueOf() < lastDayOfMonth.valueOf()) {
-			dateRange.push(currentDay);
+			dates.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// Apply offset if specified
 		if (startOffset || endOffset) {
+			// Apply offset if specified
 			const extendedDateRange = extendRange({
-				rangeToExtend: dateRange,
+				rangeToExtend: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
 			});
 
-			this._dates = [...extendedDateRange];
+			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
 
 			return this;
 		} else {
-			this._dates = [...dateRange];
+			this._setMembers(dateRangeMembers);
+
 			return this;
 		}
 	}
 
-	days(/* number of days */) {
-		//todo
-		console.info("not implemented");
-		return;
+	getDays(options?: DateRangeOpts_Days): DateRange {
+		validateDateRangeOptions_days(options);
+
+		const {
+			refDate = dateRangeDefaults.refDate,
+			startOffset = dateRangeDefaults.startOffset,
+			endOffset = dateRangeDefaults.endOffset,
+			daysCount = 1,
+		} = options || {};
+
+		const dateRangeMembers: DateRangeMembers = {
+			rangeType: RANGE_TYPE.Days,
+			dates: [],
+			refDate,
+			refWeekday: dateRangeDefaults.refWeekday,
+			endOffset,
+			startOffset,
+			isNext: dateRangeDefaults.isNext,
+			daysCount,
+		};
+
+		// Set date at the beginning of a day
+		let firstDayOfRange: DateTime;
+		if (refDate instanceof Date) {
+			firstDayOfRange = DateTime.fromJSDate(refDate).startOf("day");
+		} else {
+			firstDayOfRange = refDate.startOf("day");
+		}
+
+		const dates = dateRangeMembers.dates;
+
+		let currentDay = firstDayOfRange;
+		while (dates.length < daysCount) {
+			dates.push(currentDay);
+			currentDay = currentDay.plus({ day: 1 });
+		}
+
+		// apply offset if specified
+		if (startOffset || endOffset) {
+			const extendedDateRange = extendRange({
+				rangeToExtend: dates,
+				timeUnit: "days",
+				startOffset,
+				endOffset,
+			});
+
+			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
+
+			return this;
+		} else {
+			this._setMembers(dateRangeMembers);
+
+			return this;
+		}
 	}
 
-	next() {
-		switch (this.rangeType) {
+	next(DateRange: DateRange) {
+		if (!DateRange) {
+			// Todo: Review and refactor the error
+			throw new Error("DateRange not specified");
+		}
+		if (!DateRange.rangeType) {
+			// Todo: Refactor to custom error. Review the error message.
+			throw new Error(
+				"The 'next()' method cannot be applied on empty empty range. Generate the range with one of the get methods first.",
+			);
+		}
+		const {
+			refDate,
+			startOffset,
+			endOffset,
+			refWeekday,
+			rangeType,
+			daysCount,
+			dates,
+		} = DateRange;
+
+		switch (rangeType) {
 			case RANGE_TYPE.Week: {
-				const nextRefDate = this.refDate.plus({ days: 7 });
+				const nextRefDate = refDate.plus({ days: 7 });
 
 				const options: Required<DateRangeOpts> = {
 					refDate: nextRefDate,
-					refWeekday: this.refWeekday,
-					startOffset: this.startOffset,
-					endOffset: this.endOffset,
+					refWeekday: refWeekday,
+					startOffset: startOffset,
+					endOffset: endOffset,
 				};
 
 				this.getWeek(options);
-				break;
-			}
-			case RANGE_TYPE.MonthWeekExtended: {
-				const { year, month } = this.refDate;
-				const nextRefDate = DateTime.fromObject({
-					year,
-					month: month + 1,
-				});
+				this._isNext = true;
 
-				const options: Required<DateRangeOpts> = {
-					refWeekday: this.refWeekday,
-					refDate: nextRefDate,
-					startOffset: this.startOffset,
-					endOffset: this.endOffset,
-				};
-				this.getMonth(options);
-				break;
+				return this;
 			}
 			case RANGE_TYPE.MonthExact: {
-				const { year, month } = this.refDate;
+				const { year, month } = refDate;
 				const nextRefDate = DateTime.fromObject({
 					year,
 					month: month + 1,
@@ -552,16 +742,58 @@ export class DateRange {
 
 				const options: Required<DateRangeOpts_MonthExact> = {
 					refDate: nextRefDate,
-					startOffset: this.startOffset,
-					endOffset: this.endOffset,
+					startOffset: startOffset,
+					endOffset: endOffset,
 				};
 				this.getMonthExact(options);
-				break;
+				this._isNext = true;
+
+				return this;
+			}
+			case RANGE_TYPE.MonthWeekExtended: {
+				const { year, month } = refDate;
+				const nextRefDate = DateTime.fromObject({
+					year,
+					month: month + 1,
+				});
+
+				const options: Required<DateRangeOpts> = {
+					refWeekday: refWeekday,
+					refDate: nextRefDate,
+					startOffset: startOffset,
+					endOffset: endOffset,
+				};
+
+				this.getMonth(options);
+				this._isNext = true;
+
+				return this;
 			}
 			case RANGE_TYPE.Days: {
-				//todo
-				throw new Error("not implemented");
+				const lastDate = dates[dates.length - 1];
+				const nextRefDate = lastDate.plus({ day: 1 });
+
+				console.log({
+					lastDate: lastDate.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY),
+					nextRefDate: nextRefDate.toLocaleString(
+						DateTime.DATETIME_MED_WITH_WEEKDAY,
+					),
+				});
+
+				const options: Required<DateRangeOpts_Days> = {
+					daysCount,
+					endOffset,
+					startOffset,
+					refDate: nextRefDate,
+				};
+
+				this.getDays(options);
+				this._isNext = true;
+
+				return this;
 			}
+			default:
+				throw new Error("not implemented");
 		}
 	}
 }
