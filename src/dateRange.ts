@@ -773,13 +773,6 @@ export class DateRange {
 				const lastDate = dates[dates.length - 1];
 				const nextRefDate = lastDate.plus({ day: 1 });
 
-				console.log({
-					lastDate: lastDate.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY),
-					nextRefDate: nextRefDate.toLocaleString(
-						DateTime.DATETIME_MED_WITH_WEEKDAY,
-					),
-				});
-
 				const options: Required<DateRangeOpts_Days> = {
 					daysCount,
 					endOffset,

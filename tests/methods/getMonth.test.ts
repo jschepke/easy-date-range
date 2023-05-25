@@ -480,11 +480,6 @@ describe("getMonth", () => {
 											endOffset,
 										}).dates;
 
-										console.log(
-											dates[dates.length - 1].toLocaleString(
-												DateTime.DATETIME_MED_WITH_WEEKDAY,
-											),
-										);
 										expect(dates[dates.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
