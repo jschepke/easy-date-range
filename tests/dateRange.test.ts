@@ -3,10 +3,10 @@ import { describe, expect, it, test, vi } from "vitest";
 import { DateRange, DateRangeMembers } from "../src/dateRange";
 import { DateTime } from "luxon";
 
-import { RANGE_TYPE, WEEKDAY } from "../src/constants";
+import { RANGE_TYPE } from "../src/constants";
 import { weekdayTestValues } from "./testUtils";
 
-describe("dateRange", () => {
+describe("dateRange instance", () => {
 	const dateRangeMembersKeys: (keyof DateRangeMembers)[] = [
 		"dates",
 		"daysCount",
@@ -43,33 +43,82 @@ describe("dateRange", () => {
 		);
 	});
 
-	describe("After calling methods", () => {
-		describe("getDays", () => {
-			const dr = new DateRange().getDays();
-			const drMembers: DateRangeMembers = {
-				dates: dr.dates,
-				daysCount: dr.daysCount,
-				endOffset: dr.endOffset,
-				isNext: dr.isNext,
-				rangeType: dr.rangeType,
-				refDate: dr.refDate,
-				refWeekday: dr.refWeekday,
-				startOffset: dr.startOffset,
+	describe("The instance after calling methods", () => {
+		const testValues: {
+			methodName: string;
+			dateRange: DateRange;
+			rangeType: RANGE_TYPE;
+		}[] = [
+			{
+				methodName: "getDays",
+				dateRange: new DateRange().getDays(),
+				rangeType: RANGE_TYPE.Days,
+			},
+			{
+				methodName: "getWeek",
+				dateRange: new DateRange().getWeek(),
+				rangeType: RANGE_TYPE.Week,
+			},
+			{
+				methodName: "getMonth",
+				dateRange: new DateRange().getMonth(),
+				rangeType: RANGE_TYPE.MonthWeekExtended,
+			},
+			{
+				methodName: "getExact",
+				dateRange: new DateRange().getMonthExact(),
+				rangeType: RANGE_TYPE.MonthExact,
+			},
+		];
+
+		describe.each(testValues)("$methodName", ({ dateRange, rangeType }) => {
+			const members: DateRangeMembers = {
+				dates: dateRange.dates,
+				daysCount: dateRange.daysCount,
+				endOffset: dateRange.endOffset,
+				isNext: dateRange.isNext,
+				rangeType: dateRange.rangeType,
+				refDate: dateRange.refDate,
+				refWeekday: dateRange.refWeekday,
+				startOffset: dateRange.startOffset,
 			};
 
 			test("all instance members are initialized", () => {
-				const values = Object.values(drMembers);
+				const values = Object.values(members);
 				values.forEach((val) => expect(val).toBeDefined());
 			});
-			test(`rangeType is "${RANGE_TYPE.Days}"`, () => {
-				expect(dr.rangeType).toBe(RANGE_TYPE.Days);
+			test(`rangeType is "${rangeType}"`, () => {
+				expect(dateRange.rangeType).toBe(rangeType);
 			});
 		});
-		describe.todo("getMonth");
-		describe.todo("getMonthExact");
-		describe.todo("getMonthExact");
-		describe.todo("getWeek");
-		describe.todo("next");
+
+		describe("next", () => {
+			describe.each(testValues)(
+				"with range type $rangeType",
+				({ dateRange, rangeType }) => {
+					const dr = new DateRange().next(dateRange);
+
+					const members: DateRangeMembers = {
+						dates: dr.dates,
+						daysCount: dr.daysCount,
+						endOffset: dr.endOffset,
+						isNext: dr.isNext,
+						rangeType: dr.rangeType,
+						refDate: dr.refDate,
+						refWeekday: dr.refWeekday,
+						startOffset: dr.startOffset,
+					};
+
+					test("all instance members are initialized", () => {
+						const values = Object.values(members);
+						values.forEach((val) => expect(val).toBeDefined());
+					});
+					test(`rangeType is "${rangeType}"`, () => {
+						expect(dr.rangeType).toBe(rangeType);
+					});
+				},
+			);
+		});
 	});
 
 	describe("Utility methods", () => {
