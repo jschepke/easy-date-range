@@ -1,5 +1,7 @@
 enum ErrorCode {
-	INVALID_PARAMS = "INVALID_PARAMS",
+	INVALID_PARAM = "INVALID_PARAM",
+	MISSING_PARAM = "MISSING_PARAM",
+	EMPTY_DATERANGE = "EMPTY_DATERANGE",
 	// Add more codes as needed
 }
 
@@ -58,11 +60,62 @@ export class InvalidParameterError extends CalendarGridError {
 			paramValue,
 		)}, but ${expected} is expected.${description ? ` \n${description}` : ""}`;
 
-		super(ErrorCode.INVALID_PARAMS, message);
+		super(ErrorCode.INVALID_PARAM, message);
+
 		this.paramName = paramName;
 		this.paramValue = paramValue;
 		this.expected = expected;
 		this.description = description;
+	}
+}
+
+export class MissingArgumentError extends CalendarGridError {
+	/**
+	 * The name of the missing argument.
+	 */
+	paramName: string;
+	/**
+	 * The name of the function where the error occurs.
+	 */
+	funcName: string;
+
+	/**
+	 * Represents an error that occurs when an argument is not provided but required in the function.
+	 * @param paramName - The name of the missing argument.
+	 * @param funcName - The name of the function where the error occurs.
+	 *
+	 * @example
+	 * ```
+	 * throw new MissingArgumentError("dateRange", "DateRange.next()")
+	 * // -> Error: Missing dateRange argument in DateRange.next() function.
+	 * ```
+	 */
+	constructor(paramName: string, funcName: string) {
+		const message = `Missing ${paramName} argument in ${funcName} function`;
+
+		super(ErrorCode.MISSING_PARAM, message);
+
+		this.paramName = paramName;
+		this.funcName = funcName;
+	}
+}
+
+export class EmptyDateRangeError extends CalendarGridError {
+	funcName: string;
+
+	/**
+	 * @example
+	 * ```
+	 * throw new EmptyDateRangeError("next() method");
+	 * // -> Error: The DateRange object you have passed to the next() method is empty. You need to create a range using one of the get methods first'.
+	 * ```
+	 */
+	constructor(funcName: string) {
+		const message = `The DateRange object you have passed to the ${funcName} is empty. You need to create a range using one of the get methods first'.`;
+
+		super(ErrorCode.EMPTY_DATERANGE, message);
+
+		this.funcName = funcName;
 	}
 }
 
@@ -113,5 +166,20 @@ export class InvalidRefDateError extends InvalidParameterError {
 		super(paramName, paramValue, expected);
 	}
 }
-
-// console.log(new InvalidRefDateError("test"))
+export class InvalidDateRangeError extends InvalidParameterError {
+	/**
+	 * Represents an error that occurs when the dateRange parameter is invalid.
+	 * @param paramValue - The value of the dateRange parameter that caused the error.
+	 *
+	 * @example
+	 * ```
+	 * throw new InvalidDateRangeError(4)
+	 * // -> Error: The value of the dateRange parameter is invalid. You passed 4, but a valid, non empty DateRange object is expected.
+	 * ```
+	 */
+	constructor(paramValue: unknown) {
+		const paramName = "dateRange parameter";
+		const expected = "a valid, non empty DateRange object";
+		super(paramName, paramValue, expected);
+	}
+}
