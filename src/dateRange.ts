@@ -1,7 +1,12 @@
 import { DateTime } from "luxon";
 
 import { RANGE_TYPE, WEEKDAY } from "./constants";
-import { InvalidParameterError } from "./errors";
+import {
+	EmptyDateRangeError,
+	InvalidDateRangeError,
+	InvalidParameterError,
+	MissingArgumentError,
+} from "./errors";
 import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
 import { validateDateRangeOptions_monthExact } from "./validators";
@@ -696,17 +701,25 @@ export class DateRange {
 		}
 	}
 
-	next(DateRange: DateRange) {
-		if (!DateRange) {
-			// Todo: Review and refactor the error
-			throw new Error("DateRange not specified");
+	next(dateRange: DateRange) {
+		if (dateRange === undefined) {
+			throw new MissingArgumentError("dateRange", "DateRange.next()");
 		}
-		if (!DateRange.rangeType) {
-			// Todo: Refactor to custom error. Review the error message.
-			throw new Error(
-				"The 'next()' method cannot be applied on empty empty range. Generate the range with one of the get methods first.",
-			);
+
+		if (!(dateRange instanceof DateRange)) {
+			throw new InvalidDateRangeError(dateRange);
 		}
+
+		// The rangeType property is only defined after the range is initialized,
+		// so accessing it before that will throw an error.
+		// We use try/catch to catch that error and throw a custom EmptyDateRangeError instead,
+		// indicating that the next() method cannot be used on an empty range.
+		try {
+			dateRange.rangeType;
+		} catch (error) {
+			throw new EmptyDateRangeError("next() method");
+		}
+
 		const {
 			refDate,
 			startOffset,
@@ -715,11 +728,11 @@ export class DateRange {
 			rangeType,
 			daysCount,
 			dates,
-		} = DateRange;
+		} = dateRange;
 
 		switch (rangeType) {
 			case RANGE_TYPE.Week: {
-				const nextRefDate = refDate.plus({ days: 7 });
+				const nextRefDate = refDate.startOf("day").plus({ days: 7 });
 
 				const options: Required<DateRangeOpts> = {
 					refDate: nextRefDate,
@@ -758,10 +771,10 @@ export class DateRange {
 				});
 
 				const options: Required<DateRangeOpts> = {
-					refWeekday: refWeekday,
+					refWeekday,
 					refDate: nextRefDate,
-					startOffset: startOffset,
-					endOffset: endOffset,
+					startOffset,
+					endOffset,
 				};
 
 				this.getMonth(options);
@@ -770,8 +783,10 @@ export class DateRange {
 				return this;
 			}
 			case RANGE_TYPE.Days: {
-				const lastDate = dates[dates.length - 1];
-				const nextRefDate = lastDate.plus({ day: 1 });
+				// Todo:
+				// Add annotation to the description of next method that when used with DAYS range,
+				// the next ref date starts at the beginning of a day
+				const nextRefDate = refDate.startOf("day").plus({ day: daysCount });
 
 				const options: Required<DateRangeOpts_Days> = {
 					daysCount,
