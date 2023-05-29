@@ -251,7 +251,7 @@ describe("next method", () => {
 						);
 					});
 
-					test("with no offset the first date of the range is refWeekday", () => {
+					test("before the offset the first date of the range is refWeekday", () => {
 						const drNext = new DateRange().next(dr);
 
 						expect(drNext.dates[0].plus({ days: dr.startOffset }).weekday).toBe(
@@ -259,7 +259,7 @@ describe("next method", () => {
 						);
 					});
 
-					test("with no offset the last date of the range is weekday preceding the refWeekday", () => {
+					test("before the offset the last date of the range is weekday preceding the refWeekday", () => {
 						const drNext = new DateRange().next(dr);
 
 						expect(
@@ -305,6 +305,92 @@ describe("next method", () => {
 						// assign a new range with next method
 						drDays.next(dr);
 						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthWeekExtended);
+					});
+				});
+			});
+
+			describe(`with DateRange of type ${RANGE_TYPE.MonthExact}`, () => {
+				describe.each([
+					new DateRange().getMonthExact(),
+					new DateRange().getMonthExact({
+						refDate: date1,
+						endOffset: 5,
+						startOffset: 5,
+					}),
+					new DateRange().getMonthExact({
+						refDate: date2,
+						endOffset: 3,
+						startOffset: 3,
+					}),
+					new DateRange().getMonthExact({
+						refDate: date2,
+						endOffset: 30,
+						startOffset: 30,
+					}),
+					new DateRange().getMonthExact({
+						refDate: date3,
+					}),
+				])("test index: %#", (dr) => {
+					test("has correct refDate", () => {
+						const next = new DateRange().next(dr);
+						expect(next.refDate.toISO()).toBe(
+							dr.refDate.startOf("month").plus({ month: 1 }).toISO(),
+						);
+					});
+
+					test("before the offset the first date of the range is the first day of month", () => {
+						const drNext = new DateRange().next(dr);
+
+						expect(drNext.dates[0].plus({ days: dr.startOffset }).toISO()).toBe(
+							drNext.refDate.toISO(),
+						);
+					});
+
+					test("before the offset the last date of the range is the last day of month", () => {
+						const drNext = new DateRange().next(dr);
+
+						expect(
+							drNext.dates[drNext.dates.length - 1]
+								.minus({
+									days: dr.endOffset,
+								})
+								.toISO(),
+						).toBe(drNext.refDate.endOf("month").startOf("day").toISO());
+					});
+
+					test("each date of the range is the next day after the previous day", () => {
+						const drNext = new DateRange().next(dr);
+						const { dates } = drNext;
+
+						for (let i = 1; i < dates.length; i++) {
+							expect(dates[i].toISO()).toBe(
+								dates[i - 1].plus({ day: 1 }).toISO(),
+							);
+						}
+					});
+
+					test("each date of the range is a valid luxon DateTime", () => {
+						const drNext = new DateRange().next(dr);
+						const { dates } = drNext;
+
+						for (let i = 1; i < dates.length; i++) {
+							expect(dates[i]).instanceOf(DateTime);
+							expect(dates[i].isValid).toBe(true);
+						}
+					});
+
+					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthExact}' (with a new instance)`, () => {
+						const drNext = new DateRange().next(dr);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.MonthExact);
+					});
+
+					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthExact}' (with a previously generated instance)`, () => {
+						// generate a some range
+						const drDays = new DateRange().getDays();
+						expect(drDays.rangeType).toBe(RANGE_TYPE.Days);
+						// assign a new range with next method
+						drDays.next(dr);
+						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthExact);
 					});
 				});
 			});
