@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { DateRange } from "../../src/dateRange";
 import { monthExactTestValues } from "../testUtils";
-import { DateTime, Info } from "luxon";
+import { DateTime } from "luxon";
 
 describe("getMonthExact", () => {
 	describe("Input validation", () => {
