@@ -10,10 +10,20 @@ export enum WEEKDAY {
 	Sunday = 7,
 }
 
+/**
+ * An enum that represents the type of range for a DateRange object.
+ *
+ * It can be one of the following values:
+ * - `Week`: The range is a single week.
+ * - `MonthExact`: The range is a single month, starting from the first day to the last day of the month.
+ * - `MonthExtended`: The range is a single month,
+ * but extended to include the full weeks that contain the first and last days of the month.
+ * - `Days`: The range is a custom number of days.
+ */
 export enum RANGE_TYPE {
 	Week = "WEEK",
 	MonthExact = "MONTH-EXACT",
-	MonthWeekExtended = "MONTH-WEEK-EXTENDED",
+	MonthExtended = "MONTH-EXTENDED",
 	Days = "DAYS",
 }
 
