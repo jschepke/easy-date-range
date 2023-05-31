@@ -8,14 +8,14 @@ describe("getMonth", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
 			test("doesn't throw error if no parameters are specified", () => {
-				expect(() => new DateRange().getMonth()).not.toThrowError();
+				expect(() => new DateRange().getMonthExtended()).not.toThrowError();
 			});
 		});
 		describe("Given invalid arbitrary parameters", () => {
 			test.each(monthTestValues.invalid.arbitraryParams)(
 				"throws an error for value: $name",
 				({ value }) => {
-					expect(() => new DateRange().getMonth(value)).toThrowError();
+					expect(() => new DateRange().getMonthExtended(value)).toThrowError();
 				},
 			);
 		});
@@ -25,7 +25,7 @@ describe("getMonth", () => {
 					"throws an error for value: $name",
 					({ value }) => {
 						expect(() =>
-							new DateRange().getMonth({ refDate: value }),
+							new DateRange().getMonthExtended({ refDate: value }),
 						).toThrowError();
 					},
 				);
@@ -35,7 +35,7 @@ describe("getMonth", () => {
 					"throws an error for value: $name",
 					({ value }) => {
 						expect(() =>
-							new DateRange().getMonth({ refWeekday: value }),
+							new DateRange().getMonthExtended({ refWeekday: value }),
 						).toThrowError();
 					},
 				);
@@ -45,7 +45,7 @@ describe("getMonth", () => {
 					"throws an error for value: $name",
 					({ value }) => {
 						expect(() =>
-							new DateRange().getMonth({ startOffset: value }),
+							new DateRange().getMonthExtended({ startOffset: value }),
 						).toThrowError();
 					},
 				);
@@ -55,7 +55,7 @@ describe("getMonth", () => {
 					"throws an error for value: $name",
 					({ value }) => {
 						expect(() =>
-							new DateRange().getMonth({ endOffset: value }),
+							new DateRange().getMonthExtended({ endOffset: value }),
 						).toThrowError();
 					},
 				);
@@ -92,13 +92,13 @@ describe("getMonth", () => {
 					}
 
 					test(`creates range of ${numberOfDates} dates`, () => {
-						const dr = new DateRange().getMonth();
+						const dr = new DateRange().getMonthExtended();
 						expect(dr.dates.length).toBe(numberOfDates);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
+						const dates = dateRange.getMonthExtended().dates;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i].toISO()).toEqual(
@@ -111,7 +111,7 @@ describe("getMonth", () => {
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
+						const dates = dateRange.getMonthExtended().dates;
 
 						expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
 					});
@@ -120,7 +120,7 @@ describe("getMonth", () => {
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
+						const dates = dateRange.getMonthExtended().dates;
 
 						expect(dates[dates.length - 1].valueOf()).toBe(lastDate.valueOf());
 					});
@@ -129,7 +129,7 @@ describe("getMonth", () => {
 						Info.weekdays()[refWeekday - 1]
 					} (${refWeekday})`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
+						const dates = dateRange.getMonthExtended().dates;
 
 						expect(dates[0].weekday).toBe(refWeekday);
 					});
@@ -138,7 +138,7 @@ describe("getMonth", () => {
 						Info.weekdays()[lastWeekday - 1]
 					} (${lastWeekday})`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonth().dates;
+						const dates = dateRange.getMonthExtended().dates;
 
 						expect(dates[dateRange.dates.length - 1].weekday).toBe(lastWeekday);
 					});
@@ -167,7 +167,7 @@ describe("getMonth", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 							expect(dates.length).toBe(numberOfDates);
@@ -175,7 +175,7 @@ describe("getMonth", () => {
 
 						test("each date of the range is the next day after the previous day", () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 
@@ -190,7 +190,7 @@ describe("getMonth", () => {
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 
@@ -201,7 +201,7 @@ describe("getMonth", () => {
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 
@@ -214,7 +214,7 @@ describe("getMonth", () => {
 							Info.weekdays()[refWeekday - 1]
 						} (${refWeekday})`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 
@@ -225,7 +225,7 @@ describe("getMonth", () => {
 							Info.weekdays()[lastWeekday - 1]
 						} (${lastWeekday})`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonth({
+							const dates = dateRange.getMonthExtended({
 								refDate,
 							}).dates;
 
@@ -263,7 +263,7 @@ describe("getMonth", () => {
 
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 										expect(dates.length).toBe(numberOfDates);
@@ -271,7 +271,7 @@ describe("getMonth", () => {
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 
@@ -286,7 +286,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 
@@ -297,7 +297,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 
@@ -310,7 +310,7 @@ describe("getMonth", () => {
 										Info.weekdays()[refWeekday - 1]
 									} (${refWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 
@@ -321,7 +321,7 @@ describe("getMonth", () => {
 										Info.weekdays()[lastWeekday - 1]
 									} (${lastWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											refWeekday,
 										}).dates;
 
@@ -361,7 +361,7 @@ describe("getMonth", () => {
 
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											startOffset,
 										}).dates;
 										expect(dates.length).toBe(numberOfDates);
@@ -369,7 +369,7 @@ describe("getMonth", () => {
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											startOffset,
 										}).dates;
 
@@ -384,7 +384,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											startOffset,
 										}).dates;
 
@@ -395,7 +395,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											startOffset,
 										}).dates;
 
@@ -408,7 +408,7 @@ describe("getMonth", () => {
 										Info.weekdays()[lastWeekday - 1]
 									} (${lastWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											startOffset,
 										}).dates;
 
@@ -442,7 +442,7 @@ describe("getMonth", () => {
 								}) => {
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											endOffset,
 										}).dates;
 										expect(dates.length).toBe(numberOfDates);
@@ -450,7 +450,7 @@ describe("getMonth", () => {
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											endOffset,
 										}).dates;
 
@@ -465,7 +465,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											endOffset,
 										}).dates;
 
@@ -476,7 +476,7 @@ describe("getMonth", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											endOffset,
 										}).dates;
 
@@ -489,7 +489,7 @@ describe("getMonth", () => {
 										Info.weekdays()[refWeekday - 1]
 									} (${refWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonth({
+										const dates = dateRange.getMonthExtended({
 											endOffset,
 										}).dates;
 

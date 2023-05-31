@@ -1,4 +1,4 @@
-import { DateRange, DateRangeOpts_Days } from "../../src/dateRange";
+import { DateRange } from "../../src/dateRange";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { RANGE_TYPE } from "../../src/constants";
@@ -210,8 +210,8 @@ describe("next method", () => {
 
 					test(`rangeType after calling the next method is set to '${RANGE_TYPE.Week}' (with a previously generated instance)`, () => {
 						// generate a some range
-						const drMonth = new DateRange().getMonth();
-						expect(drMonth.rangeType).toBe(RANGE_TYPE.MonthWeekExtended);
+						const drMonth = new DateRange().getMonthExtended();
+						expect(drMonth.rangeType).toBe(RANGE_TYPE.MonthExtended);
 						// assign a new range with next method
 						drMonth.next(dr);
 						expect(drMonth.rangeType).toBe(RANGE_TYPE.Week);
@@ -219,28 +219,28 @@ describe("next method", () => {
 				});
 			});
 
-			describe(`with DateRange of type ${RANGE_TYPE.MonthWeekExtended}`, () => {
+			describe(`with DateRange of type ${RANGE_TYPE.MonthExtended}`, () => {
 				describe.each([
-					new DateRange().getMonth(),
-					new DateRange().getMonth({
+					new DateRange().getMonthExtended(),
+					new DateRange().getMonthExtended({
 						refDate: date1,
 						endOffset: 5,
 						startOffset: 5,
 						refWeekday: 4,
 					}),
-					new DateRange().getMonth({
+					new DateRange().getMonthExtended({
 						refDate: date2,
 						endOffset: 3,
 						startOffset: 3,
 						refWeekday: 2,
 					}),
-					new DateRange().getMonth({
+					new DateRange().getMonthExtended({
 						refDate: date2,
 						endOffset: 30,
 						startOffset: 30,
 						refWeekday: 2,
 					}),
-					new DateRange().getMonth({
+					new DateRange().getMonthExtended({
 						refDate: date3,
 					}),
 				])("test index: %#", (dr) => {
@@ -293,18 +293,18 @@ describe("next method", () => {
 						}
 					});
 
-					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthWeekExtended}' (with a new instance)`, () => {
+					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthExtended}' (with a new instance)`, () => {
 						const drNext = new DateRange().next(dr);
-						expect(drNext.rangeType).toBe(RANGE_TYPE.MonthWeekExtended);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.MonthExtended);
 					});
 
-					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthWeekExtended}' (with a previously generated instance)`, () => {
+					test(`rangeType after calling the next method is set to '${RANGE_TYPE.MonthExtended}' (with a previously generated instance)`, () => {
 						// generate a some range
 						const drDays = new DateRange().getDays();
 						expect(drDays.rangeType).toBe(RANGE_TYPE.Days);
 						// assign a new range with next method
 						drDays.next(dr);
-						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthWeekExtended);
+						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthExtended);
 					});
 				});
 			});

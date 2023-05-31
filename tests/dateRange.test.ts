@@ -61,8 +61,8 @@ describe("dateRange instance", () => {
 			},
 			{
 				methodName: "getMonth",
-				dateRange: new DateRange().getMonth(),
-				rangeType: RANGE_TYPE.MonthWeekExtended,
+				dateRange: new DateRange().getMonthExtended(),
+				rangeType: RANGE_TYPE.MonthExtended,
 			},
 			{
 				methodName: "getExact",

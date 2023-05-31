@@ -1,3 +1,3 @@
-export { validateDateRangeOpts } from "./validateDateRangeOpts";
+export { validateRangeOpts } from "./validateRangeOpts";
 export { validateExtendRangeOpts } from "./validateExtendRangeOpts";
-export { validateDateRangeOptions_monthExact } from "./validateDateRangeOpts_monthExact";
+export { validateRangeOptsMonthExact } from "./validateRangeOptsMonthExact";
