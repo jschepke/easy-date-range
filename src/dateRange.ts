@@ -9,14 +9,14 @@ import {
 } from "./errors";
 import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
-import { validateDateRangeOptions_monthExact } from "./validators";
-import { validateDateRangeOpts } from "./validators/validateDateRangeOpts";
-import { validateDateRangeOptions_days } from "./validators/validateDateRangeOpts_days";
+import { validateRangeOptsMonthExact } from "./validators";
+import { validateRangeOpts } from "./validators/validateRangeOpts";
+import { validateDateRangeOptions_days } from "./validators/validateRangeOptsDays";
 
 interface DateRangeAllOpts
-	extends DateRangeOpts,
-		DateRangeOpts_Days,
-		DateRangeOpts_MonthExact {}
+	extends RangeOpts,
+		RangeOptsDays,
+		RangeOptsMonthExact {}
 
 export interface DateRangeMembers extends Required<DateRangeAllOpts> {
 	rangeType: RANGE_TYPE;
@@ -42,11 +42,11 @@ const dateRangeDefaults: DateRangeDefaults = {
 };
 
 /**
- * Options for the DateRange methods.
+ * Options for most of the DateRange methods.
  */
-export interface DateRangeOpts {
+export interface RangeOpts {
 	/**
-	 * The reference date to calculate the range from.
+	 * The reference date to calculate the range.
 	 *
 	 * @remarks
 	 * Must be a Date object or luxon DateTime object.
@@ -80,13 +80,16 @@ export interface DateRangeOpts {
 	 */
 	refWeekday?: WEEKDAY;
 
+	// Todo: Change the offset option to accept also negative values.
 	/**
-	 * The number of time units to add before the start of the range.
+	 * The number of days to add before the the first date of the range.
 	 *
 	 * @remarks
-	 * Must be a non-negative integer. Defaults to 0.
+	 * Must be a non-negative integer.
 	 *
-	 * For `getWeek()` and `getMonth()` methods the time unit is `day`.
+	 * This will be change to accept also negative values.
+	 *
+	 * @defaultValue `0`
 	 *
 	 * @example
 	 * ```
@@ -108,12 +111,14 @@ export interface DateRangeOpts {
 	startOffset?: number;
 
 	/**
-	 * The number of time units to add after the end of the range.
+	 * The number of days to add after the the last date of the range.
 	 *
 	 * @remarks
-	 * Must be a non-negative integer. Defaults to 0.
+	 * Must be a non-negative integer.
 	 *
-	 *  For `getWeek()` and `getMonth()` methods the time unit is `day`.
+	 * This will be change to accept also negative values.
+	 *
+	 * @defaultValue `0`
 	 *
 	 * @example
 	 * ```
@@ -140,12 +145,12 @@ export interface DateRangeOpts {
 /**
  * Options for the DateRange `getMonthExact()` method.
  */
-export type DateRangeOpts_MonthExact = Omit<DateRangeOpts, "refWeekday">;
+export type RangeOptsMonthExact = Omit<RangeOpts, "refWeekday">;
 
 /**
  * Options for the DateRange `getDays()` method.
  */
-export type DateRangeOpts_Days = Omit<DateRangeOpts, "refWeekday"> & {
+export type RangeOptsDays = Omit<RangeOpts, "refWeekday"> & {
 	daysCount?: number;
 };
 
@@ -159,32 +164,26 @@ export class DateRange {
 
 	/**
 	 * refWeekday of the instance.
-	 *
-	 * @remarks Default to 1 (Monday)
 	 */
 	private _refWeekday: WEEKDAY | undefined;
 
 	/**
 	 * startOffset of the instance.
-	 *
-	 * @remarks Default to 0
 	 */
 	private _startOffset: number | undefined;
 
 	/**
 	 * endOffset of the instance.
-	 *
-	 * @remarks Default to 0
 	 */
 	private _endOffset: number | undefined;
 
 	/**
-	 * Instance date storage.
+	 * The instance date storage.
 	 */
 	private _dates: DateTime[] | undefined;
 
 	/**
-	 * Type of current generated date range.
+	 * The type of a current generated date range.
 	 */
 	private _rangeType: RANGE_TYPE | undefined;
 
@@ -194,24 +193,29 @@ export class DateRange {
 	private _daysCount: number | undefined;
 
 	/**
-	 * Indicates whether the `next()` method should be applied to the range.
+	 * Indicates whether the DateRange is generated with a `next()` method.
 	 */
 	private _isNext: boolean | undefined;
+
+	/**
+	 * Indicates whether the DateRange is generated with a `prev()` method.
+	 */
+	private _isPrev: boolean | undefined;
 
 	/**
 	 * DateRange is an entry point for creating and storing a range of dates.
 	 *
 	 * @remarks
-	 * The dates can be generated with a get methods.
+	 * The dates can be generated with get methods.
 	 *
-	 * The constructor does not accept any parameters. If any parameters are passed, an InvalidParameterError is thrown.
+	 * The constructor does not accept any parameters.
 	 */
 	constructor() {
-		// rome-ignore lint/style/noArguments: check specifically for no arguments
+		// rome-ignore lint/style/noArguments: check specifically for empty arguments array
 		if (arguments.length > 0) {
 			throw new InvalidParameterError(
 				"parameter passed to DateRange instance",
-				// rome-ignore lint/style/noArguments: check specifically for no arguments
+				// rome-ignore lint/style/noArguments: check specifically for empty arguments array
 				arguments.length === 1 ? arguments[0] : [...arguments],
 				"no parameters",
 				"Option parameters should be specified within DateRange methods.",
@@ -220,9 +224,7 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the reference date for this instance.
-	 *
-	 * @returns The reference date.
+	 * The reference date for this instance.
 	 */
 	get refDate(): DateTime {
 		if (this._refDate === undefined) {
@@ -235,9 +237,7 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the reference weekday for this instance.
-	 *
-	 * @returns The reference weekday.
+	 * The reference weekday for this instance.
 	 */
 	get refWeekday(): WEEKDAY {
 		if (this._refWeekday === undefined) {
@@ -250,9 +250,10 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the array of dates for this instance.
+	 * The array of luxon DateTimes for this instance.
 	 *
-	 * @returns The array of dates as Luxon DateTime objects.
+	 * @remarks
+	 * To get JS Dates use `toJSDates()` method.
 	 */
 	get dates(): DateTime[] {
 		if (this._dates === undefined) {
@@ -265,9 +266,7 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the start offset for this instance.
-	 *
-	 * @returns The start offset.
+	 * The start offset for this instance.
 	 */
 	get startOffset(): number {
 		if (this._startOffset === undefined) {
@@ -280,9 +279,7 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the end offset for this instance.
-	 *
-	 * @returns The end offset.
+	 * The end offset for this instance.
 	 */
 	get endOffset(): number {
 		if (this._endOffset === undefined) {
@@ -295,9 +292,7 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the days count used with `getDays()` method for this instance.
-	 *
-	 * @returns Number of days applied on `getDays()`.
+	 * The days count used with `getDays()` method for this instance.
 	 */
 	get daysCount(): number {
 		if (this._daysCount === undefined) {
@@ -310,14 +305,13 @@ export class DateRange {
 	}
 
 	/**
-	 * Gets the type of the current date range generated for the instance.
+	 * The type of range generated for this instance.
 	 *
 	 * @remarks
-	 * The type is a {@link RANGE_TYPE} that represents the duration of the range.
+	 * See {@link RANGE_TYPE| the RANGE_TYPE enum} for more details.
 	 *
-	 * If `undefined`, that means the range has not been created yet.
+	 * If `undefined`, the range has not been created yet.
 	 *
-	 * @returns The type of the current date range or undefined if no range is created.
 	 */
 	get rangeType(): RANGE_TYPE {
 		if (this._rangeType === undefined) {
@@ -329,7 +323,9 @@ export class DateRange {
 		return this._rangeType;
 	}
 
-	// todo: add description
+	/**
+	 * A boolean that indicates whether DateRange is created with a `next()` method.
+	 */
 	get isNext() {
 		if (this._isNext === undefined) {
 			// Todo: Refactor to custom error
@@ -340,6 +336,25 @@ export class DateRange {
 		return this._isNext;
 	}
 
+	/**
+	 * A boolean that indicates whether DateRange is created with a `prev()` method.
+	 */
+	get isPrev() {
+		if (this._isPrev === undefined) {
+			// Todo: Refactor to custom error
+			throw new Error(
+				"You try to access isPrev before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
+			);
+		}
+		return this._isNext;
+	}
+
+	/**
+	 * Sets or updates the instance members of the DateRange object.
+	 *
+	 * @param members - An object containing the properties of the DateRange object to be set or updated.
+	 * @private
+	 * */
 	private _setMembers(members: DateRangeMembers) {
 		const {
 			rangeType,
@@ -354,7 +369,6 @@ export class DateRange {
 
 		// Update instance members if different from current one
 
-		// this._rangeType = rangeType;
 		if (rangeType !== this._rangeType) {
 			this._rangeType = rangeType;
 		}
@@ -386,7 +400,7 @@ export class DateRange {
 	/**
 	 * Checks if a given value is a valid reference date.
 	 *
-	 * @remarks A reference date can be either a `Date` object or a `DateTime` object.
+	 * @remarks A reference date can be either a JS `Date` object or a Luxon `DateTime` object.
 	 *
 	 * @param refDate - The value to check.
 	 * @returns True if the value is a valid reference date, false otherwise.
@@ -418,14 +432,14 @@ export class DateRange {
 	/*================================ CONVERTING METHODS ==============================*/
 
 	/**
-	 * Returns an array of Luxon DateTime objects
+	 * Returns an array of dates generated for the instance as Luxon DateTime objects.
 	 */
 	toDateTimes(): DateTime[] {
 		return this.dates;
 	}
 
 	/**
-	 * Returns an array of JavaScript Date objects
+	 * Returns an array of dates generated for the instance as JS Date objects.
 	 */
 	toDates(): Date[] {
 		return this.dates.map((date) => date.toJSDate());
@@ -434,29 +448,51 @@ export class DateRange {
 	/*================================ TIME RANGE METHODS ==============================*/
 
 	/**
-	 * Creates an array of dates for each day of a week range based on a reference date.
+	 * Creates a single week range.
 	 *
 	 * @remarks
-	 * By default, the range starts on Monday before or on the reference date and ends
-	 * on Sunday after or on the reference date.
-	 * Each date is set to the start of the day (midnight).
+	 * - By default, the method starts the range on Monday before or on the reference date and ends
+	 * it on Sunday after or on the reference date.
 	 *
-	 * The date range can be customized by passing an `options` object with different parameters.
+	 * - If not specified, the reference date is set to the current time.
 	 *
-	 * @param options - {@link DateRangeOpts}
-	 * @returns The `DateRange` instance with the dates array populated.
+	 * - Each date is set to the start of the day (midnight).
 	 *
-	 * @example //TODO
+	 * - The method can customize the date range by accepting a `rangeOptions` object.
+	 * See {@link RangeOpts} for more details.
+	 *
+	 * @param rangeOptions - An optional {@link RangeOpts} object to customize the date range.
+	 * @returns The DateRange with generated dates.
+	 *
+	 * @example
+	 *  ```
+	 * // get current week starting on Monday
+	 * const week1 = new DateRange().getWeek();
+	 *
+	 * // get week based on a refDate and starting on Sunday
+	 * const week2 = new DateRange().getWeek({
+	 * 	refDate: new Date("2023-01-10"),
+	 * 	refWeekday: WEEKDAY.Sunday,
+	 * });
+	 * // Generated dates:👇
+	 * // Sunday, January 8, 2023 at 12:00:00 AM
+	 * // Monday, January 9, 2023 at 12:00:00 AM
+	 * // Tuesday, January 10, 2023 at 12:00:00 AM
+	 * // Wednesday, January 11, 2023 at 12:00:00 AM
+	 * // Thursday, January 12, 2023 at 12:00:00 AM
+	 * // Friday, January 13, 2023 at 12:00:00 AM
+	 * // Saturday, January 14, 2023 at 12:00:00 AM
+	 * ```
 	 */
-	public getWeek(options?: DateRangeOpts): DateRange {
-		validateDateRangeOpts(options);
+	public getWeek(rangeOptions?: RangeOpts): DateRange {
+		validateRangeOpts(rangeOptions);
 
 		const {
 			refDate = dateRangeDefaults.refDate,
 			refWeekday = dateRangeDefaults.refWeekday,
 			startOffset = dateRangeDefaults.startOffset,
 			endOffset = dateRangeDefaults.endOffset,
-		} = options || {};
+		} = rangeOptions || {};
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.Week,
@@ -499,7 +535,10 @@ export class DateRange {
 				endOffset,
 			});
 
-			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
+			this._setMembers({
+				...dateRangeMembers,
+				dates: [...extendedDateRange],
+			});
 
 			return this;
 		} else {
@@ -509,19 +548,54 @@ export class DateRange {
 		}
 	}
 
-	//TODO
-	public getMonth(options?: DateRangeOpts): DateRange {
-		validateDateRangeOpts(options);
+	/**
+	 *
+	 * Creates a single month range, but extended to include the full weeks.
+	 *
+	 * @remarks
+	 *
+	 * - By default, the method starts the range on Monday before or on the first day of the month and ends
+	 * it on Sunday after or on the last day of the month.
+	 *
+	 * - If not specified, the reference date is set to the current time.
+	 *
+	 * - Each date is set to the start of the day (midnight).
+	 *
+	 * - The method can customize the date range by accepting a rangeOptions object.
+	 * See {@link RangeOpts} for more details.
+	 *
+	 * @param rangeOptions - An optional {@link RangeOpts} object to customize the date range.
+	 * @returns The DateRange with generated dates.
+	 * @example
+	 *  ```
+	 * // Get current month extended to full weeks
+	 * const monthExtended1 = new DateRange().getMonthExtended();
+	 *
+	 * // Get month extended to full weeks based on a refDate and starting on Wednesday
+	 * const monthExtended2 = new DateRange().getMonthExtended({
+	 * 	refDate: new Date("2023-01-10"),
+	 * 	refWeekday: WEEKDAY.Wednesday,
+	 * });
+	 * // Generated dates:
+	 * // Wednesday, December 28, 2022 at 12:00:00 AM -> The first date of the range
+	 * // Thursday, December 29, 2022 at 12:00:00 AM
+	 * // Friday, December 30, 2022 at 12:00:00 AM
+	 * // ...
+	 * // Tuesday, January 31, 2023 at 12:00:00 AM -> The last date of the range
+	 * ```
+	 */
+	public getMonthExtended(rangeOptions?: RangeOpts): DateRange {
+		validateRangeOpts(rangeOptions);
 
 		const {
 			refDate = dateRangeDefaults.refDate,
 			refWeekday = dateRangeDefaults.refWeekday,
 			startOffset = dateRangeDefaults.startOffset,
 			endOffset = dateRangeDefaults.endOffset,
-		} = options || {};
+		} = rangeOptions || {};
 
 		const dateRangeMembers: DateRangeMembers = {
-			rangeType: RANGE_TYPE.MonthWeekExtended,
+			rangeType: RANGE_TYPE.MonthExtended,
 			dates: [],
 			refDate,
 			refWeekday,
@@ -575,7 +649,10 @@ export class DateRange {
 				endOffset,
 			});
 
-			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
+			this._setMembers({
+				...dateRangeMembers,
+				dates: [...extendedDateRange],
+			});
 
 			return this;
 		} else {
@@ -585,14 +662,62 @@ export class DateRange {
 		}
 	}
 
-	getMonthExact(options?: DateRangeOpts_MonthExact): DateRange {
-		validateDateRangeOptions_monthExact(options);
+	/**
+	 * Creates a single month range, from the first to the last day of the month.
+	 *
+	 * @remarks
+	 *
+	 * - By default, the method starts the range on the first day of the month and ends
+	 * it on the last day of the month.
+	 *
+	 * - If not specified, the reference date is set to the current time.
+	 *
+	 * - Each date is set to the start of the day (midnight).
+	 *
+	 * - The method can customize the date range by accepting a rangeOptions object.
+	 * See {@link RangeOptsMonthExact} for more details.
+	 *
+	 * @param rangeOptions - An optional {@link RangeOptsMonthExact} object to customize the date range.
+	 * @returns The DateRange with generated dates.
+	 * @example
+	 *  ```
+	 * // Get current month
+	 * const month1 = new DateRange().getMonthExact();
+	 *
+	 * // Get month with specified refDate
+	 * const month2 = new DateRange().getMonthExact({
+	 * 	refDate: new Date("2023-01-10"),
+	 * });
+	 * // Generated dates:
+	 * // Sunday, January 1, 2023 at 12:00:00 AM -> The first date of the range
+	 * // Monday, January 2, 2023 at 12:00:00 AM
+	 * // Tuesday, January 3, 2023 at 12:00:00 AM
+	 * // ...
+	 * // Tuesday, January 31, 2023 at 12:00:00 AM -> The last date of the range
+	 *
+	 * // Get month with specified refDate and offsets
+	 * const month3 = new DateRange().getMonthExact({
+	 * 	refDate: new Date("2023-01-10"),
+	 * 	startOffset: 2,
+	 * 	endOffset: 2,
+	 * });
+	 * // Friday, December 30, 2022 at 12:00:00 AM  -> The range starts 2 days before default first day
+	 * // Saturday, December 31, 2022 at 12:00:00 AM
+	 * // Sunday, January 1, 2023 at 12:00:00 AM
+	 * // ...
+	 * // Tuesday, January 31, 2023 at 12:00:00 AM
+	 * // Wednesday, February 1, 2023 at 12:00:00 AM
+	 * // Thursday, February 2, 2023 at 12:00:00 AM -> The range ends 2 days after default last day
+	 * ```
+	 */
+	getMonthExact(rangeOptions?: RangeOptsMonthExact): DateRange {
+		validateRangeOptsMonthExact(rangeOptions);
 
 		const {
 			refDate = dateRangeDefaults.refDate,
 			startOffset = dateRangeDefaults.startOffset,
 			endOffset = dateRangeDefaults.endOffset,
-		} = options || {};
+		} = rangeOptions || {};
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.MonthExact,
@@ -635,7 +760,10 @@ export class DateRange {
 				endOffset,
 			});
 
-			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
+			this._setMembers({
+				...dateRangeMembers,
+				dates: [...extendedDateRange],
+			});
 
 			return this;
 		} else {
@@ -645,7 +773,48 @@ export class DateRange {
 		}
 	}
 
-	getDays(options?: DateRangeOpts_Days): DateRange {
+	/**
+	 * Creates a range of custom number of days.
+	 *
+	 * @remarks
+	 * - The reference date is a starting point of the range.
+	 *
+	 * - If not specified, the reference date is set to the current time.
+	 *
+	 * - The length of the range can be specified with the `daysCount` property in the `rangeOptions` object.
+	 * If not specified, the range will be created with a single date.
+	 *
+	 * - Each date is set to the start of the day (midnight).
+	 *
+	 * - The range can be adjusted with the rangeOptions object passed to the method.
+	 * See {@link RangeOptsDays} for more details.
+	 *
+	 * @param rangeOptions - An optional object to customize the date range.
+	 * @returns The DateRange with generated dates.
+	 * @example
+	 * ```
+	 * // Get a current date
+	 * const range1 = new DateRange().getDays();
+	 *
+	 * // Get a range of 10 days starting on 2023-01-10
+	 * const range2 = new DateRange().getDays({
+	 * 	daysCount: 10,
+	 * 	refDate: new Date("2023-01-10"),
+	 * });
+	 * // Generated dates:
+	 * // January 10, 2023 at 12:00:00 AM
+	 * // January 11, 2023 at 12:00:00 AM
+	 * // January 12, 2023 at 12:00:00 AM
+	 * // January 13, 2023 at 12:00:00 AM
+	 * // January 14, 2023 at 12:00:00 AM
+	 * // January 15, 2023 at 12:00:00 AM
+	 * // January 16, 2023 at 12:00:00 AM
+	 * // January 17, 2023 at 12:00:00 AM
+	 * // January 18, 2023 at 12:00:00 AM
+	 * // January 19, 2023 at 12:00:00 AM
+	 * ```
+	 */
+	getDays(options?: RangeOptsDays): DateRange {
 		validateDateRangeOptions_days(options);
 
 		const {
@@ -691,7 +860,10 @@ export class DateRange {
 				endOffset,
 			});
 
-			this._setMembers({ ...dateRangeMembers, dates: [...extendedDateRange] });
+			this._setMembers({
+				...dateRangeMembers,
+				dates: [...extendedDateRange],
+			});
 
 			return this;
 		} else {
@@ -701,7 +873,40 @@ export class DateRange {
 		}
 	}
 
-	next(dateRange: DateRange) {
+	/**
+	 *
+	 * Generates the next range based on given one.
+	 *
+	 * @remarks
+	 * The method takes a DateRange object and based on its range type,
+	 * sets the refDate to a date that can generate the new range.
+	 *
+	 * It copies the options used to adjust the given range and applies them to the new range.
+	 *
+	 * The method shifts the refDate to the next one as follows:
+	 * - for a range generated with getDays, the refDate is incremented by the daysCount property.
+	 * - for a range generated with getWeek, the refDate is incremented by 7 days.
+	 * - for a range generated with getMonthExact and getMonthExtended, the refDate is set to the first day of the next month.
+	 *
+	 * In all cases, the refDate is set to the start of the day (midnight).
+	 *
+	 * To check whether the DaterRange is generated with a next method, access the `isNext` property of a DateRange instance.
+	 *
+	 * @param dateRange - A DateRange object with a generated range.
+	 * @returns The DateRange with generated dates.
+	 * @throws an error if DateRange is not provided or the range is not initialized.
+	 *
+	 * @example
+	 * ```
+	 * // example with a "WEEK" range
+	 * const week = new DateRange().getWeek({ refDate: new Date("2023-01-10") });
+	 * week.dates; // dates from Mon, 01/09/2023 to Sun, 01/15/2023
+	 *
+	 * const weekNext = new DateRange().next(week);
+	 * weekNext.dates; // dates from Mon, 01/16/2023 to Sun, 01/22/2023
+	 * ```
+	 */
+	next(dateRange: DateRange): DateRange {
 		if (dateRange === undefined) {
 			throw new MissingArgumentError("dateRange", "DateRange.next()");
 		}
@@ -713,7 +918,7 @@ export class DateRange {
 		// The rangeType property is only defined after the range is initialized,
 		// so accessing it before that will throw an error.
 		// We use try/catch to catch that error and throw a custom EmptyDateRangeError instead,
-		// indicating that the next() method cannot be used on an empty range.
+		// indicating that the next / prev method cannot be used on an empty range.
 		try {
 			dateRange.rangeType;
 		} catch (error) {
@@ -727,14 +932,13 @@ export class DateRange {
 			refWeekday,
 			rangeType,
 			daysCount,
-			dates,
 		} = dateRange;
 
 		switch (rangeType) {
 			case RANGE_TYPE.Week: {
 				const nextRefDate = refDate.startOf("day").plus({ days: 7 });
 
-				const options: Required<DateRangeOpts> = {
+				const options: Required<RangeOpts> = {
 					refDate: nextRefDate,
 					refWeekday: refWeekday,
 					startOffset: startOffset,
@@ -747,37 +951,29 @@ export class DateRange {
 				return this;
 			}
 			case RANGE_TYPE.MonthExact: {
-				const { year, month } = refDate;
-				const nextRefDate = DateTime.fromObject({
-					year,
-					month: month + 1,
-				});
+				const nextRefDate = refDate.startOf("month").plus({ month: 1 });
 
-				const options: Required<DateRangeOpts_MonthExact> = {
+				const options: Required<RangeOptsMonthExact> = {
 					refDate: nextRefDate,
-					startOffset: startOffset,
-					endOffset: endOffset,
+					startOffset,
+					endOffset,
 				};
 				this.getMonthExact(options);
 				this._isNext = true;
 
 				return this;
 			}
-			case RANGE_TYPE.MonthWeekExtended: {
-				const { year, month } = refDate;
-				const nextRefDate = DateTime.fromObject({
-					year,
-					month: month + 1,
-				});
+			case RANGE_TYPE.MonthExtended: {
+				const nextRefDate = refDate.startOf("month").plus({ month: 1 });
 
-				const options: Required<DateRangeOpts> = {
+				const options: Required<RangeOpts> = {
 					refWeekday,
 					refDate: nextRefDate,
 					startOffset,
 					endOffset,
 				};
 
-				this.getMonth(options);
+				this.getMonthExtended(options);
 				this._isNext = true;
 
 				return this;
@@ -788,7 +984,7 @@ export class DateRange {
 				// the next ref date starts at the beginning of a day
 				const nextRefDate = refDate.startOf("day").plus({ day: daysCount });
 
-				const options: Required<DateRangeOpts_Days> = {
+				const options: Required<RangeOptsDays> = {
 					daysCount,
 					endOffset,
 					startOffset,
@@ -797,6 +993,133 @@ export class DateRange {
 
 				this.getDays(options);
 				this._isNext = true;
+
+				return this;
+			}
+			default:
+				throw new Error("not implemented");
+		}
+	}
+
+	/**  Generates the previous range based on given one.
+	 *
+	 * @remarks
+	 *
+	 * The method takes a DateRange object and based on its range type,
+	 * sets the refDate to a date that can generate the new range.
+	 *
+	 * It copies the options used to adjust the given range and applies them to the new range.
+	 *
+	 * The method shifts the refDate to the previous one as follows:
+	 *   - for a range generated with getDays, the refDate is decremented by the daysCount property.
+	 *   - for a range generated with getWeek, the refDate is decremented by 7 days.
+	 *   - for a range generated with getMonthExact and getMonthExtended, the refDate is set to the first day of the previous month.
+	 *
+	 * In all cases, the refDate is set to the start of the day (midnight).
+	 *
+	 * To check whether the DaterRange is generated with a prev method, access the `isPrev` property of a DateRange instance.
+	 *
+	 * @param dateRange - A DateRange object with a generated range range.
+	 * @returns The DateRange object with a generated range of the same type and options as the given one but with shifted dates.
+	 * @throws an error if DateRange is not provided or the range is not initialized.
+	 *
+	 * @example
+	 * ```
+	 * // example with a "WEEK" range
+	 * const week = new DateRange().getWeek({ refDate: new Date("2023-01-10") });
+	 * week.dates; // dates from Mon, 01/09/2023, to Sun, 01/15/2023
+	 *
+	 * const weekPrev = new DateRange().prev(week);
+	 * weekPrev.dates; // dates from Mon, 01/02/2023 to Sun, 01/08/2023
+	 * ```
+	 */
+	prev(dateRange: DateRange) {
+		if (dateRange === undefined) {
+			throw new MissingArgumentError("dateRange", "DateRange.prev()");
+		}
+
+		if (!(dateRange instanceof DateRange)) {
+			throw new InvalidDateRangeError(dateRange);
+		}
+
+		// The rangeType property is only defined after the range is initialized,
+		// so accessing it before that will throw an error.
+		// We use try/catch to catch that error and throw a custom EmptyDateRangeError instead,
+		// indicating that the next / prev method cannot be used on an empty range.
+		try {
+			dateRange.rangeType;
+		} catch (error) {
+			throw new EmptyDateRangeError("prev() method");
+		}
+
+		const {
+			refDate,
+			startOffset,
+			endOffset,
+			refWeekday,
+			rangeType,
+			daysCount,
+		} = dateRange;
+
+		switch (rangeType) {
+			case RANGE_TYPE.Week: {
+				const nextRefDate = refDate.startOf("day").minus({ days: 7 });
+
+				const options: Required<RangeOpts> = {
+					refDate: nextRefDate,
+					refWeekday: refWeekday,
+					startOffset: startOffset,
+					endOffset: endOffset,
+				};
+
+				this.getWeek(options);
+				this._isPrev = true;
+
+				return this;
+			}
+			case RANGE_TYPE.MonthExact: {
+				const nextRefDate = refDate.startOf("month").minus({ month: 1 });
+
+				const options: Required<RangeOptsMonthExact> = {
+					refDate: nextRefDate,
+					startOffset,
+					endOffset,
+				};
+				this.getMonthExact(options);
+				this._isPrev = true;
+
+				return this;
+			}
+			case RANGE_TYPE.MonthExtended: {
+				const nextRefDate = refDate.startOf("month").minus({ month: 1 });
+
+				const options: Required<RangeOpts> = {
+					refWeekday,
+					refDate: nextRefDate,
+					startOffset,
+					endOffset,
+				};
+
+				this.getMonthExtended(options);
+				this._isPrev = true;
+
+				return this;
+			}
+			case RANGE_TYPE.Days: {
+				// Todo:
+				// Add annotation to the description of next / prev the next refDate is set to as the beginning of the month,
+				// and beginning of the day with getDays
+				const nextRefDate = refDate.startOf("day").minus({ day: daysCount });
+
+				const options: Required<RangeOptsDays> = {
+					daysCount,
+					endOffset,
+					startOffset,
+					refDate: nextRefDate,
+				};
+
+				this.getDays(options);
+				this._isPrev = true;
 
 				return this;
 			}
