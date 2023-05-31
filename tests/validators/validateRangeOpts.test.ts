@@ -2,8 +2,8 @@ import { DateTime } from "luxon";
 import { describe, expect, test } from "vitest";
 
 import { WEEKDAY } from "../../src/constants";
-import type { DateRangeOpts } from "../../src/dateRange";
-import { validateDateRangeOpts } from "../../src/validators";
+import type { RangeOpts } from "../../src/dateRange";
+import { validateRangeOpts } from "../../src/validators";
 
 import {
 	TestValues,
@@ -17,14 +17,14 @@ describe("validateDateRangeOps", () => {
 		describe("Given no parameters", () => {
 			test("throws an error parameters are not provided", () => {
 				// @ts-expect-error: testing invalid input
-				expect(() => validateDateRangeOpts()).toThrowError();
+				expect(() => validateRangeOpts()).toThrowError();
 			});
 		});
 
 		// test for no arguments passed for validation
 		describe("Given parameter is undefined (no arguments passed for validation)", () => {
 			test("doesn't return anything", () => {
-				expect(validateDateRangeOpts(undefined)).toBeUndefined();
+				expect(validateRangeOpts(undefined)).toBeUndefined();
 			});
 		});
 	});
@@ -35,7 +35,7 @@ describe("validateDateRangeOps", () => {
 			test.each(testValues)(
 				"throws an error if options param is $name",
 				({ value }) => {
-					expect(() => validateDateRangeOpts(value)).toThrowError();
+					expect(() => validateRangeOpts(value)).toThrowError();
 				},
 			);
 		});
@@ -49,7 +49,7 @@ describe("validateDateRangeOps", () => {
 						"doesn't throw error if refDate is $name",
 						(value) => {
 							expect(() =>
-								validateDateRangeOpts({
+								validateRangeOpts({
 									refDate: value,
 								}),
 							).not.toThrowError();
@@ -65,7 +65,7 @@ describe("validateDateRangeOps", () => {
 							if (value === undefined) return;
 
 							expect(() =>
-								validateDateRangeOpts({
+								validateRangeOpts({
 									refDate: value,
 								}),
 							).toThrowError();
@@ -81,9 +81,7 @@ describe("validateDateRangeOps", () => {
 
 		describe("Given a valid refWeekday", () => {
 			test.each(valid)("doesn't throw error if refWeekday is %d", (num) => {
-				expect(() =>
-					validateDateRangeOpts({ refWeekday: num }),
-				).not.toThrowError();
+				expect(() => validateRangeOpts({ refWeekday: num })).not.toThrowError();
 			});
 		});
 
@@ -94,9 +92,7 @@ describe("validateDateRangeOps", () => {
 					// exclude undefined from test values
 					if (value === undefined) return;
 
-					expect(() =>
-						validateDateRangeOpts({ refWeekday: value }),
-					).toThrowError();
+					expect(() => validateRangeOpts({ refWeekday: value })).toThrowError();
 				},
 			);
 		});
@@ -115,7 +111,7 @@ describe("validateDateRangeOps", () => {
 					"doesn't throw error if startOffset is $name",
 					(value) => {
 						expect(() =>
-							validateDateRangeOpts({
+							validateRangeOpts({
 								startOffset: value,
 							}),
 						).not.toThrowError();
@@ -128,7 +124,7 @@ describe("validateDateRangeOps", () => {
 					"throws an error if startOffset is $name",
 					({ value }) => {
 						expect(() =>
-							validateDateRangeOpts({
+							validateRangeOpts({
 								startOffset: value,
 							}),
 						).toThrowError();
@@ -143,7 +139,7 @@ describe("validateDateRangeOps", () => {
 					"doesn't throw error if endOffset is $name",
 					(value) => {
 						expect(() =>
-							validateDateRangeOpts({
+							validateRangeOpts({
 								endOffset: value,
 							}),
 						).not.toThrowError();
@@ -155,7 +151,7 @@ describe("validateDateRangeOps", () => {
 					"throws an error if endOffset is $name",
 					({ value }) => {
 						expect(() =>
-							validateDateRangeOpts({ endOffset: value }),
+							validateRangeOpts({ endOffset: value }),
 						).toThrowError();
 					},
 				);
@@ -166,7 +162,7 @@ describe("validateDateRangeOps", () => {
 	describe("Mixed properties", () => {
 		describe("Given an object with mixed valid properties", () => {
 			// some valid inputs
-			const opts: DateRangeOpts[] = [
+			const opts: RangeOpts[] = [
 				{
 					refDate: DateTime.now(),
 					refWeekday: WEEKDAY.Saturday,
@@ -207,8 +203,8 @@ describe("validateDateRangeOps", () => {
 			];
 
 			test.each(opts)(`doesn't return anything for %s`, (input) => {
-				expect(() => validateDateRangeOpts(input)).not.toThrowError();
-				expect(validateDateRangeOpts(input)).toBeUndefined();
+				expect(() => validateRangeOpts(input)).not.toThrowError();
+				expect(validateRangeOpts(input)).toBeUndefined();
 			});
 		});
 
@@ -258,7 +254,7 @@ describe("validateDateRangeOps", () => {
 			test.each(invalidInputs)(
 				"throws an errors if non valid property is provided. Index of test object %#",
 				(input) => {
-					expect(() => validateDateRangeOpts(input)).toThrowError();
+					expect(() => validateRangeOpts(input)).toThrowError();
 				},
 			);
 		});

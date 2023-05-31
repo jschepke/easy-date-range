@@ -1,4 +1,4 @@
-import type { DateRangeOpts_MonthExact } from "../dateRange";
+import type { RangeOptsMonthExact } from "../dateRange";
 import { InvalidParameterError } from "../errors";
 import { isEmptyObject } from "../utils/isEmptyObject";
 import { isObject } from "../utils/isObject";
@@ -9,7 +9,7 @@ import {
 	validateStartOffset,
 } from "./common";
 
-const dateRangeOptionsKeysMap: PropertiesMap<DateRangeOpts_MonthExact> = {
+const dateRangeOptionsKeysMap: PropertiesMap<RangeOptsMonthExact> = {
 	endOffset: "endOffset",
 	refDate: "refDate",
 	startOffset: "startOffset",
@@ -21,7 +21,7 @@ const dateRangeOptionsKeysMap: PropertiesMap<DateRangeOpts_MonthExact> = {
  * Throws an error if any properties of options object are
  * invalid or the parameter itself is invalid.
  */
-export function validateDateRangeOptions_monthExact(value: unknown): void {
+export function validateRangeOptsMonthExact(value: unknown): void {
 	// rome-ignore lint/style/noArguments: <explanation>
 	if (arguments.length === 0) {
 		throw new InvalidParameterError(
@@ -66,7 +66,7 @@ export function validateDateRangeOptions_monthExact(value: unknown): void {
 	}
 
 	// get the expected properties from the input value
-	const { refDate, startOffset, endOffset } = value as DateRangeOpts_MonthExact;
+	const { refDate, startOffset, endOffset } = value as RangeOptsMonthExact;
 
 	// handle refDate property
 	refDate !== undefined && validateRefDate(refDate);
