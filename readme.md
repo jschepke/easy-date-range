@@ -16,17 +16,17 @@ Date ranges can be generated with several of get methods:
 - [`getMonthExact`](#getmonthexact) creates a month range, from the first to the last day of the month.
 - [`getMonthExtended`](#getmonthextended) creates a month range extended to include the full weeks. By default, the start of the range is Monday.
 - [`getDays`](#getdays) creates a range of custom number of days.
-- `next` and `prev` methods allow to easily shift any range passed to them as an argument.
+- [`next`](#next) and [`prev`](#prev) methods enable easy shifting of any range passed into them.
 
 ### Easy to customize
 
-By default all get methods use the current day as a reference date. It can be easily customized by passing an `options` object where you can also specify other settings such as offset, start of the week or days count.
+All get methods use the current day as a reference date unless specified otherwise. It can be easily customized by passing an `options` object where you can also set other settings such as offset, start of the week or days count.
 
 ### Only one dependency
 
 easy-date-range uses [Luxon](https://moment.github.io/luxon) as a peer dependency for date handling. Luxon is a powerful and modern library for working with dates and times in JavaScript. It offers a consistent and fluent API, as well as support for various formats and locales.
 
-easy-date-range accepts both Luxon and native JavaScript dates as input.
+easy-date-range accepts both Luxon and native JavaScript dates:
 
 ```ts
 // create a range with a JavaScript Date as the reference date
@@ -49,11 +49,11 @@ dr.toDates();
 
 ### 100% TypeScript
 
-easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.org/) so you can enjoy the type safety it provides and other benefits such as autocomplete features in your code editor. Works with no issues in plain JavaScript environment, too.
+easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.org/) for type safety and other benefits such as autocomplete features in your code editor. Works with no issues in plain JavaScript environment, too.
 
 ### More features to come
 
-At the moment, easy-date-range provides basic methods for creating date ranges that cover full days. In the future, I plan to add more methods for creating ranges that span other intervals such as hours and minutes, or months and years.
+At the moment, easy-date-range provides basic functionality for creating date ranges that cover full days. In the future, I plan to add more methods for creating ranges that span other intervals such as hours and minutes, or months and years.
 
 ## Installation
 
@@ -92,23 +92,6 @@ currentWeek.dates.forEach((date) => console.log(date.toString()));
 
 ### Customize the range
 
-You can customize the range with `options` object passed to a method.
-
-Common options available for all methods:
-
-- `refDate` for setting the reference date,
-- `startOffset` for setting the number of days to add before the the first date of the range
-- `endOffset` for setting the number of days to add after the the last date of the range.
-
-Specific options depending on the method and type of range it generates:
-
-- `refWeekday` for setting the weekday to start the range from. Available with `getWeek` and `getMonthExtended` methods
-- `daysCount` for setting the number of days with `getDays` method
-
-_Note_: The offset is applied after the range is created, or in other words, it comes after all other options. Think of it as a way to add or subtract days from your range as a final touch.
-
-### Customize the range2
-
 You can customize the range with an `options` object passed to a method.
 
 Common options available for all methods:
@@ -120,7 +103,7 @@ Common options available for all methods:
 Specific options depending on the method and type of range it generates:
 
 - `refWeekday` for setting the weekday to start the range from. Available with getWeek and getMonthExtended methods
-- `daysCount` for setting the number of days with getDays method
+- `daysCount` for setting the number of days with `getDays` method
 
 **_Note:_** The offset is applied after the range is created; or in other words, it comes after all other options. Think of it as a way to add or subtract days from your range as a final touch.
 
@@ -148,9 +131,11 @@ The first and last two days in the range come from offset settings. Without the 
 public getWeek(rangeOptions?: RangeOpts): DateRange
 ```
 
-options: [RangeOpts](#rangeopts)
+Options: [RangeOpts](#rangeopts)
 
 Creates a single week range.
+
+Characteristics:
 
 - By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
 - If not specified, the reference date is set to the current time.
