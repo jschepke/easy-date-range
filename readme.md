@@ -127,21 +127,31 @@ The first and last two days in the range come from offset settings. Without the 
 
 ### **getWeek**
 
+Creates a single week range.
+
+By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
+
+The reference date is set to the current day if not specified otherwise.
+
+Each date is set to the start of the day (midnight).
+
+#### **Signature**
+
 ```ts
 public getWeek(rangeOptions?: RangeOpts): DateRange
 ```
 
-Options: [RangeOpts](#rangeopts)
+#### **Parameters**
 
-Creates a single week range.
+| Parameter    | Type                    | Description                       |
+| ------------ | ----------------------- | --------------------------------- |
+| rangeOptions | [RangeOpts](#rangeopts) | An object to configure the range. |
 
-Characteristics:
+#### **Returns:**
 
-- By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
-- If not specified, the reference date is set to the current time.
-- Each date is set to the start of the day (midnight).
+`DateRange`
 
-Examples
+#### **Examples**
 
 ```ts
 // get current week starting on Monday
@@ -164,25 +174,36 @@ const week2 = new DateRange().getWeek({
 
 ### **getMonthExact**
 
+Creates a single month range, from the first to the last day of the month.
+
+The reference date is set to the current day if not specified otherwise.
+
+Each date is set to the start of the day (midnight).
+
+#### **Signature**
+
 ```ts
 public getMonthExact(rangeOptions?: RangeOptsMonthExact): DateRange
 ```
 
-`options`: [RangeOptsMonthExact](#getmonthexact)
+#### **Parameters**
 
-Creates a single month range, from the first to the last day of the month.
+| Parameter    | Type                    | Description                       |
+| ------------ | ----------------------- | --------------------------------- |
+| rangeOptions | [RangeOpts](#rangeopts) | An object to configure the range. |
 
-- By default, the method starts the range on the first day of the month and ends it on the last day of the month.
-- If not specified, the reference date is set to the current time.
-- Each date is set to the start of the day (midnight).
-- The method can customize the date range by accepting a rangeOptions object.
+#### **Returns:**
 
-Examples
+`DateRange`
+
+#### **Examples**
 
 ```ts
 // Get current month
 const currentMonthExact = new DateRange().getMonthExact();
+```
 
+```ts
 // Get month with specified refDate
 const monthExact = new DateRange().getMonthExact({
   refDate: new Date('2023-01-10'),
@@ -193,7 +214,9 @@ const monthExact = new DateRange().getMonthExact({
 // Tuesday, January 3, 2023 at 12:00:00 AM
 // ...
 // Tuesday, January 31, 2023 at 12:00:00 AM -> The last date of the range
+```
 
+```ts
 // Get month with specified refDate and offsets
 const month3 = new DateRange().getMonthExact({
   refDate: new Date('2023-01-10'),
