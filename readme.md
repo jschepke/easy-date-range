@@ -6,15 +6,15 @@ easy-date-range is a simple, easy to use library for creating date ranges which 
 
 ### Single reference date
 
-The key feature of easy-date-range is that methods used for generating ranges are based on a **single reference date** and a set of assumptions specific for range type.
+easy-date-range lets you create various date ranges with its methods: the main concept is that each method only requires a **single reference date** to calculate the range.
 
 ### Descriptive API
 
-Date ranges can be generated with several of get methods:
+Here is a brief summary of range generators:
 
-- [`getWeek`](#getweek) creates a week range. By default, the start of the week is Monday.
+- [`getWeek`](#getweek) creates a week range that starts on Monday.
 - [`getMonthExact`](#getmonthexact) creates a month range, from the first to the last day of the month.
-- [`getMonthExtended`](#getmonthextended) creates a month range extended to include the full weeks. By default, the start of the range is Monday.
+- [`getMonthExtended`](#getmonthextended) creates a month range extended to include the full weeks.
 - [`getDays`](#getdays) creates a range of custom number of days.
 - [`next`](#next) and [`prev`](#prev) methods enable easy shifting of any range passed into them.
 
