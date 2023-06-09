@@ -10,7 +10,7 @@ easy-date-range lets you create various date ranges with its methods: the main c
 
 ### Descriptive API
 
-Here is a brief summary of range generators:
+Here is a brief summary of core functionalities: the range generators:
 
 - [`getWeek`](#getweek) creates a week range that starts on Monday.
 - [`getMonthExact`](#getmonthexact) creates a month range, from the first to the last day of the month.
@@ -18,11 +18,17 @@ Here is a brief summary of range generators:
 - [`getDays`](#getdays) creates a range of custom number of days.
 - [`next`](#next) and [`prev`](#prev) methods enable easy shifting of any range passed into them.
 
+**The reference date is always part of the range.** For example, if you use `getWeek` with today’s date as the reference date, you will get a range that includes today and six other days starting from Monday.
+
 ### Easy to customize
 
-All get methods use the current day as a reference date unless specified otherwise. It can be easily customized by passing an `options` object where you can also set other settings such as offset, start of the week or days count.
+All range generators use the current day as a reference date unless specified otherwise. It can be easily customized by passing an `options` object where you can also set other settings such as offsets, start of the week or days count.
 
-### Only one dependency
+### 100% TypeScript
+
+easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.org/) for type safety and other benefits such as autocomplete features in your code editor. Works with no issues in plain JavaScript environment, too.
+
+### Date and time made easy with Luxon
 
 easy-date-range uses [Luxon](https://moment.github.io/luxon) as a peer dependency for date handling. Luxon is a powerful and modern library for working with dates and times in JavaScript. It offers a consistent and fluent API, as well as support for various formats and locales.
 
@@ -46,10 +52,6 @@ dr.dates;
 // get JS Dates
 dr.toDates();
 ```
-
-### 100% TypeScript
-
-easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.org/) for type safety and other benefits such as autocomplete features in your code editor. Works with no issues in plain JavaScript environment, too.
 
 ### More features to come
 
@@ -92,7 +94,7 @@ currentWeek.dates.forEach((date) => console.log(date.toString()));
 
 ### Customize the range
 
-You can customize the range with an `options` object passed to a method.
+You can customize the range with an `options` object passed to a range generator.
 
 Common options available for all methods:
 
@@ -188,9 +190,9 @@ public getMonthExact(rangeOptions?: RangeOptsMonthExact): DateRange
 
 #### **Parameters**
 
-| Parameter    | Type                    | Description                       |
-| ------------ | ----------------------- | --------------------------------- |
-| rangeOptions | [RangeOpts](#rangeopts) | An object to configure the range. |
+| Parameter    | Type                                        | Description                       |
+| ------------ | ------------------------------------------- | --------------------------------- |
+| rangeOptions | [RangeOptsMonthExact](#rangeoptsmonthexact) | An object to configure the range. |
 
 #### **Returns:**
 
@@ -234,20 +236,31 @@ const month3 = new DateRange().getMonthExact({
 
 ### **getMonthExtended**
 
+Creates a single month range extended to include the full weeks.
+
+By default, the method starts the range on Monday before or on the first day of the month and ends it on Sunday after or on the last day of the month.
+
+The reference date is set to the current day if not specified otherwise.
+
+Each date is set to the start of the day (midnight).
+
+#### **Signature**
+
 ```ts
 public getMonthExtended(rangeOptions?: RangeOpts): DateRange
 ```
 
-`options`: [RangeOpts](#rangeopts)
+#### **Parameters**
 
-Creates a single month range extended to include the full weeks.
+| Parameter    | Type                                        | Description                       |
+| ------------ | ------------------------------------------- | --------------------------------- |
+| rangeOptions | [RangeOptsMonthExact](#rangeoptsmonthexact) | An object to configure the range. |
 
-- By default, the method starts the range on Monday before or on the first day of the month and ends it on Sunday after or on the last day of the month.
-- If not specified, the reference date is set to the current time.
-- Each date is set to the start of the day (midnight).
-- The method can customize the range by accepting a `options` object.
+#### **Returns:**
 
-Examples
+`DateRange`
+
+#### **Examples**
 
 ```ts
 // Get current month extended to full weeks
@@ -269,23 +282,29 @@ const monthExtended = new DateRange().getMonthExtended({
 
 ### **getDays**
 
+Creates a range of custom number of days.
+
+The reference date is a starting point of the range.
+
+The reference date is set to the current day if not specified otherwise.
+
+The length of the range can be specified with the `daysCount` property in the `rangeOptions` object. If not specified, the range will be created with a single date.
+
+Each date is set to the start of the day (midnight).
+
+#### **Signature**
+
 ```ts
 public getDays(options?: RangeOptsDays): DateRange
 ```
 
-Creates a range of custom number of days.
+#### **Parameters**
 
-Options: [RangeOptsDays](#rangeoptsdays)
+| Parameter    | Type                            | Description                       |
+| ------------ | ------------------------------- | --------------------------------- |
+| rangeOptions | [RangeOptsDays](#rangeoptsdays) | An object to configure the range. |
 
-Features:
-
-- The reference date is a starting point of the range.
-- If not specified, the reference date is set to the current time.
-- The length of the range can be specified with the `daysCount` property in the `rangeOptions` object. If not specified, the range will be created with a single date.
-- Each date is set to the start of the day (midnight).
-- The range can be adjusted with the rangeOptions object passed to the method.
-
-Examples:
+#### **Examples**
 
 ```ts
 // Get a current date
