@@ -123,7 +123,7 @@ const monthExtended = new DateRange().getMonthExtended({
 
 The range from the above example will include dates that span across all the days of January 2023 extended to start from Friday, Dec 30, 2022 and end on Monday, Feb 6, 2023.
 
-The first and last two days in the range come from offset settings. Without the offset, the day that start the range would be Sunday, Jan 1, 2023, as specified with `refWeekday` and the last day would be Saturday, Feb 4, 2023
+The first and last two days in the range come from offset settings. Without the offset, the day that start the range would be Jan 1, 2023, (Sunday - as specified with `refWeekday`) and the last day would be Feb 4, 2023 (Saturday).
 
 ## API
 
@@ -132,6 +132,8 @@ The first and last two days in the range come from offset settings. Without the 
 Creates a single week range.
 
 By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
+
+The end of the week will also be shifted accordingly if the start of the week is changed to a different day than Monday.
 
 The reference date is set to the current day if not specified otherwise.
 
@@ -240,6 +242,8 @@ Creates a single month range extended to include the full weeks.
 
 By default, the method starts the range on Monday before or on the first day of the month and ends it on Sunday after or on the last day of the month.
 
+The end of the week will also be shifted accordingly if the start of the week is changed to a different day than Monday.
+
 The reference date is set to the current day if not specified otherwise.
 
 Each date is set to the start of the day (midnight).
@@ -330,10 +334,6 @@ const range2 = new DateRange().getDays({
 
 ### **next**
 
-```ts
-public next(dateRange: DateRange): DateRange
-```
-
 Generates the next range based on given one.
 
 The method takes a DateRange object and based on its range type, sets the refDate to a date that can generate the new range.
@@ -346,7 +346,21 @@ The method shifts the refDate to the next one as follows:
 - for a range generated with getWeek, the refDate is incremented by 7 days.
 - for a range generated with getMonthExact and getMonthExtended, the refDate is set to the first day of the next month.
 
+#### **Signature**
+
+```ts
+public next(dateRange: DateRange): DateRange
+```
+
+#### **Parameters**
+
+| Parameter | Type           | Description                                |
+| --------- | -------------- | ------------------------------------------ |
+| dateRange | [DateRange](#) | A DateRange object with initialized range. |
+
 ### **prev**
+
+Generates the previous range based on given one.
 
 ## Interfaces
 
