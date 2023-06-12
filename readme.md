@@ -12,10 +12,10 @@ easy-date-range lets you create various date ranges with its methods: the main c
 
 Here is a brief summary of core functionalities: the range generators:
 
-- [`getWeek`](#getweek) creates a week range that starts on Monday.
+- [`getDays`](#getdays) creates a range of custom number of days.
 - [`getMonthExact`](#getmonthexact) creates a month range, from the first to the last day of the month.
 - [`getMonthExtended`](#getmonthextended) creates a month range extended to include the full weeks.
-- [`getDays`](#getdays) creates a range of custom number of days.
+- [`getWeek`](#getweek) creates a week range that starts on Monday.
 - [`next`](#next) and [`prev`](#prev) methods enable easy shifting of any range passed into them.
 
 **The reference date is always part of the range.** For example, if you use `getWeek` with today’s date as the reference date, you will get a range that includes today and six other days starting from Monday.
@@ -24,7 +24,7 @@ Here is a brief summary of core functionalities: the range generators:
 
 All range generators use the current day as a reference date unless specified otherwise. It can be easily customized by passing an `options` object where you can also set other settings such as offsets, start of the week or days count.
 
-### 100% TypeScript
+### Type-Safe
 
 easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.org/) for type safety and other benefits such as autocomplete features in your code editor. Works with no issues in plain JavaScript environment, too.
 
@@ -32,26 +32,7 @@ easy-date-range is written entirely in [TypeScript](https://www.typescriptlang.o
 
 easy-date-range uses [Luxon](https://moment.github.io/luxon) as a peer dependency for date handling. Luxon is a powerful and modern library for working with dates and times in JavaScript. It offers a consistent and fluent API, as well as support for various formats and locales.
 
-easy-date-range accepts both Luxon and native JavaScript dates:
-
-```ts
-// create a range with a JavaScript Date as the reference date
-const dr = new DateRange().getWeek({ refDate: new Date('2023-01-01') });
-
-// create a range with a Luxon DateTime as the reference date
-const dr = new DateRange().getWeek({ refDate: DateTime.fromISO('2023-01-01') });
-```
-
-Once the range is created you can access dates either way:
-
-```ts
-// get Luxon DateTimes with `toDateTime` method or with a getter property `dates`
-dr.toDateTimes();
-dr.dates;
-
-// get JS Dates
-dr.toDates();
-```
+easy-date-range supports both Luxon and native JavaScript dates as inputs and outputs.
 
 ### More features to come
 
@@ -123,33 +104,39 @@ const monthExtended = new DateRange().getMonthExtended({
 
 The range from the above example will include dates that span across all the days of January 2023 extended to start from Friday, Dec 30, 2022 and end on Monday, Feb 6, 2023.
 
-The first and last two days in the range come from offset settings. Without the offset, the day that start the range would be Jan 1, 2023, (Sunday - as specified with `refWeekday`) and the last day would be Feb 4, 2023 (Saturday).
+The first and last two days in the range come from offset settings. Without the offset, the day that start the range would be Jan 1, 2023 (Sunday - as specified with `refWeekday`) and the last day would be Feb 4, 2023 (Saturday).
 
 ## API
 
-### **getWeek**
+### **DateRange class**
 
-Creates a single week range.
+DateRange is the core component of easy-date-range. It provides various methods and properties for generating and handling date ranges.
 
-By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
+To use the class, an instance must be created and initialized with one of the range generator methods.
 
-The end of the week will also be shifted accordingly if the start of the week is changed to a different day than Monday.
+### **getDays**
+
+Creates a range of custom number of days.
+
+The reference date is a starting point of the range.
 
 The reference date is set to the current day if not specified otherwise.
+
+The length of the range can be specified with the `daysCount` property in the `rangeOptions` object. If not specified, the range will be created with a single date.
 
 Each date is set to the start of the day (midnight).
 
 #### **Signature**
 
 ```ts
-public getWeek(rangeOptions?: RangeOpts): DateRange
+public getDays(options?: RangeOptsDays): DateRange
 ```
 
 #### **Parameters**
 
-| Parameter    | Type                    | Description                       |
-| ------------ | ----------------------- | --------------------------------- |
-| rangeOptions | [RangeOpts](#rangeopts) | An object to configure the range. |
+| Parameter    | Type                            | Description                       |
+| ------------ | ------------------------------- | --------------------------------- |
+| rangeOptions | [RangeOptsDays](#rangeoptsdays) | An object to configure the range. |
 
 #### **Returns:**
 
@@ -158,22 +145,25 @@ public getWeek(rangeOptions?: RangeOpts): DateRange
 #### **Examples**
 
 ```ts
-// get current week starting on Monday
-const currentWeek = new DateRange().getWeek();
+// Get a current date
+const range1 = new DateRange().getDays();
 
-// get week based on a refDate and starting on Sunday
-const week2 = new DateRange().getWeek({
+// Get a range of 10 days starting on 2023-01-10
+const range2 = new DateRange().getDays({
+  daysCount: 10,
   refDate: new Date('2023-01-10'),
-  refWeekday: WEEKDAY.Sunday,
 });
-// Generated dates:👇
-// Sunday, January 8, 2023 at 12:00:00 AM
-// Monday, January 9, 2023 at 12:00:00 AM
-// Tuesday, January 10, 2023 at 12:00:00 AM
-// Wednesday, January 11, 2023 at 12:00:00 AM
-// Thursday, January 12, 2023 at 12:00:00 AM
-// Friday, January 13, 2023 at 12:00:00 AM
-// Saturday, January 14, 2023 at 12:00:00 AM
+// Generated dates:
+// January 10, 2023 at 12:00:00 AM
+// January 11, 2023 at 12:00:00 AM
+// January 12, 2023 at 12:00:00 AM
+// January 13, 2023 at 12:00:00 AM
+// January 14, 2023 at 12:00:00 AM
+// January 15, 2023 at 12:00:00 AM
+// January 16, 2023 at 12:00:00 AM
+// January 17, 2023 at 12:00:00 AM
+// January 18, 2023 at 12:00:00 AM
+// January 19, 2023 at 12:00:00 AM
 ```
 
 ### **getMonthExact**
@@ -284,67 +274,72 @@ const monthExtended = new DateRange().getMonthExtended({
 // Tue, January 31, 2023 at 12:00:00 AM -> The last date of the range
 ```
 
-### **getDays**
+### **getWeek**
 
-Creates a range of custom number of days.
+Creates a single week range.
 
-The reference date is a starting point of the range.
+By default, the method starts the range on Monday before or on the reference date and ends it on Sunday after or on the reference date.
+
+The end of the week will also be shifted accordingly if the start of the week is changed to a different day than Monday.
 
 The reference date is set to the current day if not specified otherwise.
-
-The length of the range can be specified with the `daysCount` property in the `rangeOptions` object. If not specified, the range will be created with a single date.
 
 Each date is set to the start of the day (midnight).
 
 #### **Signature**
 
 ```ts
-public getDays(options?: RangeOptsDays): DateRange
+public getWeek(rangeOptions?: RangeOpts): DateRange
 ```
 
 #### **Parameters**
 
-| Parameter    | Type                            | Description                       |
-| ------------ | ------------------------------- | --------------------------------- |
-| rangeOptions | [RangeOptsDays](#rangeoptsdays) | An object to configure the range. |
+| Parameter    | Type                    | Description                       |
+| ------------ | ----------------------- | --------------------------------- |
+| rangeOptions | [RangeOpts](#rangeopts) | An object to configure the range. |
+
+#### **Returns:**
+
+`DateRange`
 
 #### **Examples**
 
 ```ts
-// Get a current date
-const range1 = new DateRange().getDays();
+// get current week starting on Monday
+const currentWeek = new DateRange().getWeek();
 
-// Get a range of 10 days starting on 2023-01-10
-const range2 = new DateRange().getDays({
-  daysCount: 10,
+// get week based on a refDate and starting on Sunday
+const week2 = new DateRange().getWeek({
   refDate: new Date('2023-01-10'),
+  refWeekday: WEEKDAY.Sunday,
 });
-// Generated dates:
-// January 10, 2023 at 12:00:00 AM
-// January 11, 2023 at 12:00:00 AM
-// January 12, 2023 at 12:00:00 AM
-// January 13, 2023 at 12:00:00 AM
-// January 14, 2023 at 12:00:00 AM
-// January 15, 2023 at 12:00:00 AM
-// January 16, 2023 at 12:00:00 AM
-// January 17, 2023 at 12:00:00 AM
-// January 18, 2023 at 12:00:00 AM
-// January 19, 2023 at 12:00:00 AM
+// Generated dates:👇
+// Sunday, January 8, 2023 at 12:00:00 AM
+// Monday, January 9, 2023 at 12:00:00 AM
+// Tuesday, January 10, 2023 at 12:00:00 AM
+// Wednesday, January 11, 2023 at 12:00:00 AM
+// Thursday, January 12, 2023 at 12:00:00 AM
+// Friday, January 13, 2023 at 12:00:00 AM
+// Saturday, January 14, 2023 at 12:00:00 AM
 ```
 
 ### **next**
 
 Generates the next range based on given one.
 
-The method takes a DateRange object and based on its range type, sets the refDate to a date that can generate the new range.
-
-It copies the options used to adjust the given range and applies them to the new range.
+The method uses the refDate and range type stored in the DateRange being passed and sets a new refDate that can generate a range that is one interval after the given one.
 
 The method shifts the refDate to the next one as follows:
 
 - for a range generated with getDays, the refDate is incremented by the daysCount property.
 - for a range generated with getWeek, the refDate is incremented by 7 days.
 - for a range generated with getMonthExact and getMonthExtended, the refDate is set to the first day of the next month.
+
+The options used to adjust the given range are copied and applied to the new range.
+
+In all cases, the refDate is set to the start of the day (midnight).
+
+To check whether the DaterRange is generated with a next method, access the `isNext` property of a DateRange instance.
 
 #### **Signature**
 
@@ -354,13 +349,41 @@ public next(dateRange: DateRange): DateRange
 
 #### **Parameters**
 
-| Parameter | Type           | Description                                |
-| --------- | -------------- | ------------------------------------------ |
-| dateRange | [DateRange](#) | A DateRange object with initialized range. |
+| Parameter | Type                          | Description                                |
+| --------- | ----------------------------- | ------------------------------------------ |
+| dateRange | [DateRange](#daterange-class) | A DateRange object with initialized range. |
+
+#### **Returns:**
+
+`DateRange`
 
 ### **prev**
 
 Generates the previous range based on given one.
+
+The method uses the refDate and range type stored in the DateRange being passed and sets a new refDate that can generate a range that is one interval before the given one.
+
+The method shifts the refDate to the previous one as follows:
+
+- for a range generated with getDays, the refDate is decremented by the daysCount property.
+- for a range generated with getWeek, the refDate is decremented by 7 days.
+- for a range generated with getMonthExact and getMonthExtended, the refDate is set to the first day of the previous month.
+
+The options used to adjust the given range are copied and applied to the new range.
+
+In all cases, the refDate is set to the start of the day (midnight).
+
+To check whether the DaterRange is generated with a prev method, access the `isPrev` property of a DateRange instance.
+
+#### **Parameters**
+
+| Parameter | Type                          | Description                                |
+| --------- | ----------------------------- | ------------------------------------------ |
+| dateRange | [DateRange](#daterange-class) | A DateRange object with initialized range. |
+
+#### **Returns:**
+
+`DateRange`
 
 ## Interfaces
 
