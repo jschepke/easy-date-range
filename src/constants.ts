@@ -1,5 +1,8 @@
 import { DurationUnit } from "luxon";
 
+/**
+ * An enum that represents the weekdays as numbers from 1 to 7.
+ */
 export enum WEEKDAY {
 	Monday = 1,
 	Tuesday = 2,
@@ -11,14 +14,13 @@ export enum WEEKDAY {
 }
 
 /**
- * An enum that represents the type of range for a DateRange object.
+ * An enum that represents the type of date range that is generated and stored by DateRange instance.
  *
- * It can be one of the following values:
- * - `Week`: The range is a single week.
- * - `MonthExact`: The range is a single month, starting from the first day to the last day of the month.
- * - `MonthExtended`: The range is a single month,
- * but extended to include the full weeks that contain the first and last days of the month.
- * - `Days`: The range is a custom number of days.
+ * It corresponds to the range generator method used to create the range:
+ * - `WEEK` for `getWeek`
+ * - `MONTH-EXACT` for `getMonthExact`
+ * - `MONTH-EXTENDED` for `getMonthExtended`
+ * - `DAYS` for `getDays`
  */
 export enum RANGE_TYPE {
 	Week = "WEEK",
