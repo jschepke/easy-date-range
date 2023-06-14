@@ -96,7 +96,7 @@ describe("dateRange instance", () => {
 			describe.each(testValues)(
 				"with range type $rangeType",
 				({ dateRange, rangeType }) => {
-					const dr = new DateRange().next(dateRange);
+					const dr = new DateRange().getNext(dateRange);
 
 					const members: DateRangeMembers = {
 						dates: dr.dates,

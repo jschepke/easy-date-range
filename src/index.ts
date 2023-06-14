@@ -1,2 +1,2 @@
 export { DateRange } from "./dateRange";
-export type { RangeOpts } from "./dateRange";
+export type { RangeOptions as RangeOptions } from "./dateRange";
