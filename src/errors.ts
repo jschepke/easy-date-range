@@ -86,8 +86,8 @@ export class MissingArgumentError extends CalendarGridError {
 	 *
 	 * @example
 	 * ```
-	 * throw new MissingArgumentError("dateRange", "DateRange.next()")
-	 * // -> Error: Missing dateRange argument in DateRange.next() function.
+	 * throw new MissingArgumentError("dateRange", "DateRange.getNext()")
+	 * // -> Error: Missing dateRange argument in DateRange.getNext() function.
 	 * ```
 	 */
 	constructor(paramName: string, funcName: string) {
@@ -106,8 +106,8 @@ export class EmptyDateRangeError extends CalendarGridError {
 	/**
 	 * @example
 	 * ```
-	 * throw new EmptyDateRangeError("next() method");
-	 * // -> Error: The DateRange object you have passed to the next() method is empty. You need to create a range using one of the get methods first'.
+	 * throw new EmptyDateRangeError("getNext method");
+	 * // -> Error: The DateRange object you have passed to the getNext method is empty. You need to create a range using one of the get methods first'.
 	 * ```
 	 */
 	constructor(funcName: string) {
