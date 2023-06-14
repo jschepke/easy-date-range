@@ -1,29 +1,29 @@
-import type { RangeOptsDays } from "../dateRange";
+import { RangeOptions } from "../dateRange";
 import { InvalidParameterError } from "../errors";
 import { isEmptyObject } from "../utils/isEmptyObject";
 import { isObject } from "../utils/isObject";
 import { PropertiesMap } from "../utils/types";
 import {
-	validateDaysCount,
 	validateEndOffset,
 	validateRefDate,
+	validateRefWeekday,
 	validateStartOffset,
 } from "./common";
 
-const dateRangeOptionsKeysMap: PropertiesMap<RangeOptsDays> = {
+const dateRangeOptionsKeysMap: PropertiesMap<RangeOptions> = {
 	endOffset: "endOffset",
 	refDate: "refDate",
+	refWeekday: "refWeekday",
 	startOffset: "startOffset",
-	daysCount: "daysCount",
 };
 
 /**
- * Validates the `options` param of the `getDays()` method.
+ * Validates the date range options parameter.
  *
  * Throws an error if any properties of options object are
  * invalid or the parameter itself is invalid.
  */
-export function validateDateRangeOptions_days(value: unknown): void {
+export function validateRangeOptions(value: unknown): void {
 	// rome-ignore lint/style/noArguments: <explanation>
 	if (arguments.length === 0) {
 		throw new InvalidParameterError(
@@ -36,7 +36,7 @@ export function validateDateRangeOptions_days(value: unknown): void {
 	if (value === undefined) {
 		return;
 	}
-	const expectedKeys = Object.values(dateRangeOptionsKeysMap);
+	const expectedProperties = Object.values(dateRangeOptionsKeysMap);
 
 	// check if value is an object and has any properties
 	if (
@@ -46,39 +46,39 @@ export function validateDateRangeOptions_days(value: unknown): void {
 		throw new InvalidParameterError(
 			"options parameter",
 			value,
-			`either no arguments or an object with one or more of these properties: ${expectedKeys.join(
+			`either no arguments or an object with one or more of these properties: ${expectedProperties.join(
 				", ",
 			)}`,
 		);
 	}
 
-	// check if passed param object has any of the not matching keys
-	const notMatchingKeys = Object.keys(value).filter(
+	// check if value has any of the not matching properties
+	const notMatchingProperties = Object.keys(value).filter(
 		(prop) => !(prop in dateRangeOptionsKeysMap),
 	);
 
-	if (notMatchingKeys.length > 0) {
+	if (notMatchingProperties.length > 0) {
 		throw new InvalidParameterError(
 			"options parameter",
 			value,
-			`an object with the following properties only: ${expectedKeys.join(
+			`an object with the following properties only: ${expectedProperties.join(
 				", ",
 			)}`,
 		);
 	}
 
 	// get the expected properties from the input value
-	const { refDate, startOffset, endOffset, daysCount } = value as RangeOptsDays;
+	const { refDate, refWeekday, startOffset, endOffset } = value as RangeOptions;
 
 	// handle refDate property
 	refDate !== undefined && validateRefDate(refDate);
+
+	// handle refWeekday property
+	refWeekday !== undefined && validateRefWeekday(refWeekday);
 
 	// handle startOffset property
 	startOffset !== undefined && validateStartOffset(startOffset);
 
 	// handle endOffset property
 	endOffset !== undefined && validateEndOffset(endOffset);
-
-	// handle daysCount property
-	daysCount !== undefined && validateDaysCount(daysCount);
 }

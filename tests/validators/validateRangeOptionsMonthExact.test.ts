@@ -3,8 +3,8 @@ import { describe, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
 import { WEEKDAY } from "../../src/constants";
-import type { RangeOptsMonthExact } from "../../src/dateRange";
-import { validateRangeOptsMonthExact } from "../../src/validators";
+import type { RangeOptionsMonthExact } from "../../src/dateRange";
+import { validateRangeOptionsMonthExact } from "../../src/validators";
 
 import {
 	TestValues,
@@ -12,19 +12,19 @@ import {
 	offsetTestValues,
 } from "../testUtils";
 
-describe("validateRangeOptsMonthExact", () => {
+describe("validateRangeOptionsMonthExact", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
 			test("throws an error parameters are not provided", () => {
 				// @ts-expect-error: testing invalid input
-				expect(() => validateRangeOptsMonthExact()).toThrowError();
+				expect(() => validateRangeOptionsMonthExact()).toThrowError();
 			});
 		});
 
 		// test for no arguments passed for validation
 		describe("Given parameter is undefined (no arguments passed for validation)", () => {
 			test("doesn't return anything", () => {
-				expect(validateRangeOptsMonthExact(undefined)).toBeUndefined();
+				expect(validateRangeOptionsMonthExact(undefined)).toBeUndefined();
 			});
 		});
 	});
@@ -35,7 +35,7 @@ describe("validateRangeOptsMonthExact", () => {
 			test.each(testValues)(
 				"throws an error if options param is $name",
 				({ value }) => {
-					expect(() => validateRangeOptsMonthExact(value)).toThrowError();
+					expect(() => validateRangeOptionsMonthExact(value)).toThrowError();
 				},
 			);
 		});
@@ -49,7 +49,7 @@ describe("validateRangeOptsMonthExact", () => {
 						"doesn't throw error if refDate is $name",
 						(value) => {
 							expect(() =>
-								validateRangeOptsMonthExact({
+								validateRangeOptionsMonthExact({
 									refDate: value,
 								}),
 							).not.toThrowError();
@@ -65,7 +65,7 @@ describe("validateRangeOptsMonthExact", () => {
 							if (value === undefined) return;
 
 							expect(() =>
-								validateRangeOptsMonthExact({
+								validateRangeOptionsMonthExact({
 									refDate: value,
 								}),
 							).toThrowError();
@@ -89,7 +89,7 @@ describe("validateRangeOptsMonthExact", () => {
 					"doesn't throw error if startOffset is $name",
 					(value) => {
 						expect(() =>
-							validateRangeOptsMonthExact({
+							validateRangeOptionsMonthExact({
 								startOffset: value,
 							}),
 						).not.toThrowError();
@@ -102,7 +102,7 @@ describe("validateRangeOptsMonthExact", () => {
 					"throws an error if startOffset is $name",
 					({ value }) => {
 						expect(() =>
-							validateRangeOptsMonthExact({
+							validateRangeOptionsMonthExact({
 								startOffset: value,
 							}),
 						).toThrowError();
@@ -117,7 +117,7 @@ describe("validateRangeOptsMonthExact", () => {
 					"doesn't throw error if endOffset is $name",
 					(value) => {
 						expect(() =>
-							validateRangeOptsMonthExact({
+							validateRangeOptionsMonthExact({
 								endOffset: value,
 							}),
 						).not.toThrowError();
@@ -129,7 +129,7 @@ describe("validateRangeOptsMonthExact", () => {
 					"throws an error if endOffset is $name",
 					({ value }) => {
 						expect(() =>
-							validateRangeOptsMonthExact({ endOffset: value }),
+							validateRangeOptionsMonthExact({ endOffset: value }),
 						).toThrowError();
 					},
 				);
@@ -140,7 +140,7 @@ describe("validateRangeOptsMonthExact", () => {
 	describe("Mixed properties", () => {
 		describe("Given an object with mixed valid properties", () => {
 			// some valid inputs
-			const opts: RangeOptsMonthExact[] = [
+			const opts: RangeOptionsMonthExact[] = [
 				{
 					refDate: DateTime.now(),
 					endOffset: 3,
@@ -175,8 +175,8 @@ describe("validateRangeOptsMonthExact", () => {
 			];
 
 			test.each(opts)(`doesn't return anything for %s`, (input) => {
-				expect(() => validateRangeOptsMonthExact(input)).not.toThrowError();
-				expect(validateRangeOptsMonthExact(input)).toBeUndefined();
+				expect(() => validateRangeOptionsMonthExact(input)).not.toThrowError();
+				expect(validateRangeOptionsMonthExact(input)).toBeUndefined();
 			});
 		});
 
@@ -226,7 +226,7 @@ describe("validateRangeOptsMonthExact", () => {
 			test.each(invalidInputs)(
 				"throws an errors if non valid property is provided. Index of test object %#",
 				(input) => {
-					expect(() => validateRangeOptsMonthExact(input)).toThrowError();
+					expect(() => validateRangeOptionsMonthExact(input)).toThrowError();
 				},
 			);
 		});

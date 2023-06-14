@@ -1,5 +1,5 @@
 import { InvalidParameterError } from "../errors";
-import type { ExtendRangeOpts } from "../extendRange";
+import type { ExtendRangeOptions } from "../extendRange";
 import type { PropertiesMap } from "../utils";
 import {
 	isEmptyObject,
@@ -10,7 +10,7 @@ import {
 
 import { validateEndOffset, validateStartOffset } from "./common";
 
-const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOpts> = {
+const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOptions> = {
 	rangeToExtend: "rangeToExtend",
 	startOffset: "startOffset",
 	endOffset: "endOffset",
@@ -18,7 +18,7 @@ const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOpts> = {
 };
 const expectedProperties = Object.values(extendRangeOptionsKeysMap);
 
-export function validateExtendRangeOpts(value: unknown): void {
+export function validateExtendRangeOptions(value: unknown): void {
 	// check if value is an object and has any properties
 	if (!isObject(value) || isEmptyObject(value)) {
 		throw new InvalidParameterError(
@@ -47,7 +47,7 @@ export function validateExtendRangeOpts(value: unknown): void {
 
 	// get the expected properties from the input value
 	const { endOffset, rangeToExtend, startOffset, timeUnit } =
-		value as ExtendRangeOpts;
+		value as ExtendRangeOptions;
 
 	// handle rangeToExtend
 	if (!isValidDateTimeArray(rangeToExtend)) {

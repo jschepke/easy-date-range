@@ -28,19 +28,19 @@ const date3 = DateTime.fromObject({
 	minute: 32,
 });
 
-describe("prev method", () => {
+describe("getNext method", () => {
 	describe("Input validation", () => {
 		describe("Given no arguments to the function", () => {
 			test("throws an errors", () => {
 				// @ts-expect-error: testing invalid input
-				expect(() => new DateRange().prev()).toThrowError("Missing");
+				expect(() => new DateRange().getNext()).toThrowError("Missing");
 			});
 		});
 		describe("Given invalid arguments to the function", () => {
 			test.each(new TestValues().excludeByName(["undefined"]))(
 				"throws an error for argument: $name",
 				({ value }) => {
-					expect(() => new DateRange().prev(value)).toThrowError(
+					expect(() => new DateRange().getNext(value)).toThrowError(
 						"The value of the dateRange parameter is invalid.",
 					);
 				},
@@ -49,8 +49,8 @@ describe("prev method", () => {
 		describe("Given an empty DateRange object to the function", () => {
 			test("throws the 'EmptyDateRangeError", () => {
 				const dr = new DateRange();
-				expect(() => new DateRange().prev(dr)).toThrowError(
-					new EmptyDateRangeError("prev() method"),
+				expect(() => new DateRange().getNext(dr)).toThrowError(
+					new EmptyDateRangeError("getNext method"),
 				);
 			});
 		});
@@ -66,6 +66,8 @@ describe("prev method", () => {
 			afterEach(() => {
 				vi.useRealTimers();
 			});
+
+			const dateRange = new DateRange();
 
 			describe(`with DateRange of type ${RANGE_TYPE.Days}`, () => {
 				describe.each([
@@ -84,28 +86,30 @@ describe("prev method", () => {
 					}),
 				])("test index: %#", (dr) => {
 					test("has the same number of dates", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.dates.length).toBe(dr.dates.length);
+						// const next = new DateRange().getNext(dr);
+						const next = dateRange.getNext(dr);
+						expect(next.dates.length).toBe(dr.dates.length);
 					});
 
 					test("has correct refDate", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.refDate.toISO()).toBe(
-							dr.refDate.startOf("day").minus({ days: dr.daysCount }).toISO(),
+						// const next = new DateRange().getNext(dr);
+						const next = dateRange.getNext(dr);
+						expect(next.refDate.toISO()).toBe(
+							dr.refDate.startOf("day").plus({ days: dr.daysCount }).toISO(),
 						);
 					});
 
 					test("has correct first date", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
-						expect(prev.dates[0].toISODate()).toBe(
-							dr.dates[0].minus({ days: dr.daysCount }).toISODate(),
+						expect(drNext.dates[0].toISODate()).toBe(
+							dr.dates[0].plus({ days: dr.daysCount }).toISODate(),
 						);
 					});
 
-					test("each date of the range is the prev day after the previous day", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+					test("each date of the range is the next day after the previous day", () => {
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i].toISO()).toBe(
@@ -115,8 +119,8 @@ describe("prev method", () => {
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i]).instanceOf(DateTime);
@@ -124,17 +128,17 @@ describe("prev method", () => {
 						}
 					});
 
-					test("rangeType after calling the prev method is set to 'DAYS' (with a new instance)", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.rangeType).toBe(RANGE_TYPE.Days);
+					test("rangeType after calling the getNext method is set to 'DAYS' (with a new instance)", () => {
+						const drNext = new DateRange().getNext(dr);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.Days);
 					});
 
-					test("rangeType after calling the prev method is set to 'DAYS' (with a previously generated instance)", () => {
+					test("rangeType after calling the getNext method is set to 'DAYS' (with a previously generated instance)", () => {
 						// generate a week range
 						const drWeek = new DateRange().getWeek();
 						expect(drWeek.rangeType).toBe(RANGE_TYPE.Week);
-						// assign a new range with prev method
-						drWeek.prev(dr);
+						// assign a new range with getNext method
+						drWeek.getNext(dr);
 						expect(drWeek.rangeType).toBe(RANGE_TYPE.Days);
 					});
 				});
@@ -163,28 +167,28 @@ describe("prev method", () => {
 					}),
 				])("test index: %#", (dr) => {
 					test("has the same number of dates", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.dates.length).toBe(dr.dates.length);
+						const next = new DateRange().getNext(dr);
+						expect(next.dates.length).toBe(dr.dates.length);
 					});
 
 					test("has correct refDate", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.refDate.toISO()).toBe(
-							dr.refDate.startOf("day").minus({ days: 7 }).toISO(),
+						const next = new DateRange().getNext(dr);
+						expect(next.refDate.toISO()).toBe(
+							dr.refDate.startOf("day").plus({ days: 7 }).toISO(),
 						);
 					});
 
 					test("has correct first date", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
-						expect(prev.dates[0].toISODate()).toBe(
-							dr.dates[0].minus({ days: 7 }).toISODate(),
+						expect(drNext.dates[0].toISODate()).toBe(
+							dr.dates[0].plus({ days: 7 }).toISODate(),
 						);
 					});
 
-					test("each date of the range is the prev day after the previous day", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+					test("each date of the range is the next day after the previous day", () => {
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i].toISO()).toBe(
@@ -194,8 +198,8 @@ describe("prev method", () => {
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i]).instanceOf(DateTime);
@@ -203,17 +207,17 @@ describe("prev method", () => {
 						}
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.Week}' (with a new instance)`, () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.rangeType).toBe(RANGE_TYPE.Week);
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.Week}' (with a new instance)`, () => {
+						const drNext = new DateRange().getNext(dr);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.Week);
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.Week}' (with a previously generated instance)`, () => {
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.Week}' (with a previously generated instance)`, () => {
 						// generate a some range
 						const drMonth = new DateRange().getMonthExtended();
 						expect(drMonth.rangeType).toBe(RANGE_TYPE.MonthExtended);
-						// assign a new range with prev method
-						drMonth.prev(dr);
+						// assign a new range with getNext method
+						drMonth.getNext(dr);
 						expect(drMonth.rangeType).toBe(RANGE_TYPE.Week);
 					});
 				});
@@ -245,25 +249,25 @@ describe("prev method", () => {
 					}),
 				])("test index: %#", (dr) => {
 					test("has correct refDate", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.refDate.toISO()).toBe(
-							dr.refDate.startOf("month").minus({ month: 1 }).toISO(),
+						const next = new DateRange().getNext(dr);
+						expect(next.refDate.toISO()).toBe(
+							dr.refDate.startOf("month").plus({ month: 1 }).toISO(),
 						);
 					});
 
 					test("before the offset the first date of the range is refWeekday", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
-						expect(prev.dates[0].plus({ days: dr.startOffset }).weekday).toBe(
+						expect(drNext.dates[0].plus({ days: dr.startOffset }).weekday).toBe(
 							dr.refWeekday,
 						);
 					});
 
 					test("before the offset the last date of the range is weekday preceding the refWeekday", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
 						expect(
-							prev.dates[prev.dates.length - 1].minus({
+							drNext.dates[drNext.dates.length - 1].minus({
 								days: dr.endOffset,
 							}).weekday,
 						).toBe(
@@ -272,9 +276,9 @@ describe("prev method", () => {
 						);
 					});
 
-					test("each date of the range is the prev day after the previous day", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+					test("each date of the range is the next day after the previous day", () => {
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i].toISO()).toBe(
@@ -284,8 +288,8 @@ describe("prev method", () => {
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i]).instanceOf(DateTime);
@@ -293,17 +297,17 @@ describe("prev method", () => {
 						}
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.MonthExtended}' (with a new instance)`, () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.rangeType).toBe(RANGE_TYPE.MonthExtended);
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.MonthExtended}' (with a new instance)`, () => {
+						const drNext = new DateRange().getNext(dr);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.MonthExtended);
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.MonthExtended}' (with a previously generated instance)`, () => {
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.MonthExtended}' (with a previously generated instance)`, () => {
 						// generate a some range
 						const drDays = new DateRange().getDays();
 						expect(drDays.rangeType).toBe(RANGE_TYPE.Days);
-						// assign a new range with prev method
-						drDays.prev(dr);
+						// assign a new range with getNext method
+						drDays.getNext(dr);
 						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthExtended);
 					});
 				});
@@ -332,35 +336,35 @@ describe("prev method", () => {
 					}),
 				])("test index: %#", (dr) => {
 					test("has correct refDate", () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.refDate.toISO()).toBe(
-							dr.refDate.startOf("month").minus({ month: 1 }).toISO(),
+						const next = new DateRange().getNext(dr);
+						expect(next.refDate.toISO()).toBe(
+							dr.refDate.startOf("month").plus({ month: 1 }).toISO(),
 						);
 					});
 
 					test("before the offset the first date of the range is the first day of month", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
-						expect(prev.dates[0].plus({ days: dr.startOffset }).toISO()).toBe(
-							prev.refDate.toISO(),
+						expect(drNext.dates[0].plus({ days: dr.startOffset }).toISO()).toBe(
+							drNext.refDate.toISO(),
 						);
 					});
 
 					test("before the offset the last date of the range is the last day of month", () => {
-						const prev = new DateRange().prev(dr);
+						const drNext = new DateRange().getNext(dr);
 
 						expect(
-							prev.dates[prev.dates.length - 1]
+							drNext.dates[drNext.dates.length - 1]
 								.minus({
 									days: dr.endOffset,
 								})
 								.toISO(),
-						).toBe(prev.refDate.endOf("month").startOf("day").toISO());
+						).toBe(drNext.refDate.endOf("month").startOf("day").toISO());
 					});
 
-					test("each date of the range is the prev day after the previous day", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+					test("each date of the range is the next day after the previous day", () => {
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i].toISO()).toBe(
@@ -370,8 +374,8 @@ describe("prev method", () => {
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
-						const prev = new DateRange().prev(dr);
-						const { dates } = prev;
+						const drNext = new DateRange().getNext(dr);
+						const { dates } = drNext;
 
 						for (let i = 1; i < dates.length; i++) {
 							expect(dates[i]).instanceOf(DateTime);
@@ -379,17 +383,17 @@ describe("prev method", () => {
 						}
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.MonthExact}' (with a new instance)`, () => {
-						const prev = new DateRange().prev(dr);
-						expect(prev.rangeType).toBe(RANGE_TYPE.MonthExact);
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.MonthExact}' (with a new instance)`, () => {
+						const drNext = new DateRange().getNext(dr);
+						expect(drNext.rangeType).toBe(RANGE_TYPE.MonthExact);
 					});
 
-					test(`rangeType after calling the prev method is set to '${RANGE_TYPE.MonthExact}' (with a previously generated instance)`, () => {
+					test(`rangeType after calling the getNext method is set to '${RANGE_TYPE.MonthExact}' (with a previously generated instance)`, () => {
 						// generate a some range
 						const drDays = new DateRange().getDays();
 						expect(drDays.rangeType).toBe(RANGE_TYPE.Days);
-						// assign a new range with prev method
-						drDays.prev(dr);
+						// assign a new range with getNext method
+						drDays.getNext(dr);
 						expect(drDays.rangeType).toBe(RANGE_TYPE.MonthExact);
 					});
 				});
