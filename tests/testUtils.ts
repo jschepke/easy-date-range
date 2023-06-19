@@ -186,8 +186,12 @@ export const isValidDateTimeArrayTestValues = {
 };
 
 export const offsetTestValues = {
-	valid: [0, 1, 123, 10000],
-	invalid: new TestValues().excludeByName(["integer 0", "integer 1"]),
+	valid: [-1000, -123, -1, 0, 1, 123, 10000],
+	invalid: new TestValues().excludeByName([
+		"integer 0",
+		"integer 1",
+		"negative integer -1",
+	]),
 };
 
 interface Assertion {
