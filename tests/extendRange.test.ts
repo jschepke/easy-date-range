@@ -381,7 +381,6 @@ describe("extendRange", () => {
 						endOffset,
 					});
 					test("date range has the correct length", () => {
-						console.log(extendedRange.length);
 						expect(extendedRange.length).toBe(expectedLength);
 					});
 
@@ -450,7 +449,6 @@ describe("extendRange", () => {
 						endOffset,
 					});
 					test("date range has the correct length", () => {
-						console.log(extendedRange.length);
 						expect(extendedRange.length).toBe(expectedLength);
 					});
 
@@ -538,7 +536,7 @@ describe("extendRange", () => {
 				];
 
 				describe.each(testData)(
-					"Test index %#",
+					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToExtend.length",
 					({
 						endOffset,
 						expectedLength,
@@ -608,10 +606,16 @@ describe("extendRange", () => {
 						startOffset: -1,
 						timeUnit: "day",
 					},
+					{
+						rangeToExtend: [],
+						endOffset: -2,
+						startOffset: -1,
+						timeUnit: "day",
+					},
 				];
 
 				describe.each(testData)(
-					"Test index %#",
+					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToExtend.length",
 					({ endOffset, rangeToExtend, startOffset, timeUnit }) => {
 						test("throws an error", () => {
 							expect(() =>

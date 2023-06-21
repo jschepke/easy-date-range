@@ -92,14 +92,3 @@ export function extendRange(options: ExtendRangeOptions): DateTime[] {
 
 	return extendedRange;
 }
-
-extendRange({
-	rangeToExtend: [
-		DateTime.fromISO("2020-01-01"),
-		DateTime.fromISO("2020-01-02"),
-		DateTime.fromISO("2020-01-03"),
-	],
-	endOffset: 0,
-	startOffset: -2,
-	timeUnit: "day",
-});
