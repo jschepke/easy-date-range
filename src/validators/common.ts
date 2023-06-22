@@ -6,7 +6,29 @@ import {
 	InvalidRefWeekdayError,
 	InvalidStartOffsetError,
 } from "../errors";
-import { isValidOffset, isValidRefDate, isValidWeekday } from "../utils";
+import {
+	isEmptyObject,
+	isObject,
+	isValidOffset,
+	isValidRefDate,
+	isValidWeekday,
+} from "../utils";
+
+/**
+ * Validates an object argument.
+ *
+ * @remarks
+ * Throws an {@link InvalidParameterError} if the input is not an object or an empty object.
+ *
+ * @param input - The input to be validated.
+ * @throws {@link InvalidParameterError}
+ * @returns void
+ */
+export const validateObjectArgument = (input: unknown): void => {
+	if (!isObject(input) || isEmptyObject(input)) {
+		throw new InvalidParameterError("provided argument", input, "a non object");
+	}
+};
 
 export const validateStartOffset = (startOffset: unknown): void => {
 	if (!isValidOffset(startOffset)) {
