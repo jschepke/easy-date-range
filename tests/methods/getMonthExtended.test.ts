@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { DateRange } from "../../src/dateRange";
-import { monthTestValues } from "../testUtils";
+import { DateRange, OptionsMonthExtended } from "../../src/dateRange";
+import { TestValues, monthTestValues } from "../testUtils";
 import { DateTime, Info } from "luxon";
 
-describe("getMonth", () => {
+describe("getMonthExtended", () => {
 	describe("Input validation", () => {
 		describe("Given no parameters", () => {
 			test("doesn't throw error if no parameters are specified", () => {
@@ -12,26 +12,31 @@ describe("getMonth", () => {
 			});
 		});
 		describe("Given invalid arbitrary parameters", () => {
-			test.each(monthTestValues.invalid.arbitraryParams)(
-				"throws an error for value: $name",
-				({ value }) => {
-					expect(() => new DateRange().getMonthExtended(value)).toThrowError();
-				},
-			);
+			test.each(
+				new TestValues().excludeByName([
+					"object { a: 1, b: 'foo' }",
+					"undefined",
+				]),
+			)("throws an error for value: $name", ({ value }) => {
+				expect(() => new DateRange().getMonthExtended(value)).toThrowError();
+			});
 		});
 		describe("Given invalid expected parameters", () => {
 			describe("refDate", () => {
-				test.each(monthTestValues.invalid.refDate)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExtended({ refDate: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"Date object - new Date()",
+						"DateTime object - DateTime.now()",
+						"undefined",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExtended({ refDate: value }),
+					).toThrowError();
+				});
 			});
 			describe("refWeekday", () => {
-				test.each(monthTestValues.invalid.refWeekday)(
+				test.each(new TestValues().excludeByName(["integer 1", "undefined"]))(
 					"throws an error for value: $name",
 					({ value }) => {
 						expect(() =>
@@ -41,24 +46,32 @@ describe("getMonth", () => {
 				);
 			});
 			describe("startOffset", () => {
-				test.each(monthTestValues.invalid.startOffset)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExtended({ startOffset: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"undefined",
+						"integer 0",
+						"integer 1",
+						"negative integer -1",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExtended({ startOffset: value }),
+					).toThrowError();
+				});
 			});
 			describe("endOffset", () => {
-				test.each(monthTestValues.invalid.endOffset)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExtended({ endOffset: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"undefined",
+						"integer 0",
+						"integer 1",
+						"negative integer -1",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExtended({ endOffset: value }),
+					).toThrowError();
+				});
 			});
 		});
 	});
@@ -497,6 +510,114 @@ describe("getMonth", () => {
 									});
 								},
 							);
+						},
+					);
+				});
+			});
+
+			describe("starOffset and endOffset together", () => {
+				describe("Given valid data", () => {
+					const data: Array<
+						OptionsMonthExtended & {
+							expectedFirstDate: DateTime;
+							expectedLastDate: DateTime;
+						}
+					> = [
+						{
+							startOffset: 0,
+							endOffset: 0,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+							expectedFirstDate: DateTime.fromISO("2023-02-27"),
+							expectedLastDate: DateTime.fromISO("2023-04-02"),
+						},
+						{
+							startOffset: -5,
+							endOffset: -5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+							expectedFirstDate: DateTime.fromISO("2023-03-04"),
+							expectedLastDate: DateTime.fromISO("2023-03-28"),
+						},
+						{
+							startOffset: 5,
+							endOffset: -5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+							expectedFirstDate: DateTime.fromISO("2023-02-22"),
+							expectedLastDate: DateTime.fromISO("2023-03-28"),
+						},
+						{
+							startOffset: -5,
+							endOffset: 5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+							expectedFirstDate: DateTime.fromISO("2023-03-04"),
+							expectedLastDate: DateTime.fromISO("2023-04-07"),
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({
+							expectedFirstDate,
+							expectedLastDate,
+							endOffset,
+							refDate,
+							refWeekday,
+							startOffset,
+						}) => {
+							const options = { endOffset, refDate, refWeekday, startOffset };
+
+							const dr = new DateRange().getMonthExtended(options);
+							const firstDate = dr.dates[0];
+							const lastDate = dr.dates[dr.dates.length - 1];
+
+							test("The first date of range is correct", () => {
+								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());
+							});
+							test("The last date of range is correct", () => {
+								expect(lastDate.toISO()).toEqual(expectedLastDate.toISO());
+							});
+						},
+					);
+				});
+
+				describe("Given non valid data", () => {
+					const data: OptionsMonthExtended[] = [
+						{
+							startOffset: -35,
+							endOffset: 5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+						},
+						{
+							startOffset: 5,
+							endOffset: -35,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+						},
+						{
+							startOffset: -5,
+							endOffset: -30,
+							refDate: DateTime.fromISO("2023-03-01"),
+							refWeekday: 1,
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({ endOffset, refDate, refWeekday, startOffset }) => {
+							test("throws an error", () => {
+								expect(() =>
+									new DateRange().getMonthExtended({
+										endOffset,
+										refDate,
+										refWeekday,
+										startOffset,
+									}),
+								).toThrowError();
+							});
 						},
 					);
 				});
