@@ -16,7 +16,10 @@ describe("getWeek", () => {
 		});
 
 		describe("Given invalid arbitrary parameters", () => {
-			const values = new TestValues().excludeByName(["undefined"]);
+			const values = new TestValues().excludeByName([
+				"object { a: 1, b: 'foo' }",
+				"undefined",
+			]);
 			test.each(values)("throws an error for value: $name", ({ value }) => {
 				expect(() => new DateRange().getWeek(value)).toThrowError();
 			});
@@ -66,7 +69,7 @@ describe("getWeek", () => {
 			});
 
 			describe("offset", () => {
-				test.each([-1, 0.5, Infinity, "test"])(
+				test.each([0.5, Infinity, "test"])(
 					"throws an error if endOffset is invalid: %s",
 					(value) => {
 						expect(() =>
@@ -76,7 +79,7 @@ describe("getWeek", () => {
 					},
 				);
 
-				test.each([-1, 0.5, Infinity, "test"])(
+				test.each([0.5, Infinity, "test"])(
 					"throws an error if startOffset is invalid: %s",
 					(value) => {
 						expect(() =>

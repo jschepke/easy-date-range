@@ -10,6 +10,13 @@ import {
 import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
 import { validateRangeOptionsMonthExact } from "./validators";
+import {
+	validateEndOffset,
+	validateObjectArgument,
+	validateRefDate,
+	validateRefWeekday,
+	validateStartOffset,
+} from "./validators/common";
 import { validateRangeOptions } from "./validators/validateRangeOptions";
 import { validateDateRangeOptions_days } from "./validators/validateRangeOptionsDays";
 
@@ -151,13 +158,13 @@ interface DaysCount {
 	daysCount?: number;
 }
 
-interface OptionsWeek extends RefDate, RefWeekday, Offset {}
+export interface OptionsWeek extends RefDate, RefWeekday, Offset {}
 
-interface OptionsDays extends RefDate, DaysCount, Offset {}
+export interface OptionsDays extends RefDate, DaysCount, Offset {}
 
-interface OptionsMonthExact extends RefDate, Offset {}
+export interface OptionsMonthExact extends RefDate, Offset {}
 
-interface OptionsMonthExtended extends RefDate, RefWeekday, Offset {}
+export interface OptionsMonthExtended extends RefDate, RefWeekday, Offset {}
 
 /**
  * DateRange is the core component of easy-date-range. It provides various methods and properties for generating and handling date ranges.
@@ -493,7 +500,20 @@ export class DateRange {
 	 * ```
 	 */
 	public getWeek(options?: OptionsWeek): DateRange {
-		validateRangeOptions(options);
+		// Input validation
+
+		// Perform validation only for specified properties in the 'options' object
+		if (options !== undefined) {
+			// Check if 'options' argument is an object
+			validateObjectArgument(options);
+
+			// Validate specified properties in 'options' object
+			const { refDate, refWeekday, endOffset, startOffset } = options;
+			refDate !== undefined && validateRefDate(refDate);
+			refWeekday !== undefined && validateRefWeekday(refWeekday);
+			startOffset !== undefined && validateStartOffset(startOffset);
+			endOffset !== undefined && validateEndOffset(endOffset);
+		}
 
 		const {
 			refDate = dateRangeDefaults.refDate,
@@ -590,7 +610,19 @@ export class DateRange {
 	 * ```
 	 */
 	public getMonthExtended(options?: OptionsMonthExtended): DateRange {
-		validateRangeOptions(options);
+		// Input validation
+		// Perform validation only for specified properties in the 'options' object
+		if (options !== undefined) {
+			// Check if 'options' argument is an object
+			validateObjectArgument(options);
+
+			// Validate specified properties in 'options' object
+			const { refDate, refWeekday, endOffset, startOffset } = options;
+			refDate !== undefined && validateRefDate(refDate);
+			refWeekday !== undefined && validateRefWeekday(refWeekday);
+			startOffset !== undefined && validateStartOffset(startOffset);
+			endOffset !== undefined && validateEndOffset(endOffset);
+		}
 
 		const {
 			refDate = dateRangeDefaults.refDate,
@@ -713,8 +745,18 @@ export class DateRange {
 	 * ```
 	 */
 	public getMonthExact(options?: OptionsMonthExact): DateRange {
-		validateRangeOptionsMonthExact(options);
+		// Input validation
+		// Perform validation only for specified properties in the 'options' object
+		if (options !== undefined) {
+			// Check if 'options' argument is an object
+			validateObjectArgument(options);
 
+			// Validate specified properties in 'options' object
+			const { refDate, endOffset, startOffset } = options;
+			refDate !== undefined && validateRefDate(refDate);
+			startOffset !== undefined && validateStartOffset(startOffset);
+			endOffset !== undefined && validateEndOffset(endOffset);
+		}
 		const {
 			refDate = dateRangeDefaults.refDate,
 			startOffset = dateRangeDefaults.startOffset,

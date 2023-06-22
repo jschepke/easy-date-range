@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { DateRange } from "../../src/dateRange";
-import { monthExactTestValues } from "../testUtils";
+import { DateRange, OptionsMonthExact } from "../../src/dateRange";
+import { TestValues, monthExactTestValues } from "../testUtils";
 import { DateTime } from "luxon";
 
 describe("getMonthExact", () => {
@@ -12,44 +12,57 @@ describe("getMonthExact", () => {
 			});
 		});
 		describe("Given invalid arbitrary parameters", () => {
-			test.each(monthExactTestValues.invalid.arbitraryParams)(
-				"throws an error for value: $name",
-				({ value }) => {
-					expect(() => new DateRange().getMonthExact(value)).toThrowError();
-				},
-			);
+			test.each(
+				new TestValues().excludeByName([
+					"object { a: 1, b: 'foo' }",
+					"undefined",
+				]),
+			)("throws an error for value: $name", ({ value }) => {
+				expect(() => new DateRange().getMonthExact(value)).toThrowError();
+			});
 		});
 		describe("Given invalid expected parameters", () => {
 			describe("refDate", () => {
-				test.each(monthExactTestValues.invalid.refDate)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExact({ refDate: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"undefined",
+						"Date object - new Date()",
+						"DateTime object - DateTime.now()",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExact({ refDate: value }),
+					).toThrowError();
+				});
 			});
 
 			describe("startOffset", () => {
-				test.each(monthExactTestValues.invalid.startOffset)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExact({ startOffset: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"undefined",
+						"integer 0",
+						"integer 1",
+						"negative integer -1",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExact({ startOffset: value }),
+					).toThrowError();
+				});
 			});
 			describe("endOffset", () => {
-				test.each(monthExactTestValues.invalid.endOffset)(
-					"throws an error for value: $name",
-					({ value }) => {
-						expect(() =>
-							new DateRange().getMonthExact({ endOffset: value }),
-						).toThrowError();
-					},
-				);
+				test.each(
+					new TestValues().excludeByName([
+						"undefined",
+						"integer 0",
+						"integer 1",
+						"negative integer -1",
+					]),
+				)("throws an error for value: $name", ({ value }) => {
+					expect(() =>
+						new DateRange().getMonthExact({ endOffset: value }),
+					).toThrowError();
+				});
 			});
 		});
 	});
@@ -283,6 +296,105 @@ describe("getMonthExact", () => {
 									});
 								},
 							);
+						},
+					);
+				});
+			});
+
+			describe("starOffset and endOffset together", () => {
+				describe("Given valid data", () => {
+					const data: Array<
+						OptionsMonthExact & {
+							expectedFirstDate: DateTime;
+							expectedLastDate: DateTime;
+						}
+					> = [
+						{
+							startOffset: 0,
+							endOffset: 0,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-01"),
+							expectedLastDate: DateTime.fromISO("2023-03-31"),
+						},
+						{
+							startOffset: -5,
+							endOffset: -5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-06"),
+							expectedLastDate: DateTime.fromISO("2023-03-26"),
+						},
+						{
+							startOffset: 5,
+							endOffset: -5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-02-24"),
+							expectedLastDate: DateTime.fromISO("2023-03-26"),
+						},
+						{
+							startOffset: -5,
+							endOffset: 5,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-06"),
+							expectedLastDate: DateTime.fromISO("2023-04-05"),
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({
+							expectedFirstDate,
+							expectedLastDate,
+							endOffset,
+							refDate,
+							startOffset,
+						}) => {
+							const options = { endOffset, refDate, startOffset };
+
+							const dr = new DateRange().getMonthExact(options);
+							const firstDate = dr.dates[0];
+							const lastDate = dr.dates[dr.dates.length - 1];
+
+							test("The first date of range is correct", () => {
+								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());
+							});
+							test("The last date of range is correct", () => {
+								expect(lastDate.toISO()).toEqual(expectedLastDate.toISO());
+							});
+						},
+					);
+				});
+
+				describe("Given non valid data", () => {
+					const data: OptionsMonthExact[] = [
+						{
+							startOffset: -31,
+							endOffset: 5,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+						{
+							startOffset: 5,
+							endOffset: -31,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+						{
+							startOffset: -1,
+							endOffset: -30,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({ endOffset, refDate, startOffset }) => {
+							test("throws an error", () => {
+								expect(() =>
+									new DateRange().getMonthExact({
+										endOffset,
+										refDate,
+										startOffset,
+									}),
+								).toThrowError();
+							});
 						},
 					);
 				});
