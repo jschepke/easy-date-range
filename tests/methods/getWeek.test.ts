@@ -278,33 +278,33 @@ describe("getWeek", () => {
 			});
 
 			describe("with offset specified", () => {
-				test("length of the extended array is equal default array plus offset", () => {
+				test("length of the adjusted array is equal default array plus offset", () => {
 					const startOffset = 2;
 					const endOffset = 2;
 
 					const defaultWeekRange = new DateRange().getWeek();
-					const extendedWeekRange = new DateRange().getWeek({
+					const adjustedWeekRange = new DateRange().getWeek({
 						startOffset,
 						endOffset,
 					});
 
 					expect(
 						defaultWeekRange.dates.length + startOffset + endOffset,
-					).toEqual(extendedWeekRange.dates.length);
+					).toEqual(adjustedWeekRange.dates.length);
 
 					//with specified refDate
 					const refDate = DateTime.fromISO("2020-01-01");
 					const weekRange2 = new DateRange().getWeek({
 						refDate,
 					});
-					const extendedWeekRange2 = new DateRange().getWeek({
+					const adjustedWeekRange2 = new DateRange().getWeek({
 						refDate,
 						startOffset,
 						endOffset,
 					});
 
 					expect(weekRange2.dates.length + startOffset + endOffset).toEqual(
-						extendedWeekRange2.dates.length,
+						adjustedWeekRange2.dates.length,
 					);
 				});
 
