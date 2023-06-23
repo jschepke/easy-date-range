@@ -78,8 +78,8 @@ You can customize the range with an `options` object passed to a range generator
 Common options available for all methods:
 
 - `refDate` for setting the reference date,
-- `startOffset` for setting the number of days to add before the first date of the range
-- `endOffset` for setting the number of days to add after the last date of the range.
+- `startOffset` for setting the offset at the start of the range,
+- `endOffset` for setting the offset at the end of the range,
 
 Specific options depending on the method and type of range it generates:
 
@@ -96,13 +96,15 @@ const monthExtended = new DateRange().getMonthExtended({
   refDate: new Date('2023-01-01'),
   refWeekday: WEEKDAY.Sunday,
   startOffset: 2,
-  endOffset: 2,
+  endOffset: -2,
 });
 ```
 
-The range from the above example will include dates that span across all the days of January 2023 extended to start from Friday, Dec 30, 2022 and end on Monday, Feb 6, 2023.
+The range from the above example will include dates that span across all the days of January 2023 extended to start from Friday, Dec 30, 2022 and end on Thursday, Feb 2, 2023.
 
-The first and the last two days in the range come from offset settings. Without the offset, the first day of the range would be Jan 1, 2023 (Sunday - as specified with `refWeekday`) and the last day would be Feb 4, 2023 (Saturday).
+The first two days in the range come from the startOffset setting, which added two extra days. At the end of the range, two days were removed because of the negative endOffset setting.
+
+Without the offsets, the first day of the range would be Jan 1, 2023 (Sunday - as specified with `refWeekday`) and the last day would be Feb 4, 2023 (Saturday).
 
 ## API
 
@@ -181,12 +183,12 @@ public getDays(options?: OptionsDays): DateRange
 
 Options properties
 
-| Property                          | Type                 | Description                                                       |
-| --------------------------------- | -------------------- | ----------------------------------------------------------------- |
-| [refDate](#refdate-interface)     | [DateTime] \| [Date] | The reference date to calculate the range.                        |
-| [daysCount](#dayscount-interface) | number               | The number of days to include in the range.                       |
-| [startOffset](#offset-interface)  | number               | The number of days to add before the the first date of the range. |
-| [endOffset](#offset-interface)    | number               | The number of days to add after the the last date of the range.   |
+| Property                          | Type                 | Description                                                          |
+| --------------------------------- | -------------------- | -------------------------------------------------------------------- |
+| [refDate](#refdate-interface)     | [DateTime] \| [Date] | The reference date to calculate the range.                           |
+| [daysCount](#dayscount-interface) | number               | The number of days to include in the range.                          |
+| [startOffset](#offset-interface)  | number               | The number of days to add or remove from the beginning of the range. |
+| [endOffset](#offset-interface)    | number               | The number of days to add after the the last date of the range.      |
 
 #### **Returns:**
 
@@ -238,11 +240,11 @@ public getMonthExact(options?: OptionsMonthExact): DateRange
 
 Options properties
 
-| Property                         | Type                 | Description                                                       |
-| -------------------------------- | -------------------- | ----------------------------------------------------------------- |
-| [refDate](#refdate-interface)    | [DateTime] \| [Date] | The reference date to calculate the range.                        |
-| [startOffset](#offset-interface) | number               | The number of days to add before the the first date of the range. |
-| [endOffset](#offset-interface)   | number               | The number of days to add after the the last date of the range.   |
+| Property                         | Type                 | Description                                                          |
+| -------------------------------- | -------------------- | -------------------------------------------------------------------- |
+| [refDate](#refdate-interface)    | [DateTime] \| [Date] | The reference date to calculate the range.                           |
+| [startOffset](#offset-interface) | number               | The number of days to add or remove from the beginning of the range. |
+| [endOffset](#offset-interface)   | number               | The number of days to add after the the last date of the range.      |
 
 #### **Returns:**
 
@@ -310,12 +312,12 @@ public getMonthExtended(options?: OptionsMonthExtended): DateRange
 
 Options properties
 
-| Property                            | Type                     | Description                                                       |
-| ----------------------------------- | ------------------------ | ----------------------------------------------------------------- |
-| [refDate](#refdate-interface)       | [DateTime] \| [Date]     | The reference date to calculate the range.                        |
-| [refWeekday](#refweekday-interface) | [WEEKDAY](#weekday-enum) | The reference weekday to start the range from.                    |
-| [startOffset](#offset-interface)    | number                   | The number of days to add before the the first date of the range. |
-| [endOffset](#offset-interface)      | number                   | The number of days to add after the the last date of the range.   |
+| Property                            | Type                     | Description                                                          |
+| ----------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| [refDate](#refdate-interface)       | [DateTime] \| [Date]     | The reference date to calculate the range.                           |
+| [refWeekday](#refweekday-interface) | [WEEKDAY](#weekday-enum) | The reference weekday to start the range from.                       |
+| [startOffset](#offset-interface)    | number                   | The number of days to add or remove from the beginning of the range. |
+| [endOffset](#offset-interface)      | number                   | The number of days to add after the the last date of the range.      |
 
 #### **Returns:**
 
@@ -356,23 +358,23 @@ Each date is set to the start of the day (midnight).
 #### **Signature**
 
 ```ts
-public getWeek(options?: RangeOptions): DateRange
+public getWeek(options?: OptionsWeek): DateRange
 ```
 
 #### **Parameters**
 
-| Parameter | Type                                    | Description                       |
-| --------- | --------------------------------------- | --------------------------------- |
-| options   | [RangeOptions](#rangeoptions-interface) | An object to configure the range. |
+| Parameter | Type                                  | Description                       |
+| --------- | ------------------------------------- | --------------------------------- |
+| options   | [OptionsWeek](#optionsweek-interface) | An object to configure the range. |
 
 Options properties
 
-| Property                            | Type                     | Description                                                       |
-| ----------------------------------- | ------------------------ | ----------------------------------------------------------------- |
-| [refDate](#refdate-interface)       | [DateTime] \| [Date]     | The reference date to calculate the range.                        |
-| [refWeekday](#refweekday-interface) | [WEEKDAY](#weekday-enum) | The reference weekday to start the range from.                    |
-| [startOffset](#offset-interface)    | number                   | The number of days to add before the the first date of the range. |
-| [endOffset](#offset-interface)      | number                   | The number of days to add after the the last date of the range.   |
+| Property                            | Type                     | Description                                                          |
+| ----------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| [refDate](#refdate-interface)       | [DateTime] \| [Date]     | The reference date to calculate the range.                           |
+| [refWeekday](#refweekday-interface) | [WEEKDAY](#weekday-enum) | The reference weekday to start the range from.                       |
+| [startOffset](#offset-interface)    | number                   | The number of days to add or remove from the beginning of the range. |
+| [endOffset](#offset-interface)      | number                   | The number of days to add after the the last date of the range.      |
 
 #### **Returns:**
 
@@ -469,7 +471,7 @@ public getPrevious(dateRange: DateRange): DateRange
 
 ### **isValidOffset**
 
-Checks if a given value is a valid offset (non-negative integer).
+Checks if a given value is a valid offset.
 
 #### **Signature**
 
@@ -485,7 +487,7 @@ public isValidOffset(offset: unknown): boolean
 
 #### **Returns:**
 
-`boolean` - True if the value is a non-negative integer, false otherwise.
+`boolean` - True if the value is an integer, false otherwise.
 
 ### **isValidRefDate**
 
@@ -565,57 +567,6 @@ The methods doesn't accept parameters.
 
 ## Interfaces
 
-### RangeOptions interface
-
-```ts
-interface RangeOptions {
-  /**
-   * The reference date to calculate the range.
-   *
-   * @remarks
-   * Must be a Date object or luxon DateTime object.
-   *
-   * Defaults to current time.
-   */
-  refDate?: DateTime | Date;
-
-  /**
-   * The reference weekday to start the range from.
-   *
-   *@remarks
-   * Must be an integer from 1 (Monday) to 7 (Sunday).
-   *
-   * Defaults to Monday.
-   */
-  refWeekday?: WEEKDAY;
-
-  /**
-   * The number of days to add before the the first date of the range.
-   *
-   * @remarks
-   * Must be a non-negative integer.
-   *
-   * This will be change to accept also negative values.
-   *
-   * @defaultValue `0`
-   *
-   */
-  startOffset?: number;
-
-  /**
-   * The number of days to add after the the last date of the range.
-   *
-   * @remarks
-   * Must be a non-negative integer.
-   *
-   * This will be change to accept also negative values.
-   *
-   * @defaultValue `0`
-   */
-  endOffset?: number;
-}
-```
-
 ### RangeOptionsMonthExact interface
 
 ```ts
@@ -652,61 +603,75 @@ interface DaysCount {
 ````ts
 export interface Offset {
   /**
-   * The number of days to add before the the first date of the range.
+   * The number of days to add or remove from the beginning of the range.
    *
    * @remarks
-   * Must be a non-negative integer.
-   *
-   * This will be change to accept also negative values.
+   * If the specified offset is positive, dates are added. If negative, dates are removed.
    *
    * @defaultValue `0`
    *
    * @example
    * ```
-   * // set reference date ('Fri, Jan 10, 2020')
-   * const refDate = DateTime.fromObject({ year: 2020, month: 1, day: 10 });
+   * // set the reference date
+   * const refDate = new Date("2020-01-17");
    *
-   * // without startOffset
-   * const weekRange1 = new DateRange().getWeek({ refDate });
-   * weekRange1.dates[0]; // 'Mon, Jan 6, 2020'
+   * // with no offset 👈
+   * const month1 = new DateRange().getMonthExact({ refDate });
+   * // first date in range
+   * month1.dates[0]; // Jan 1, 2020
+   * // last date in range
+   * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
    *
-   * // with startOffset
-   * const weekRange2 = new DateRange().getWeek({
-   * 	refDate,
-   * 	startOffset: 5,
-   * });
-   * weekRange2.dates[0]; // 'Wed, Jan 1, 2020'
+   * // with positive startOffset 👈
+   * const month2 = new DateRange().getMonthExact({ refDate, startOffset: 5 });
+   * // first date in range
+   * month2.dates[0]; // Dec 27, 2020
+   * // last date in range (no changes)
+   * month2.dates[month2.dates.length - 1]; // Jan 31, 2020
+   *
+   * // with negative startOffset 👈
+   * const month3 = new DateRange().getMonthExact({ refDate, startOffset: -5 });
+   * // first date in range
+   * month3.dates[0]; // Jan 6, 2020
+   * // last date in range (no changes)
+   * month3.dates[month3.dates.length - 1]; // Jan 31, 2020
    * ```
    */
   startOffset?: number;
 
   /**
-   * The number of days to add after the the last date of the range.
+   * The number of days to add or remove from the end of the range.
    *
    * @remarks
-   * Must be a non-negative integer.
-   *
-   * This will be change to accept also negative values.
+   * If the specified offset is positive, dates are added. If negative, dates are removed.
    *
    * @defaultValue `0`
    *
    * @example
    * ```
-   * // set reference date ('Fri, Jan 10, 2020')
-   * const refDate = DateTime.fromObject({ year: 2020, month: 1, day: 10 });
+   * // set the reference date
+   * const refDate = new Date("2020-01-17");
    *
-   * // without endOffset
-   * const weekRange1 = new DateRange().getWeek({ refDate });
-   * // last date of the range
-   * weekRange1.dates[weekRange1.dates.length - 1]; // 'Sun, Jan 12, 2020'
+   * // with no offset 👈
+   * const month1 = new DateRange().getMonthExact({ refDate });
+   * // first date in range
+   * month1.dates[0]; // Jan 1, 2020
+   * // last date in range
+   * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
    *
-   * // with endOffset
-   * const weekRange2 = new DateRange().getWeek({
-   * 	refDate,
-   * 	endOffset: 5,
-   * });
-   * // last date of the range
-   * weekRange2.dates[weekRange2.dates.length - 1]; // 'Fri, Jan 17, 2020'
+   * // with positive endOffset 👈
+   * const month2 = new DateRange().getMonthExact({ refDate, endOffset: 5 });
+   * // first date in range (no changes)
+   * month2.dates[0]; // Jan 1, 2020
+   * // last date in range
+   * month2.dates[month2.dates.length - 1]; // Feb 5, 2020
+   *
+   * // with negative endOffset 👈
+   * const month3 = new DateRange().getMonthExact({ refDate, endOffset: -5 });
+   * // first date in range (no changes)
+   * month3.dates[0]; // Jan 1, 2020
+   * // last date in range
+   * month3.dates[month3.dates.length - 1]; // Jan 26, 2020
    * ```
    */
   endOffset?: number;
