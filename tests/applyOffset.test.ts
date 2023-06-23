@@ -1,16 +1,16 @@
 import { DateTime, DurationUnit } from "luxon";
 import { describe, expect, test } from "vitest";
 
+import { ApplyOffsetSettings, applyOffset } from "../src/applyOffset";
 import { DURATION_UNITS } from "../src/constants";
-import { ExtendRangeOptions, extendRange } from "../src/extendRange";
 import { TestValues } from "./testUtils";
 
-describe("extendRange", () => {
+describe("applyOffset", () => {
 	describe("general functionality", () => {
-		//test if the function returns an array of DateTime objects that represents the extended range
-		test("should return an extended range", () => {
+		//test if the function returns an array of DateTime objects
+		test("returns array of dates with applied offset", () => {
 			//some valid values for the options
-			const rangeToExtend = [
+			const rangeToAdjust = [
 				DateTime.fromISO("2020-01-01"),
 				DateTime.fromISO("2020-01-02"),
 				DateTime.fromISO("2020-01-03"),
@@ -20,8 +20,8 @@ describe("extendRange", () => {
 			const endOffset = 3;
 
 			//call the function with the options and store the result
-			const result = extendRange({
-				rangeToExtend,
+			const result = applyOffset({
+				rangeToAdjust,
 				timeUnit,
 				startOffset,
 				endOffset,
@@ -31,19 +31,19 @@ describe("extendRange", () => {
 			expect(Array.isArray(result)).toBe(true);
 			expect(result.every((dt) => dt instanceof DateTime)).toBe(true);
 
-			//expect the result to have the same length as the rangeToExtend plus the offset values
+			//expect the result to have the same length as the rangeToAdjust plus the offset values
 			expect(result.length).toBe(
-				rangeToExtend.length + startOffset + endOffset,
+				rangeToAdjust.length + startOffset + endOffset,
 			);
 
-			// expect the result to contain the original rangeToExtend plus
+			// expect the result to contain the original rangeToAdjust plus
 			// the added elements at the start and end
-			expect(result.slice(startOffset, -endOffset)).toEqual(rangeToExtend);
+			expect(result.slice(startOffset, -endOffset)).toEqual(rangeToAdjust);
 			expect(result[0]).toEqual(
-				rangeToExtend[0].minus({ [timeUnit]: startOffset }),
+				rangeToAdjust[0].minus({ [timeUnit]: startOffset }),
 			);
 			expect(result[result.length - 1]).toEqual(
-				rangeToExtend[rangeToExtend.length - 1].plus({
+				rangeToAdjust[rangeToAdjust.length - 1].plus({
 					[timeUnit]: endOffset,
 				}),
 			);
@@ -51,8 +51,8 @@ describe("extendRange", () => {
 	});
 
 	describe("input validation", () => {
-		test("should throw an error when rangeToExtend is invalid", () => {
-			//some invalid values for rangeToExtend
+		test("should throw an error when rangeToAdjust is invalid", () => {
+			//some invalid values for rangeToAdjust
 			const invalidValues = [
 				null,
 				undefined,
@@ -66,9 +66,9 @@ describe("extendRange", () => {
 			//loop through the invalid values and expect the function to throw an error
 			for (const value of invalidValues) {
 				expect(() =>
-					extendRange({
+					applyOffset({
 						// @ts-expect-error: testing invalid input
-						rangeToExtend: value,
+						rangeToAdjust: value,
 						timeUnit: "days",
 						startOffset: 1,
 						endOffset: 1,
@@ -88,8 +88,8 @@ describe("extendRange", () => {
 						]),
 					)("throws an error if startOffset is $name", ({ value }) => {
 						expect(() =>
-							extendRange({
-								rangeToExtend: [
+							applyOffset({
+								rangeToAdjust: [
 									DateTime.fromISO("2020-01-01"),
 									DateTime.fromISO("2020-01-02"),
 									DateTime.fromISO("2020-01-03"),
@@ -107,8 +107,8 @@ describe("extendRange", () => {
 						"doesn't throw an error if starOffset is %s",
 						(value) => {
 							expect(() =>
-								extendRange({
-									rangeToExtend: [
+								applyOffset({
+									rangeToAdjust: [
 										DateTime.fromISO("2020-01-01"),
 										DateTime.fromISO("2020-01-02"),
 										DateTime.fromISO("2020-01-03"),
@@ -124,21 +124,21 @@ describe("extendRange", () => {
 
 				describe("Given negative startOffset value that exceeds the date range", () => {
 					test.each([
-						{ startOffset: -1, rangeToExtend: [DateTime.now()] },
+						{ startOffset: -1, rangeToAdjust: [DateTime.now()] },
 						{
 							startOffset: -10,
-							rangeToExtend: [
+							rangeToAdjust: [
 								DateTime.fromISO("2020-01-01"),
 								DateTime.fromISO("2020-01-02"),
 								DateTime.fromISO("2020-01-03"),
 							],
 						},
 					])(
-						"throws an error for startOffset $startOffset and range of $rangeToExtend.length dates",
-						({ rangeToExtend, startOffset }) => {
+						"throws an error for startOffset $startOffset and range of $rangeToAdjust.length dates",
+						({ rangeToAdjust, startOffset }) => {
 							expect(() =>
-								extendRange({
-									rangeToExtend,
+								applyOffset({
+									rangeToAdjust: rangeToAdjust,
 									startOffset,
 									endOffset: 0,
 									timeUnit: "day",
@@ -159,8 +159,8 @@ describe("extendRange", () => {
 						]),
 					)("throws an error if endOffset is $name", ({ value }) => {
 						expect(() =>
-							extendRange({
-								rangeToExtend: [
+							applyOffset({
+								rangeToAdjust: [
 									DateTime.fromISO("2020-01-01"),
 									DateTime.fromISO("2020-01-02"),
 									DateTime.fromISO("2020-01-03"),
@@ -178,8 +178,8 @@ describe("extendRange", () => {
 						"doesn't throw an error if endOffset is %d",
 						(value) => {
 							expect(() =>
-								extendRange({
-									rangeToExtend: [
+								applyOffset({
+									rangeToAdjust: [
 										DateTime.fromISO("2020-01-01"),
 										DateTime.fromISO("2020-01-02"),
 										DateTime.fromISO("2020-01-03"),
@@ -195,21 +195,21 @@ describe("extendRange", () => {
 
 				describe("Given negative endOffset value that exceeds the date range", () => {
 					test.each([
-						{ endOffset: -1, rangeToExtend: [DateTime.now()] },
+						{ endOffset: -1, rangeToAdjust: [DateTime.now()] },
 						{
 							endOffset: -10,
-							rangeToExtend: [
+							rangeToAdjust: [
 								DateTime.fromISO("2020-01-01"),
 								DateTime.fromISO("2020-01-02"),
 								DateTime.fromISO("2020-01-03"),
 							],
 						},
 					])(
-						"throws an error for endOffset $endOffset and range of $rangeToExtend.length dates",
-						({ rangeToExtend, endOffset }) => {
+						"throws an error for endOffset $endOffset and range of $rangeToAdjust.length dates",
+						({ rangeToAdjust, endOffset }) => {
 							expect(() =>
-								extendRange({
-									rangeToExtend,
+								applyOffset({
+									rangeToAdjust: rangeToAdjust,
 									endOffset,
 									startOffset: 0,
 									timeUnit: "day",
@@ -225,12 +225,12 @@ describe("extendRange", () => {
 					{
 						startOffset: -1,
 						endOffset: -1,
-						rangeToExtend: [DateTime.now(), DateTime.now()],
+						rangeToAdjust: [DateTime.now(), DateTime.now()],
 					},
 					{
 						startOffset: -1,
 						endOffset: -2,
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
@@ -239,20 +239,20 @@ describe("extendRange", () => {
 					{
 						startOffset: -2,
 						endOffset: -2,
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
 						],
 					},
 				])(
-					"throws an error if negative offsets ($startOffset, $endOffset) exceeds date range length ($rangeToExtend.length)",
-					({ startOffset, endOffset, rangeToExtend }) => {
+					"throws an error if negative offsets ($startOffset, $endOffset) exceeds date range length ($rangeToAdjust.length)",
+					({ startOffset, endOffset, rangeToAdjust }) => {
 						expect(() =>
-							extendRange({
+							applyOffset({
 								startOffset,
 								endOffset,
-								rangeToExtend,
+								rangeToAdjust: rangeToAdjust,
 								timeUnit: "day",
 							}),
 						).toThrowError("Negative values of startOffset");
@@ -268,8 +268,8 @@ describe("extendRange", () => {
 			//loop through the invalid values and expect the function to throw an error
 			for (const value of invalidValues) {
 				expect(() =>
-					extendRange({
-						rangeToExtend: [DateTime.local()],
+					applyOffset({
+						rangeToAdjust: [DateTime.local()],
 						// @ts-expect-error: testing invalid input
 						timeUnit: value,
 						startOffset: 1,
@@ -284,12 +284,15 @@ describe("extendRange", () => {
 		describe("timeUnit", () => {
 			const timeUnits: DurationUnit[] = DURATION_UNITS;
 
+			// Note
+			// Using time units other then 'days' with negative offset is not fully developed.
+			// That's why there is only test for extending the range with each unit.
 			describe("Extend range using each time unit", () => {
 				test.each(timeUnits)(
-					"the extended range has the correct length and matches unit of time: %s",
+					"the range has the correct length and matches unit of time: %s",
 					(timeUnit) => {
 						// arrange
-						const rangeToExtend = [
+						const rangeToAdjust = [
 							DateTime.fromISO("2020-01-01T00:00:00"),
 							DateTime.fromISO("2020-01-01T01:00:00"),
 							DateTime.fromISO("2020-01-01T02:00:00"),
@@ -298,26 +301,26 @@ describe("extendRange", () => {
 						const endOffset = 2;
 
 						// act
-						const extendedRange = extendRange({
-							rangeToExtend,
+						const adjustedRange = applyOffset({
+							rangeToAdjust: rangeToAdjust,
 							timeUnit,
 							startOffset,
 							endOffset,
 						});
 
-						expect(extendedRange.length).toBe(5);
+						expect(adjustedRange.length).toBe(5);
 
-						// find the index of the last element of the original array in the extended range
-						const lastIndex = extendedRange.findIndex((date) =>
-							date.equals(rangeToExtend[rangeToExtend.length - 1]),
+						// find the index of the last element of the original array in the shifted range
+						const lastIndex = adjustedRange.findIndex((date) =>
+							date.equals(rangeToAdjust[rangeToAdjust.length - 1]),
 						);
 
-						// loop over the extended range from the last element of the
-						// original array to the last element of the extended range
-						for (let i = lastIndex; i < extendedRange.length - 1; i++) {
+						// loop over the adjusted range from the last element of the
+						// original array to the last element of the adjusted range
+						for (let i = lastIndex; i < adjustedRange.length - 1; i++) {
 							// check if the current element equals to the next element minus one unit of time
-							expect(extendedRange[i]).toEqual(
-								extendedRange[i + 1].minus({ [timeUnit]: 1 }),
+							expect(adjustedRange[i]).toEqual(
+								adjustedRange[i + 1].minus({ [timeUnit]: 1 }),
 							);
 						}
 					},
@@ -327,13 +330,13 @@ describe("extendRange", () => {
 
 		describe("endOffset", () => {
 			const testData: Array<
-				ExtendRangeOptions & {
+				ApplyOffsetSettings & {
 					expectedLength: number;
 					expectedRange: DateTime[];
 				}
 			> = [
 				{
-					rangeToExtend: [
+					rangeToAdjust: [
 						DateTime.fromISO("2020-01-01"),
 						DateTime.fromISO("2020-01-02"),
 						DateTime.fromISO("2020-01-03"),
@@ -351,7 +354,7 @@ describe("extendRange", () => {
 					],
 				},
 				{
-					rangeToExtend: [
+					rangeToAdjust: [
 						DateTime.fromISO("2020-01-01"),
 						DateTime.fromISO("2020-01-02"),
 						DateTime.fromISO("2020-01-03"),
@@ -365,28 +368,28 @@ describe("extendRange", () => {
 			];
 
 			describe.each(testData)(
-				"the extended range has the correct length and each element matches the expected date",
+				"the range has the correct length and each element matches the expected date",
 				({
 					endOffset,
 					timeUnit,
-					rangeToExtend,
+					rangeToAdjust: rangeToAdjust,
 					startOffset,
 					expectedLength,
 					expectedRange,
 				}) => {
-					const extendedRange = extendRange({
-						rangeToExtend,
+					const adjustedRange = applyOffset({
+						rangeToAdjust: rangeToAdjust,
 						timeUnit,
 						startOffset,
 						endOffset,
 					});
 					test("date range has the correct length", () => {
-						expect(extendedRange.length).toBe(expectedLength);
+						expect(adjustedRange.length).toBe(expectedLength);
 					});
 
-					test("each date of extended range matches expected one", () => {
+					test("each date of the adjusted range matches the expected one", () => {
 						for (let i = 0; i < expectedLength; i++) {
-							expect(extendedRange[i]).toEqual(expectedRange[i]);
+							expect(adjustedRange[i]).toEqual(expectedRange[i]);
 						}
 					});
 				},
@@ -395,13 +398,13 @@ describe("extendRange", () => {
 
 		describe("startOffset", () => {
 			const testData: Array<
-				ExtendRangeOptions & {
+				ApplyOffsetSettings & {
 					expectedLength: number;
 					expectedRange: DateTime[];
 				}
 			> = [
 				{
-					rangeToExtend: [
+					rangeToAdjust: [
 						DateTime.fromISO("2020-01-03"),
 						DateTime.fromISO("2020-01-04"),
 						DateTime.fromISO("2020-01-05"),
@@ -419,7 +422,7 @@ describe("extendRange", () => {
 					],
 				},
 				{
-					rangeToExtend: [
+					rangeToAdjust: [
 						DateTime.fromISO("2020-01-01"),
 						DateTime.fromISO("2020-01-02"),
 						DateTime.fromISO("2020-01-03"),
@@ -433,28 +436,28 @@ describe("extendRange", () => {
 			];
 
 			describe.each(testData)(
-				"the extended range has the correct length and each element matches the expected date",
+				"the range has the correct length and each element matches the expected date",
 				({
 					endOffset,
 					expectedLength,
 					expectedRange,
-					rangeToExtend,
+					rangeToAdjust: rangeToAdjust,
 					startOffset,
 					timeUnit,
 				}) => {
-					const extendedRange = extendRange({
-						rangeToExtend,
+					const adjustedRange = applyOffset({
+						rangeToAdjust: rangeToAdjust,
 						timeUnit,
 						startOffset,
 						endOffset,
 					});
 					test("date range has the correct length", () => {
-						expect(extendedRange.length).toBe(expectedLength);
+						expect(adjustedRange.length).toBe(expectedLength);
 					});
 
-					test("each date of extended range matches expected one", () => {
+					test("each date of the range matches the expected one", () => {
 						for (let i = 0; i < expectedLength; i++) {
-							expect(extendedRange[i]).toEqual(expectedRange[i]);
+							expect(adjustedRange[i]).toEqual(expectedRange[i]);
 						}
 					});
 				},
@@ -464,13 +467,13 @@ describe("extendRange", () => {
 		describe("Both offsets", () => {
 			describe("Given valid data", () => {
 				const testData: Array<
-					ExtendRangeOptions & {
+					ApplyOffsetSettings & {
 						expectedLength: number;
 						expectedRange: DateTime[];
 					}
 				> = [
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-03"),
 							DateTime.fromISO("2020-01-04"),
 							DateTime.fromISO("2020-01-05"),
@@ -490,7 +493,7 @@ describe("extendRange", () => {
 						],
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
@@ -502,7 +505,7 @@ describe("extendRange", () => {
 						expectedRange: [DateTime.fromISO("2020-01-02")],
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
@@ -518,7 +521,7 @@ describe("extendRange", () => {
 						],
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-03"),
 							DateTime.fromISO("2020-01-04"),
 							DateTime.fromISO("2020-01-05"),
@@ -536,28 +539,28 @@ describe("extendRange", () => {
 				];
 
 				describe.each(testData)(
-					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToExtend.length",
+					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToAdjust.length",
 					({
 						endOffset,
 						expectedLength,
 						expectedRange,
-						rangeToExtend,
+						rangeToAdjust: rangeToAdjust,
 						startOffset,
 						timeUnit,
 					}) => {
-						const extendedRange = extendRange({
-							rangeToExtend,
+						const adjustedRange = applyOffset({
+							rangeToAdjust: rangeToAdjust,
 							timeUnit,
 							startOffset,
 							endOffset,
 						});
 
 						test("date range has correct length", () => {
-							expect(extendedRange.length).toBe(expectedRange.length);
+							expect(adjustedRange.length).toBe(expectedRange.length);
 						});
-						test("each date of extended range matches expected one", () => {
+						test("each date of the range matches the expected one", () => {
 							for (let i = 0; i < expectedLength; i++) {
-								expect(extendedRange[i]).toEqual(expectedRange[i]);
+								expect(adjustedRange[i]).toEqual(expectedRange[i]);
 							}
 						});
 					},
@@ -565,9 +568,9 @@ describe("extendRange", () => {
 			});
 
 			describe("Given invalid data", () => {
-				const testData: Array<ExtendRangeOptions> = [
+				const testData: Array<ApplyOffsetSettings> = [
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-03"),
 							DateTime.fromISO("2020-01-04"),
 							DateTime.fromISO("2020-01-05"),
@@ -577,7 +580,7 @@ describe("extendRange", () => {
 						timeUnit: "day",
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
@@ -587,7 +590,7 @@ describe("extendRange", () => {
 						timeUnit: "day",
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-01"),
 							DateTime.fromISO("2020-01-02"),
 							DateTime.fromISO("2020-01-03"),
@@ -597,7 +600,7 @@ describe("extendRange", () => {
 						timeUnit: "day",
 					},
 					{
-						rangeToExtend: [
+						rangeToAdjust: [
 							DateTime.fromISO("2020-01-03"),
 							DateTime.fromISO("2020-01-04"),
 							DateTime.fromISO("2020-01-05"),
@@ -607,7 +610,7 @@ describe("extendRange", () => {
 						timeUnit: "day",
 					},
 					{
-						rangeToExtend: [],
+						rangeToAdjust: [],
 						endOffset: -2,
 						startOffset: -1,
 						timeUnit: "day",
@@ -615,12 +618,17 @@ describe("extendRange", () => {
 				];
 
 				describe.each(testData)(
-					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToExtend.length",
-					({ endOffset, rangeToExtend, startOffset, timeUnit }) => {
+					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToAdjust.length",
+					({
+						endOffset,
+						rangeToAdjust: rangeToAdjust,
+						startOffset,
+						timeUnit,
+					}) => {
 						test("throws an error", () => {
 							expect(() =>
-								extendRange({
-									rangeToExtend,
+								applyOffset({
+									rangeToAdjust: rangeToAdjust,
 									timeUnit,
 									startOffset,
 									endOffset,
