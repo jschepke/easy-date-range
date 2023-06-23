@@ -9,16 +9,14 @@ import {
 } from "./errors";
 import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
-import { validateRangeOptionsMonthExact } from "./validators";
 import {
+	validateDaysCount,
 	validateEndOffset,
 	validateObjectArgument,
 	validateRefDate,
 	validateRefWeekday,
 	validateStartOffset,
 } from "./validators/common";
-import { validateRangeOptions } from "./validators/validateRangeOptions";
-import { validateDateRangeOptions_days } from "./validators/validateRangeOptionsDays";
 
 interface OptionsAll
 	extends OptionsDays,
@@ -757,6 +755,7 @@ export class DateRange {
 			startOffset !== undefined && validateStartOffset(startOffset);
 			endOffset !== undefined && validateEndOffset(endOffset);
 		}
+
 		const {
 			refDate = dateRangeDefaults.refDate,
 			startOffset = dateRangeDefaults.startOffset,
@@ -856,7 +855,19 @@ export class DateRange {
 	 * ```
 	 */
 	public getDays(options?: OptionsDays): DateRange {
-		validateDateRangeOptions_days(options);
+		// Input validation
+		// Perform validation only for specified properties in the 'options' object
+		if (options !== undefined) {
+			// Check if 'options' argument is an object
+			validateObjectArgument(options);
+
+			// Validate specified properties in 'options' object
+			const { refDate, endOffset, startOffset, daysCount } = options;
+			refDate !== undefined && validateRefDate(refDate);
+			startOffset !== undefined && validateStartOffset(startOffset);
+			endOffset !== undefined && validateEndOffset(endOffset);
+			daysCount !== undefined && validateDaysCount(daysCount);
+		}
 
 		const {
 			refDate = dateRangeDefaults.refDate,

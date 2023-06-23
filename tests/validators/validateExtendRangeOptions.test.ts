@@ -1,12 +1,12 @@
 import { describe, expect, test } from "vitest";
 
-import { validateExtendRangeOptions } from "../../src/validators";
 import { DateTime } from "luxon";
 
 import type { ExtendRangeOptions } from "../../src/extendRange";
 
 import { DURATION_UNITS } from "../../src/constants";
 import { InvalidParameterError } from "../../src/errors";
+import { validateExtendRangeOptions } from "../../src/validators/validateExtendRangeOptions";
 import { offsetTestValues } from "../testUtils";
 import { TestValues } from "../testUtils";
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { DateRange } from "../../src/dateRange";
+import { DateRange, OptionsDays } from "../../src/dateRange";
 import { TestValues } from "../testUtils";
 import { DateTime } from "luxon";
 
@@ -13,7 +13,10 @@ describe("getDays", () => {
 		});
 
 		describe("Given invalid arbitrary parameters", () => {
-			const values = new TestValues().excludeByName(["undefined"]);
+			const values = new TestValues().excludeByName([
+				"undefined",
+				"object { a: 1, b: 'foo' }",
+			]);
 			test.each(values)("throws an error for value: $name", ({ value }) => {
 				expect(() => new DateRange().getDays(value)).toThrowError();
 			});
@@ -428,6 +431,114 @@ describe("getDays", () => {
 						});
 					},
 				);
+			});
+
+			describe("starOffset and endOffset together", () => {
+				describe("Given valid data", () => {
+					const data: Array<
+						OptionsDays & {
+							expectedFirstDate: DateTime;
+							expectedLastDate: DateTime;
+						}
+					> = [
+						{
+							startOffset: 0,
+							endOffset: 0,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-01"),
+							expectedLastDate: DateTime.fromISO("2023-03-10"),
+						},
+						{
+							startOffset: -1,
+							endOffset: -1,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-02"),
+							expectedLastDate: DateTime.fromISO("2023-03-09"),
+						},
+						{
+							startOffset: 5,
+							endOffset: -5,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-02-24"),
+							expectedLastDate: DateTime.fromISO("2023-03-05"),
+						},
+						{
+							startOffset: -5,
+							endOffset: 5,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+							expectedFirstDate: DateTime.fromISO("2023-03-06"),
+							expectedLastDate: DateTime.fromISO("2023-03-15"),
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({
+							expectedFirstDate,
+							expectedLastDate,
+							endOffset,
+							refDate,
+							startOffset,
+							daysCount,
+						}) => {
+							const options = { endOffset, refDate, startOffset, daysCount };
+
+							const dr = new DateRange().getDays(options);
+							const firstDate = dr.dates[0];
+							const lastDate = dr.dates[dr.dates.length - 1];
+
+							test("The first date of range is correct", () => {
+								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());
+							});
+							test("The last date of range is correct", () => {
+								expect(lastDate.toISO()).toEqual(expectedLastDate.toISO());
+							});
+						},
+					);
+				});
+
+				describe("Given non valid data", () => {
+					const data: OptionsDays[] = [
+						{
+							startOffset: -10,
+							endOffset: 5,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+						{
+							startOffset: 5,
+							endOffset: -10,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+						{
+							startOffset: -5,
+							endOffset: -5,
+							daysCount: 10,
+							refDate: DateTime.fromISO("2023-03-01"),
+						},
+					];
+
+					describe.each(data)(
+						"Given startOffset: $startOffset, endOffset: $endOffset",
+						({ endOffset, refDate, startOffset, daysCount }) => {
+							test("throws an error", () => {
+								expect(() =>
+									new DateRange().getDays({
+										endOffset,
+										refDate,
+										startOffset,
+										daysCount,
+									}),
+								).toThrowError();
+							});
+						},
+					);
+				});
 			});
 
 			describe("with daysCount property", () => {
