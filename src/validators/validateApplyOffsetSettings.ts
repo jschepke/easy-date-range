@@ -1,5 +1,5 @@
+import type { ApplyOffsetSettings } from "../applyOffset";
 import { InvalidParameterError } from "../errors";
-import type { ExtendRangeOptions } from "../extendRange";
 import type { PropertiesMap } from "../utils";
 import {
 	isEmptyObject,
@@ -10,15 +10,15 @@ import {
 
 import { validateEndOffset, validateStartOffset } from "./common";
 
-const extendRangeOptionsKeysMap: PropertiesMap<ExtendRangeOptions> = {
-	rangeToExtend: "rangeToExtend",
+const applyOffsetSettingsKeysMap: PropertiesMap<ApplyOffsetSettings> = {
+	rangeToAdjust: "rangeToAdjust",
 	startOffset: "startOffset",
 	endOffset: "endOffset",
 	timeUnit: "timeUnit",
 };
-const expectedProperties = Object.values(extendRangeOptionsKeysMap);
+const expectedProperties = Object.values(applyOffsetSettingsKeysMap);
 
-export function validateExtendRangeOptions(value: unknown): void {
+export function validateApplyOffsetSettings(value: unknown): void {
 	// check if value is an object and has any properties
 	if (!isObject(value) || isEmptyObject(value)) {
 		throw new InvalidParameterError(
@@ -32,7 +32,7 @@ export function validateExtendRangeOptions(value: unknown): void {
 
 	// check if the value has any of the not matching properties
 	const notMatchingProperties = Object.keys(value).filter(
-		(prop) => !(prop in extendRangeOptionsKeysMap),
+		(prop) => !(prop in applyOffsetSettingsKeysMap),
 	);
 
 	if (notMatchingProperties.length > 0) {
@@ -46,14 +46,14 @@ export function validateExtendRangeOptions(value: unknown): void {
 	}
 
 	// get the expected properties from the input value
-	const { endOffset, rangeToExtend, startOffset, timeUnit } =
-		value as ExtendRangeOptions;
+	const { endOffset, rangeToAdjust, startOffset, timeUnit } =
+		value as ApplyOffsetSettings;
 
-	// handle rangeToExtend
-	if (!isValidDateTimeArray(rangeToExtend)) {
+	// handle rangeToAdjust
+	if (!isValidDateTimeArray(rangeToAdjust)) {
 		throw new InvalidParameterError(
-			"rangeToExtend",
-			rangeToExtend,
+			"rangeToAdjust",
+			rangeToAdjust,
 			"an array of DateTime",
 		);
 	}
