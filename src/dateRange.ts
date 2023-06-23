@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 
+import { applyOffset } from "./applyOffset";
 import { RANGE_TYPE, WEEKDAY } from "./constants";
 import {
 	EmptyDateRangeError,
@@ -7,7 +8,6 @@ import {
 	InvalidParameterError,
 	MissingArgumentError,
 } from "./errors";
-import { extendRange } from "./extendRange";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
 import {
 	validateDaysCount,
@@ -47,64 +47,77 @@ const dateRangeDefaults: DateRangeDefaults = {
 	isNext: false,
 };
 
-// Todo: Change the offset option to accept also negative values.
 export interface Offset {
 	/**
-	 * The number of days to add before the the first date of the range.
+	 * The number of days to add or remove from the beginning of the range.
 	 *
 	 * @remarks
-	 * Must be a non-negative integer.
-	 *
-	 * This will be change to accept also negative values.
+	 * If the specified offset is positive, dates are added. If negative, dates are removed.
 	 *
 	 * @defaultValue `0`
 	 *
 	 * @example
 	 * ```
-	 * // set reference date ('Fri, Jan 10, 2020')
-	 * const refDate = DateTime.fromObject({ year: 2020, month: 1, day: 10 });
+	 * // set the reference date
+	 * const refDate = new Date("2020-01-17");
 	 *
-	 * // without startOffset
-	 * const weekRange1 = new DateRange().getWeek({ refDate });
-	 * weekRange1.dates[0]; // 'Mon, Jan 6, 2020'
+	 * // with no offset 👈
+	 * const month1 = new DateRange().getMonthExact({ refDate });
+	 * // first date in range
+	 * month1.dates[0]; // Jan 1, 2020
+	 * // last date in range
+	 * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
 	 *
-	 * // with startOffset
-	 * const weekRange2 = new DateRange().getWeek({
-	 * 	refDate,
-	 * 	startOffset: 5,
-	 * });
-	 * weekRange2.dates[0]; // 'Wed, Jan 1, 2020'
+	 * // with positive startOffset 👈
+	 * const month2 = new DateRange().getMonthExact({ refDate, startOffset: 5 });
+	 * // first date in range
+	 * month2.dates[0]; // Dec 27, 2020
+	 * // last date in range (no changes)
+	 * month2.dates[month2.dates.length - 1]; // Jan 31, 2020
+	 *
+	 * // with negative startOffset 👈
+	 * const month3 = new DateRange().getMonthExact({ refDate, startOffset: -5 });
+	 * // first date in range
+	 * month3.dates[0]; // Jan 6, 2020
+	 * // last date in range (no changes)
+	 * month3.dates[month3.dates.length - 1]; // Jan 31, 2020
 	 * ```
 	 */
 	startOffset?: number;
 
 	/**
-	 * The number of days to add after the the last date of the range.
+	 * The number of days to add or remove from the end of the range.
 	 *
 	 * @remarks
-	 * Must be a non-negative integer.
-	 *
-	 * This will be change to accept also negative values.
+	 * If the specified offset is positive, dates are added. If negative, dates are removed.
 	 *
 	 * @defaultValue `0`
 	 *
 	 * @example
 	 * ```
-	 * // set reference date ('Fri, Jan 10, 2020')
-	 * const refDate = DateTime.fromObject({ year: 2020, month: 1, day: 10 });
+	 * // set the reference date
+	 * const refDate = new Date("2020-01-17");
 	 *
-	 * // without endOffset
-	 * const weekRange1 = new DateRange().getWeek({ refDate });
-	 * // last date of the range
-	 * weekRange1.dates[weekRange1.dates.length - 1]; // 'Sun, Jan 12, 2020'
+	 * // with no offset 👈
+	 * const month1 = new DateRange().getMonthExact({ refDate });
+	 * // first date in range
+	 * month1.dates[0]; // Jan 1, 2020
+	 * // last date in range
+	 * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
 	 *
-	 * // with endOffset
-	 * const weekRange2 = new DateRange().getWeek({
-	 * 	refDate,
-	 * 	endOffset: 5,
-	 * });
-	 * // last date of the range
-	 * weekRange2.dates[weekRange2.dates.length - 1]; // 'Fri, Jan 17, 2020'
+	 * // with positive endOffset 👈
+	 * const month2 = new DateRange().getMonthExact({ refDate, endOffset: 5 });
+	 * // first date in range (no changes)
+	 * month2.dates[0]; // Jan 1, 2020
+	 * // last date in range
+	 * month2.dates[month2.dates.length - 1]; // Feb 5, 2020
+	 *
+	 * // with negative endOffset 👈
+	 * const month3 = new DateRange().getMonthExact({ refDate, endOffset: -5 });
+	 * // first date in range (no changes)
+	 * month3.dates[0]; // Jan 1, 2020
+	 * // last date in range
+	 * month3.dates[month3.dates.length - 1]; // Jan 26, 2020
 	 * ```
 	 */
 	endOffset?: number;
@@ -554,8 +567,8 @@ export class DateRange {
 
 		// apply offset if specified
 		if (startOffset || endOffset) {
-			const extendedDateRange = extendRange({
-				rangeToExtend: dates,
+			const adjustedDateRange = applyOffset({
+				rangeToAdjust: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -563,7 +576,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...extendedDateRange],
+				dates: [...adjustedDateRange],
 			});
 
 			return this;
@@ -677,8 +690,8 @@ export class DateRange {
 
 		// Apply offset if specified
 		if (startOffset || endOffset) {
-			const extendedDateRange = extendRange({
-				rangeToExtend: dates,
+			const adjustedDateRange = applyOffset({
+				rangeToAdjust: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -686,7 +699,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...extendedDateRange],
+				dates: [...adjustedDateRange],
 			});
 
 			return this;
@@ -796,8 +809,8 @@ export class DateRange {
 		// Apply offset if specified
 		if (startOffset || endOffset) {
 			// Apply offset if specified
-			const extendedDateRange = extendRange({
-				rangeToExtend: dates,
+			const adjustedDateRange = applyOffset({
+				rangeToAdjust: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -805,7 +818,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...extendedDateRange],
+				dates: [...adjustedDateRange],
 			});
 
 			return this;
@@ -905,8 +918,8 @@ export class DateRange {
 
 		// apply offset if specified
 		if (startOffset || endOffset) {
-			const extendedDateRange = extendRange({
-				rangeToExtend: dates,
+			const adjustedDateRange = applyOffset({
+				rangeToAdjust: dates,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -914,7 +927,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...extendedDateRange],
+				dates: [...adjustedDateRange],
 			});
 
 			return this;
