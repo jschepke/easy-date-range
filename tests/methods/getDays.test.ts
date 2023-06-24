@@ -122,7 +122,7 @@ describe("getDays", () => {
 
 			test("creates a date range with one date", () => {
 				const dr = new DateRange().getDays();
-				expect(dr.dates.length).toBe(1);
+				expect(dr.dateTimes.length).toBe(1);
 			});
 
 			test("refDate is equal to mocked current date", () => {
@@ -132,7 +132,7 @@ describe("getDays", () => {
 
 			test("date rage starts on a refDate", () => {
 				const dr = new DateRange().getDays();
-				const firstDate = dr.dates[0];
+				const firstDate = dr.dateTimes[0];
 
 				expect(firstDate.valueOf()).toBe(date.startOf("day").valueOf());
 			});
@@ -286,21 +286,21 @@ describe("getDays", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dr = new DateRange().getDays({ daysCount, endOffset });
-							expect(dr.dates.length).toBe(numberOfDates);
+							expect(dr.dateTimes.length).toBe(numberOfDates);
 						});
 						test("first date of range is mocked current date", () => {
 							const dr = new DateRange().getDays({ daysCount, endOffset });
-							expect(dr.dates[0].valueOf()).toBe(
+							expect(dr.dateTimes[0].valueOf()).toBe(
 								refDate.startOf("day").valueOf(),
 							);
 						});
 						test("each date of the range is the next day after the previous day", () => {
 							const dr = new DateRange().getDays({ daysCount, endOffset });
-							const { dates } = dr;
+							const { dateTimes } = dr;
 
-							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].toISO()).toBe(
-									dates[i - 1].plus({ day: 1 }).toISO(),
+							for (let i = 1; i < dateTimes.length; i++) {
+								expect(dateTimes[i].toISO()).toBe(
+									dateTimes[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -411,21 +411,21 @@ describe("getDays", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dr = new DateRange().getDays({ daysCount, startOffset });
-							expect(dr.dates.length).toBe(numberOfDates);
+							expect(dr.dateTimes.length).toBe(numberOfDates);
 						});
 						test(`first date of range is ${startOffset} days before mocked current date`, () => {
 							const dr = new DateRange().getDays({ daysCount, startOffset });
-							expect(dr.dates[0].valueOf()).toBe(
+							expect(dr.dateTimes[0].valueOf()).toBe(
 								refDate.startOf("day").minus({ days: startOffset }).valueOf(),
 							);
 						});
 						test("each date of the range is the next day after the previous day", () => {
 							const dr = new DateRange().getDays({ daysCount, startOffset });
-							const { dates } = dr;
+							const { dateTimes } = dr;
 
-							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].toISO()).toBe(
-									dates[i - 1].plus({ day: 1 }).toISO(),
+							for (let i = 1; i < dateTimes.length; i++) {
+								expect(dateTimes[i].toISO()).toBe(
+									dateTimes[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -488,8 +488,8 @@ describe("getDays", () => {
 							const options = { endOffset, refDate, startOffset, daysCount };
 
 							const dr = new DateRange().getDays(options);
-							const firstDate = dr.dates[0];
-							const lastDate = dr.dates[dr.dates.length - 1];
+							const firstDate = dr.dateTimes[0];
+							const lastDate = dr.dateTimes[dr.dateTimes.length - 1];
 
 							test("The first date of range is correct", () => {
 								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());
@@ -638,22 +638,22 @@ describe("getDays", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dr = new DateRange().getDays({ daysCount });
-							expect(dr.dates.length).toBe(numberOfDates);
+							expect(dr.dateTimes.length).toBe(numberOfDates);
 						});
 						test("first date of range is mocked current date", () => {
 							const dr = new DateRange().getDays({ daysCount });
 
-							expect(dr.dates[0].valueOf()).toBe(
+							expect(dr.dateTimes[0].valueOf()).toBe(
 								refDate.startOf("day").valueOf(),
 							);
 						});
 						test("each date of the range is the next day after the previous day", () => {
 							const dr = new DateRange().getDays({ daysCount });
-							const { dates } = dr;
+							const { dateTimes } = dr;
 
-							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].toISO()).toBe(
-									dates[i - 1].plus({ day: 1 }).toISO(),
+							for (let i = 1; i < dateTimes.length; i++) {
+								expect(dateTimes[i].toISO()).toBe(
+									dateTimes[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});

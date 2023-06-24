@@ -85,7 +85,7 @@ describe("getPrevious method", () => {
 				])("test index: %#", (dr) => {
 					test("has the same number of dates", () => {
 						const previous = new DateRange().getPrevious(dr);
-						expect(previous.dates.length).toBe(dr.dates.length);
+						expect(previous.dateTimes.length).toBe(dr.dateTimes.length);
 					});
 
 					test("has correct refDate", () => {
@@ -98,29 +98,29 @@ describe("getPrevious method", () => {
 					test("has correct first date", () => {
 						const previous = new DateRange().getPrevious(dr);
 
-						expect(previous.dates[0].toISODate()).toBe(
-							dr.dates[0].minus({ days: dr.daysCount }).toISODate(),
+						expect(previous.dateTimes[0].toISODate()).toBe(
+							dr.dateTimes[0].minus({ days: dr.daysCount }).toISODate(),
 						);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toBe(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toBe(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i]).instanceOf(DateTime);
-							expect(dates[i].isValid).toBe(true);
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i]).instanceOf(DateTime);
+							expect(dateTimes[i].isValid).toBe(true);
 						}
 					});
 
@@ -164,7 +164,7 @@ describe("getPrevious method", () => {
 				])("test index: %#", (dr) => {
 					test("has the same number of dates", () => {
 						const previous = new DateRange().getPrevious(dr);
-						expect(previous.dates.length).toBe(dr.dates.length);
+						expect(previous.dateTimes.length).toBe(dr.dateTimes.length);
 					});
 
 					test("has correct refDate", () => {
@@ -177,29 +177,29 @@ describe("getPrevious method", () => {
 					test("has correct first date", () => {
 						const previous = new DateRange().getPrevious(dr);
 
-						expect(previous.dates[0].toISODate()).toBe(
-							dr.dates[0].minus({ days: 7 }).toISODate(),
+						expect(previous.dateTimes[0].toISODate()).toBe(
+							dr.dateTimes[0].minus({ days: 7 }).toISODate(),
 						);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toBe(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toBe(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i]).instanceOf(DateTime);
-							expect(dates[i].isValid).toBe(true);
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i]).instanceOf(DateTime);
+							expect(dateTimes[i].isValid).toBe(true);
 						}
 					});
 
@@ -255,7 +255,7 @@ describe("getPrevious method", () => {
 						const previous = new DateRange().getPrevious(dr);
 
 						expect(
-							previous.dates[0].plus({ days: dr.startOffset }).weekday,
+							previous.dateTimes[0].plus({ days: dr.startOffset }).weekday,
 						).toBe(dr.refWeekday);
 					});
 
@@ -263,7 +263,7 @@ describe("getPrevious method", () => {
 						const previous = new DateRange().getPrevious(dr);
 
 						expect(
-							previous.dates[previous.dates.length - 1].minus({
+							previous.dateTimes[previous.dateTimes.length - 1].minus({
 								days: dr.endOffset,
 							}).weekday,
 						).toBe(
@@ -274,22 +274,22 @@ describe("getPrevious method", () => {
 
 					test("each date of the range is the next day after the previous day", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toBe(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toBe(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i]).instanceOf(DateTime);
-							expect(dates[i].isValid).toBe(true);
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i]).instanceOf(DateTime);
+							expect(dateTimes[i].isValid).toBe(true);
 						}
 					});
 
@@ -342,7 +342,7 @@ describe("getPrevious method", () => {
 						const previous = new DateRange().getPrevious(dr);
 
 						expect(
-							previous.dates[0].plus({ days: dr.startOffset }).toISO(),
+							previous.dateTimes[0].plus({ days: dr.startOffset }).toISO(),
 						).toBe(previous.refDate.toISO());
 					});
 
@@ -350,7 +350,7 @@ describe("getPrevious method", () => {
 						const previous = new DateRange().getPrevious(dr);
 
 						expect(
-							previous.dates[previous.dates.length - 1]
+							previous.dateTimes[previous.dateTimes.length - 1]
 								.minus({
 									days: dr.endOffset,
 								})
@@ -360,22 +360,22 @@ describe("getPrevious method", () => {
 
 					test("each date of the range is the next day after the previous day", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toBe(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toBe(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
 
 					test("each date of the range is a valid luxon DateTime", () => {
 						const previous = new DateRange().getPrevious(dr);
-						const { dates } = previous;
+						const { dateTimes } = previous;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i]).instanceOf(DateTime);
-							expect(dates[i].isValid).toBe(true);
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i]).instanceOf(DateTime);
+							expect(dateTimes[i].isValid).toBe(true);
 						}
 					});
 

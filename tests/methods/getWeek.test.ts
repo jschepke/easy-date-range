@@ -99,9 +99,11 @@ describe("getWeek", () => {
 
 				for (let i = 0; i < 10; i++) {
 					const result = dateRange.getWeek();
-					const dates = result.dates;
-					expect(dates.length).toEqual(7);
-					dates.forEach((date) =>
+					const dateTimes = result.dateTimes;
+
+					expect(dateTimes.length).toEqual(7);
+
+					dateTimes.forEach((date) =>
 						expect(DateTime.isDateTime(date)).toBeTruthy(),
 					);
 				}
@@ -111,7 +113,7 @@ describe("getWeek", () => {
 				// The loop ensures that the result is the same for repeated calls
 				for (let i = 0; i < 3; i++) {
 					const dateRange = new DateRange();
-					const dates = dateRange.getWeek().dates;
+					const dateTimes = dateRange.getWeek().dateTimes;
 					const instanceRefDate = dateRange.refDate;
 					const instanceRefWeekday = dateRange.refWeekday;
 
@@ -121,15 +123,15 @@ describe("getWeek", () => {
 						);
 					}
 					expect(
-						dates.find(
+						dateTimes.find(
 							(date) => date.toISODate() === instanceRefDate.toISODate(),
 						),
 					).toBeTruthy();
 
-					expect(dates[0].weekday).toEqual(instanceRefWeekday);
+					expect(dateTimes[0].weekday).toEqual(instanceRefWeekday);
 
 					// Expect the first date in the array is a refDate or is before the refDate
-					expect(dates[0].valueOf()).toBeLessThanOrEqual(
+					expect(dateTimes[0].valueOf()).toBeLessThanOrEqual(
 						instanceRefDate.valueOf(),
 					);
 				}
@@ -139,7 +141,7 @@ describe("getWeek", () => {
 				// The loop ensures that the result is the same for repeated calls
 				for (let i = 0; i < 3; i++) {
 					const dateRange = new DateRange().getWeek();
-					const dates = dateRange.getWeek().dates;
+					const dateTimes = dateRange.getWeek().dateTimes;
 					const { refDate } = dateRange;
 
 					if (!refDate) {
@@ -148,16 +150,16 @@ describe("getWeek", () => {
 						);
 					}
 
-					expect(dates[0].valueOf()).toBeLessThanOrEqual(refDate.valueOf());
+					expect(dateTimes[0].valueOf()).toBeLessThanOrEqual(refDate.valueOf());
 				}
 			});
 
 			test("each date of an array starts at the beginning of the day", () => {
 				for (let i = 0; i < 3; i++) {
 					const dateRange = new DateRange();
-					const dates = dateRange.getWeek().dates;
+					const dateTimes = dateRange.getWeek().dateTimes;
 
-					dates.forEach((date) => {
+					dateTimes.forEach((date) => {
 						expect(date.toISO()).toBe(date.startOf("day").toISO());
 					});
 				}
@@ -166,9 +168,9 @@ describe("getWeek", () => {
 			test("Monday is the first date of the range", () => {
 				for (let i = 0; i < 3; i++) {
 					const dateRange = new DateRange();
-					const dates = dateRange.getWeek().dates;
+					const dateTimes = dateRange.getWeek().dateTimes;
 
-					expect(dates[0].weekday).toEqual(WEEKDAY.Monday);
+					expect(dateTimes[0].weekday).toEqual(WEEKDAY.Monday);
 				}
 			});
 		});
@@ -182,13 +184,13 @@ describe("getWeek", () => {
 						const randomRefDate = getRandomDateTime();
 						const randomRefWeekday = getRandomWeekday();
 
-						const dates = dateRange.getWeek({
+						const dateTimes = dateRange.getWeek({
 							refDate: randomRefDate,
 							refWeekday: randomRefWeekday,
-						}).dates;
+						}).dateTimes;
 
-						expect(dates.length).toEqual(7);
-						dates.forEach((date) =>
+						expect(dateTimes.length).toEqual(7);
+						dateTimes.forEach((date) =>
 							expect(DateTime.isDateTime(date)).toBeTruthy(),
 						);
 					}
@@ -204,23 +206,23 @@ describe("getWeek", () => {
 						// Loop through each weekday from 1 to 7 with random date specified in the outer loop
 						for (let weekday = 1; weekday <= 7; weekday++) {
 							// Call the eachDayOfWeek() method with the refDate and refWeekday options
-							const dates = dateRange.getWeek({
+							const dateTimes = dateRange.getWeek({
 								refDate: randomRefDate,
 								refWeekday: weekday,
-							}).dates;
+							}).dateTimes;
 
 							// Expect that one of the dates in the array matches the refDate option
 							expect(
-								dates.find(
+								dateTimes.find(
 									(date) => date.toISODate() === randomRefDate.toISODate(),
 								),
 							).toBeTruthy();
 
 							// Expect that the first date in the array matches the refWeekday option
-							expect(dates[0].weekday).toEqual(weekday);
+							expect(dateTimes[0].weekday).toEqual(weekday);
 
 							// Expect the first day in the array is a refDate or before or the refDate
-							expect(dates[0].valueOf()).toBeLessThanOrEqual(
+							expect(dateTimes[0].valueOf()).toBeLessThanOrEqual(
 								randomRefDate.valueOf(),
 							);
 						}
@@ -233,12 +235,12 @@ describe("getWeek", () => {
 					for (let i = 0; i < 10; i++) {
 						const randomRefDate = getRandomDateTime();
 						const randomRefWeekday = getRandomWeekday();
-						const dates = dateRange.getWeek({
+						const dateTimes = dateRange.getWeek({
 							refDate: randomRefDate,
 							refWeekday: randomRefWeekday,
-						}).dates;
+						}).dateTimes;
 
-						expect(dates[0].valueOf()).toBeLessThanOrEqual(
+						expect(dateTimes[0].valueOf()).toBeLessThanOrEqual(
 							randomRefDate.valueOf(),
 						);
 					}
@@ -251,12 +253,12 @@ describe("getWeek", () => {
 						const randomRefDate = getRandomDateTime();
 						const randomRefWeekday = getRandomWeekday();
 
-						const dates = dateRange.getWeek({
+						const dateTimes = dateRange.getWeek({
 							refDate: randomRefDate,
 							refWeekday: randomRefWeekday,
-						}).dates;
+						}).dateTimes;
 
-						dates.forEach((date) => {
+						dateTimes.forEach((date) => {
 							expect(date.toISO()).toBe(date.startOf("day").toISO());
 						});
 					}
@@ -268,11 +270,11 @@ describe("getWeek", () => {
 					for (let i = 0; i < 10; i++) {
 						const randomRefDate = getRandomDateTime();
 
-						const dates = dateRange.getWeek({
+						const dateTimes = dateRange.getWeek({
 							refDate: randomRefDate,
-						}).dates;
+						}).dateTimes;
 
-						expect(dates[0].weekday).toEqual(WEEKDAY.Monday);
+						expect(dateTimes[0].weekday).toEqual(WEEKDAY.Monday);
 					}
 				});
 			});
@@ -289,8 +291,8 @@ describe("getWeek", () => {
 					});
 
 					expect(
-						defaultWeekRange.dates.length + startOffset + endOffset,
-					).toEqual(adjustedWeekRange.dates.length);
+						defaultWeekRange.dateTimes.length + startOffset + endOffset,
+					).toEqual(adjustedWeekRange.dateTimes.length);
 
 					//with specified refDate
 					const refDate = DateTime.fromISO("2020-01-01");
@@ -303,8 +305,8 @@ describe("getWeek", () => {
 						endOffset,
 					});
 
-					expect(weekRange2.dates.length + startOffset + endOffset).toEqual(
-						adjustedWeekRange2.dates.length,
+					expect(weekRange2.dateTimes.length + startOffset + endOffset).toEqual(
+						adjustedWeekRange2.dateTimes.length,
 					);
 				});
 
@@ -315,11 +317,11 @@ describe("getWeek", () => {
 
 						const defaultWeekRange = new DateRange().getWeek({
 							refDate,
-						}).dates;
+						}).dateTimes;
 						const extendedWeekRange = new DateRange().getWeek({
 							refDate,
 							startOffset,
-						}).dates;
+						}).dateTimes;
 
 						// find the index of the first element of the default range in the extended range
 						const defaultRangeFirstIndex = extendedWeekRange.findIndex(
@@ -344,11 +346,11 @@ describe("getWeek", () => {
 
 						const defaultWeekRange = new DateRange().getWeek({
 							refDate,
-						}).dates;
+						}).dateTimes;
 						const extendedWeekRange = new DateRange().getWeek({
 							refDate,
 							endOffset,
-						}).dates;
+						}).dateTimes;
 
 						// find the index of the last element of the default range in the extended range
 						const defaultRangeEndIndex = extendedWeekRange.findIndex((date) =>

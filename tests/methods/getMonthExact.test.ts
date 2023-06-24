@@ -85,17 +85,17 @@ describe("getMonthExact", () => {
 
 					test(`creates range of ${numberOfDates} dates`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExact().dates;
-						expect(dates.length).toBe(numberOfDates);
+						const dateTimes = dateRange.getMonthExact().dateTimes;
+						expect(dateTimes.length).toBe(numberOfDates);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExact().dates;
+						const dateTimes = dateRange.getMonthExact().dateTimes;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toEqual(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toEqual(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
@@ -104,18 +104,20 @@ describe("getMonthExact", () => {
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExact().dates;
+						const dateTimes = dateRange.getMonthExact().dateTimes;
 
-						expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+						expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 					});
 
 					test(`the last date in range is ${lastDate.toLocaleString(
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExact().dates;
+						const dateTimes = dateRange.getMonthExact().dateTimes;
 
-						expect(dates[dates.length - 1].valueOf()).toBe(lastDate.valueOf());
+						expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
+							lastDate.valueOf(),
+						);
 					});
 				},
 			);
@@ -130,21 +132,21 @@ describe("getMonthExact", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExact({
+							const dateTimes = dateRange.getMonthExact({
 								refDate,
-							}).dates;
-							expect(dates.length).toBe(numberOfDates);
+							}).dateTimes;
+							expect(dateTimes.length).toBe(numberOfDates);
 						});
 
 						test("each date of the range is the next day after the previous day", () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExact({
+							const dateTimes = dateRange.getMonthExact({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].toISO()).toEqual(
-									dates[i - 1].plus({ day: 1 }).toISO(),
+							for (let i = 1; i < dateTimes.length; i++) {
+								expect(dateTimes[i].toISO()).toEqual(
+									dateTimes[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -153,22 +155,22 @@ describe("getMonthExact", () => {
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExact({
+							const dateTimes = dateRange.getMonthExact({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+							expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 						});
 
 						test(`the last date in range is ${lastDate.toLocaleString(
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExact({
+							const dateTimes = dateRange.getMonthExact({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[dates.length - 1].valueOf()).toBe(
+							expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 								lastDate.valueOf(),
 							);
 						});
@@ -190,21 +192,21 @@ describe("getMonthExact", () => {
 								({ firstDate, lastDate, numberOfDates, startOffset }) => {
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											startOffset,
-										}).dates;
-										expect(dates.length).toBe(numberOfDates);
+										}).dateTimes;
+										expect(dateTimes.length).toBe(numberOfDates);
 									});
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].toISO()).toEqual(
-												dates[i - 1].plus({ day: 1 }).toISO(),
+										for (let i = 1; i < dateTimes.length; i++) {
+											expect(dateTimes[i].toISO()).toEqual(
+												dateTimes[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -213,22 +215,22 @@ describe("getMonthExact", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+										expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 									});
 
 									test(`the last date in range is ${lastDate.toLocaleString(
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dates.length - 1].valueOf()).toBe(
+										expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
 									});
@@ -252,21 +254,21 @@ describe("getMonthExact", () => {
 								({ firstDate, lastDate, numberOfDates, endOffset }) => {
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											endOffset,
-										}).dates;
-										expect(dates.length).toBe(numberOfDates);
+										}).dateTimes;
+										expect(dateTimes.length).toBe(numberOfDates);
 									});
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].toISO()).toEqual(
-												dates[i - 1].plus({ day: 1 }).toISO(),
+										for (let i = 1; i < dateTimes.length; i++) {
+											expect(dateTimes[i].toISO()).toEqual(
+												dateTimes[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -275,22 +277,22 @@ describe("getMonthExact", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+										expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 									});
 
 									test(`the last date in range is ${lastDate.toLocaleString(
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExact({
+										const dateTimes = dateRange.getMonthExact({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dates.length - 1].valueOf()).toBe(
+										expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
 									});
@@ -351,8 +353,8 @@ describe("getMonthExact", () => {
 							const options = { endOffset, refDate, startOffset };
 
 							const dr = new DateRange().getMonthExact(options);
-							const firstDate = dr.dates[0];
-							const lastDate = dr.dates[dr.dates.length - 1];
+							const firstDate = dr.dateTimes[0];
+							const lastDate = dr.dateTimes[dr.dateTimes.length - 1];
 
 							test("The first date of range is correct", () => {
 								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());

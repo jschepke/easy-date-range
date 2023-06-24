@@ -106,16 +106,16 @@ describe("getMonthExtended", () => {
 
 					test(`creates range of ${numberOfDates} dates`, () => {
 						const dr = new DateRange().getMonthExtended();
-						expect(dr.dates.length).toBe(numberOfDates);
+						expect(dr.dateTimes.length).toBe(numberOfDates);
 					});
 
 					test("each date of the range is the next day after the previous day", () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExtended().dates;
+						const dateTimes = dateRange.getMonthExtended().dateTimes;
 
-						for (let i = 1; i < dates.length; i++) {
-							expect(dates[i].toISO()).toEqual(
-								dates[i - 1].plus({ day: 1 }).toISO(),
+						for (let i = 1; i < dateTimes.length; i++) {
+							expect(dateTimes[i].toISO()).toEqual(
+								dateTimes[i - 1].plus({ day: 1 }).toISO(),
 							);
 						}
 					});
@@ -124,36 +124,40 @@ describe("getMonthExtended", () => {
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExtended().dates;
+						const dateTimes = dateRange.getMonthExtended().dateTimes;
 
-						expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+						expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 					});
 
 					test(`the last date in range is ${lastDate.toLocaleString(
 						DateTime.DATETIME_MED_WITH_WEEKDAY,
 					)}`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExtended().dates;
+						const dateTimes = dateRange.getMonthExtended().dateTimes;
 
-						expect(dates[dates.length - 1].valueOf()).toBe(lastDate.valueOf());
+						expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
+							lastDate.valueOf(),
+						);
 					});
 
 					test(`the first weekday in range is ${
 						Info.weekdays()[refWeekday - 1]
 					} (${refWeekday})`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExtended().dates;
+						const dateTimes = dateRange.getMonthExtended().dateTimes;
 
-						expect(dates[0].weekday).toBe(refWeekday);
+						expect(dateTimes[0].weekday).toBe(refWeekday);
 					});
 
 					test(`the last weekday in range is ${
 						Info.weekdays()[lastWeekday - 1]
 					} (${lastWeekday})`, () => {
 						const dateRange = new DateRange();
-						const dates = dateRange.getMonthExtended().dates;
+						const dateTimes = dateRange.getMonthExtended().dateTimes;
 
-						expect(dates[dateRange.dates.length - 1].weekday).toBe(lastWeekday);
+						expect(dateTimes[dateRange.dateTimes.length - 1].weekday).toBe(
+							lastWeekday,
+						);
 					});
 				},
 			);
@@ -180,21 +184,21 @@ describe("getMonthExtended", () => {
 
 						test(`creates range of ${numberOfDates} dates`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
-							expect(dates.length).toBe(numberOfDates);
+							}).dateTimes;
+							expect(dateTimes.length).toBe(numberOfDates);
 						});
 
 						test("each date of the range is the next day after the previous day", () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							for (let i = 1; i < dates.length; i++) {
-								expect(dates[i].toISO()).toEqual(
-									dates[i - 1].plus({ day: 1 }).toISO(),
+							for (let i = 1; i < dateTimes.length; i++) {
+								expect(dateTimes[i].toISO()).toEqual(
+									dateTimes[i - 1].plus({ day: 1 }).toISO(),
 								);
 							}
 						});
@@ -203,22 +207,22 @@ describe("getMonthExtended", () => {
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+							expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 						});
 
 						test(`the last date in range is ${lastDate.toLocaleString(
 							DateTime.DATETIME_MED_WITH_WEEKDAY,
 						)}`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[dates.length - 1].valueOf()).toBe(
+							expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 								lastDate.valueOf(),
 							);
 						});
@@ -227,22 +231,22 @@ describe("getMonthExtended", () => {
 							Info.weekdays()[refWeekday - 1]
 						} (${refWeekday})`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[0].weekday).toBe(refWeekday);
+							expect(dateTimes[0].weekday).toBe(refWeekday);
 						});
 
 						test(`the last weekday in range is ${
 							Info.weekdays()[lastWeekday - 1]
 						} (${lastWeekday})`, () => {
 							const dateRange = new DateRange();
-							const dates = dateRange.getMonthExtended({
+							const dateTimes = dateRange.getMonthExtended({
 								refDate,
-							}).dates;
+							}).dateTimes;
 
-							expect(dates[dateRange.dates.length - 1].weekday).toBe(
+							expect(dateTimes[dateRange.dateTimes.length - 1].weekday).toBe(
 								lastWeekday,
 							);
 						});
@@ -276,21 +280,21 @@ describe("getMonthExtended", () => {
 
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
-										expect(dates.length).toBe(numberOfDates);
+										}).dateTimes;
+										expect(dateTimes.length).toBe(numberOfDates);
 									});
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
+										}).dateTimes;
 
-										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].toISO()).toEqual(
-												dates[i - 1].plus({ day: 1 }).toISO(),
+										for (let i = 1; i < dateTimes.length; i++) {
+											expect(dateTimes[i].toISO()).toEqual(
+												dateTimes[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -299,22 +303,22 @@ describe("getMonthExtended", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+										expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 									});
 
 									test(`the last date in range is ${lastDate.toLocaleString(
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dates.length - 1].valueOf()).toBe(
+										expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
 									});
@@ -323,24 +327,24 @@ describe("getMonthExtended", () => {
 										Info.weekdays()[refWeekday - 1]
 									} (${refWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].weekday).toBe(refWeekday);
+										expect(dateTimes[0].weekday).toBe(refWeekday);
 									});
 
 									test(`the last weekday in range is ${
 										Info.weekdays()[lastWeekday - 1]
 									} (${lastWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											refWeekday,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dateRange.dates.length - 1].weekday).toBe(
-											lastWeekday,
-										);
+										expect(
+											dateTimes[dateRange.dateTimes.length - 1].weekday,
+										).toBe(lastWeekday);
 									});
 								},
 							);
@@ -374,21 +378,21 @@ describe("getMonthExtended", () => {
 
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											startOffset,
-										}).dates;
-										expect(dates.length).toBe(numberOfDates);
+										}).dateTimes;
+										expect(dateTimes.length).toBe(numberOfDates);
 									});
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].toISO()).toEqual(
-												dates[i - 1].plus({ day: 1 }).toISO(),
+										for (let i = 1; i < dateTimes.length; i++) {
+											expect(dateTimes[i].toISO()).toEqual(
+												dateTimes[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -397,22 +401,22 @@ describe("getMonthExtended", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+										expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 									});
 
 									test(`the last date in range is ${lastDate.toLocaleString(
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dates.length - 1].valueOf()).toBe(
+										expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
 									});
@@ -421,13 +425,13 @@ describe("getMonthExtended", () => {
 										Info.weekdays()[lastWeekday - 1]
 									} (${lastWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											startOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dateRange.dates.length - 1].weekday).toBe(
-											lastWeekday,
-										);
+										expect(
+											dateTimes[dateRange.dateTimes.length - 1].weekday,
+										).toBe(lastWeekday);
 									});
 								},
 							);
@@ -455,21 +459,21 @@ describe("getMonthExtended", () => {
 								}) => {
 									test(`creates range of ${numberOfDates} dates`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											endOffset,
-										}).dates;
-										expect(dates.length).toBe(numberOfDates);
+										}).dateTimes;
+										expect(dateTimes.length).toBe(numberOfDates);
 									});
 
 									test("each date of the range is the next day after the previous day", () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										for (let i = 1; i < dates.length; i++) {
-											expect(dates[i].toISO()).toBe(
-												dates[i - 1].plus({ day: 1 }).toISO(),
+										for (let i = 1; i < dateTimes.length; i++) {
+											expect(dateTimes[i].toISO()).toBe(
+												dateTimes[i - 1].plus({ day: 1 }).toISO(),
 											);
 										}
 									});
@@ -478,22 +482,22 @@ describe("getMonthExtended", () => {
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].valueOf()).toEqual(firstDate.valueOf());
+										expect(dateTimes[0].valueOf()).toEqual(firstDate.valueOf());
 									});
 
 									test(`the last date in range is ${lastDate.toLocaleString(
 										DateTime.DATETIME_MED_WITH_WEEKDAY,
 									)}`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[dates.length - 1].valueOf()).toBe(
+										expect(dateTimes[dateTimes.length - 1].valueOf()).toBe(
 											lastDate.valueOf(),
 										);
 									});
@@ -502,11 +506,11 @@ describe("getMonthExtended", () => {
 										Info.weekdays()[refWeekday - 1]
 									} (${refWeekday})`, () => {
 										const dateRange = new DateRange();
-										const dates = dateRange.getMonthExtended({
+										const dateTimes = dateRange.getMonthExtended({
 											endOffset,
-										}).dates;
+										}).dateTimes;
 
-										expect(dates[0].weekday).toBe(refWeekday);
+										expect(dateTimes[0].weekday).toBe(refWeekday);
 									});
 								},
 							);
@@ -570,8 +574,8 @@ describe("getMonthExtended", () => {
 							const options = { endOffset, refDate, refWeekday, startOffset };
 
 							const dr = new DateRange().getMonthExtended(options);
-							const firstDate = dr.dates[0];
-							const lastDate = dr.dates[dr.dates.length - 1];
+							const firstDate = dr.dateTimes[0];
+							const lastDate = dr.dateTimes[dr.dateTimes.length - 1];
 
 							test("The first date of range is correct", () => {
 								expect(firstDate.toISO()).toEqual(expectedFirstDate.toISO());
