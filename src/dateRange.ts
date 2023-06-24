@@ -26,7 +26,7 @@ interface OptionsAll
 
 export interface DateRangeMembers extends Required<OptionsAll> {
 	rangeType: RANGE_TYPE;
-	dates: DateTime[];
+	dateTimes: DateTime[];
 	isNext: boolean;
 }
 // DateRangeDefaults inherits DateRangeMembers but makes ‘rangeType’ optional.
@@ -43,7 +43,7 @@ const dateRangeDefaults: DateRangeDefaults = {
 	},
 	refWeekday: WEEKDAY.Monday,
 	startOffset: 0,
-	dates: [],
+	dateTimes: [],
 	isNext: false,
 };
 
@@ -64,23 +64,23 @@ export interface Offset {
 	 * // with no offset 👈
 	 * const month1 = new DateRange().getMonthExact({ refDate });
 	 * // first date in range
-	 * month1.dates[0]; // Jan 1, 2020
+	 * month1.dateTimes[0]; // Jan 1, 2020
 	 * // last date in range
-	 * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
+	 * month1.dateTimes[month1.dateTimes.length - 1]; // Jan 31, 2020
 	 *
 	 * // with positive startOffset 👈
 	 * const month2 = new DateRange().getMonthExact({ refDate, startOffset: 5 });
 	 * // first date in range
-	 * month2.dates[0]; // Dec 27, 2020
+	 * month2.dateTimes[0]; // Dec 27, 2020
 	 * // last date in range (no changes)
-	 * month2.dates[month2.dates.length - 1]; // Jan 31, 2020
+	 * month2.dateTimes[month2.dateTimes.length - 1]; // Jan 31, 2020
 	 *
 	 * // with negative startOffset 👈
 	 * const month3 = new DateRange().getMonthExact({ refDate, startOffset: -5 });
 	 * // first date in range
-	 * month3.dates[0]; // Jan 6, 2020
+	 * month3.dateTimes[0]; // Jan 6, 2020
 	 * // last date in range (no changes)
-	 * month3.dates[month3.dates.length - 1]; // Jan 31, 2020
+	 * month3.dateTimes[month3.dateTimes.length - 1]; // Jan 31, 2020
 	 * ```
 	 */
 	startOffset?: number;
@@ -101,23 +101,23 @@ export interface Offset {
 	 * // with no offset 👈
 	 * const month1 = new DateRange().getMonthExact({ refDate });
 	 * // first date in range
-	 * month1.dates[0]; // Jan 1, 2020
+	 * month1.dateTimes[0]; // Jan 1, 2020
 	 * // last date in range
-	 * month1.dates[month1.dates.length - 1]; // Jan 31, 2020
+	 * month1.dateTimes[month1.dateTimes.length - 1]; // Jan 31, 2020
 	 *
 	 * // with positive endOffset 👈
 	 * const month2 = new DateRange().getMonthExact({ refDate, endOffset: 5 });
 	 * // first date in range (no changes)
-	 * month2.dates[0]; // Jan 1, 2020
+	 * month2.dateTimes[0]; // Jan 1, 2020
 	 * // last date in range
-	 * month2.dates[month2.dates.length - 1]; // Feb 5, 2020
+	 * month2.dateTimes[month2.dateTimes.length - 1]; // Feb 5, 2020
 	 *
 	 * // with negative endOffset 👈
 	 * const month3 = new DateRange().getMonthExact({ refDate, endOffset: -5 });
 	 * // first date in range (no changes)
-	 * month3.dates[0]; // Jan 1, 2020
+	 * month3.dateTimes[0]; // Jan 1, 2020
 	 * // last date in range
-	 * month3.dates[month3.dates.length - 1]; // Jan 26, 2020
+	 * month3.dateTimes[month3.dateTimes.length - 1]; // Jan 26, 2020
 	 * ```
 	 */
 	endOffset?: number;
@@ -207,9 +207,9 @@ export class DateRange {
 	private _endOffset: number | undefined;
 
 	/**
-	 * The instance date storage.
+	 * The instance dates storage.
 	 */
-	private _dates: DateTime[] | undefined;
+	private _dateTimes: DateTime[] | undefined;
 
 	/**
 	 * The type of a current generated date range.
@@ -284,14 +284,14 @@ export class DateRange {
 	 * @remarks
 	 * To get JS Dates use `toJSDates()` method.
 	 */
-	get dates(): DateTime[] {
-		if (this._dates === undefined) {
+	get dateTimes(): DateTime[] {
+		if (this._dateTimes === undefined) {
 			// Todo: Refactor to custom error
 			throw new Error(
 				"You try to access dates before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
 			);
 		}
-		return this._dates;
+		return this._dateTimes;
 	}
 
 	/**
@@ -392,7 +392,7 @@ export class DateRange {
 			startOffset,
 			endOffset,
 			daysCount,
-			dates,
+			dateTimes,
 			isNext,
 		} = members;
 
@@ -421,7 +421,7 @@ export class DateRange {
 			this._isNext = isNext;
 		}
 
-		this._dates = dates;
+		this._dateTimes = dateTimes;
 	}
 
 	/*================================ Utility METHODS ==============================*/
@@ -464,14 +464,14 @@ export class DateRange {
 	 * Returns an array of dates generated for the instance as Luxon DateTime objects.
 	 */
 	public toDateTimes(): DateTime[] {
-		return this.dates;
+		return this.dateTimes;
 	}
 
 	/**
 	 * Returns an array of dates generated for the instance as JS Date objects.
 	 */
 	public toDates(): Date[] {
-		return this.dates.map((date) => date.toJSDate());
+		return this.dateTimes.map((date) => date.toJSDate());
 	}
 
 	/*================================ TIME RANGE METHODS ==============================*/
@@ -535,7 +535,7 @@ export class DateRange {
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.Week,
-			dates: [],
+			dateTimes: [],
 			refDate,
 			refWeekday,
 			endOffset,
@@ -557,18 +557,18 @@ export class DateRange {
 			firstDayOfRange = firstDayOfRange.minus({ days: 1 });
 		}
 
-		const dates = dateRangeMembers.dates;
+		const dateTimes = dateRangeMembers.dateTimes;
 
 		let currentDay = firstDayOfRange;
-		while (dates.length < 7) {
-			dates.push(currentDay);
+		while (dateTimes.length < 7) {
+			dateTimes.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// apply offset if specified
 		if (startOffset || endOffset) {
 			const adjustedDateRange = applyOffset({
-				rangeToAdjust: dates,
+				rangeToAdjust: dateTimes,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -576,7 +576,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...adjustedDateRange],
+				dateTimes: [...adjustedDateRange],
 			});
 
 			return this;
@@ -644,7 +644,7 @@ export class DateRange {
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.MonthExtended,
-			dates: [],
+			dateTimes: [],
 			refDate,
 			refWeekday,
 			endOffset,
@@ -668,7 +668,7 @@ export class DateRange {
 			lastDayOfMonth = refDate.endOf("month");
 		}
 
-		const dates = dateRangeMembers.dates;
+		const dateTimes = dateRangeMembers.dateTimes;
 
 		// Find the first date of a range aligned with a begging of a week
 		let firstDayOfRange: DateTime = firstDayOfMonth;
@@ -679,19 +679,19 @@ export class DateRange {
 		// Loop over the dates to the last day of month
 		let currentDay = firstDayOfRange;
 		while (currentDay.valueOf() < lastDayOfMonth.valueOf()) {
-			dates.push(currentDay);
+			dateTimes.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// Find the last date of a range aligned with an ending of a week
-		while (dates[dates.length - 1].weekday !== lastWeekday) {
-			dates.push(dates[dates.length - 1].plus({ days: 1 }));
+		while (dateTimes[dateTimes.length - 1].weekday !== lastWeekday) {
+			dateTimes.push(dateTimes[dateTimes.length - 1].plus({ days: 1 }));
 		}
 
 		// Apply offset if specified
 		if (startOffset || endOffset) {
 			const adjustedDateRange = applyOffset({
-				rangeToAdjust: dates,
+				rangeToAdjust: dateTimes,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -699,7 +699,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...adjustedDateRange],
+				dateTimes: [...adjustedDateRange],
 			});
 
 			return this;
@@ -777,7 +777,7 @@ export class DateRange {
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.MonthExact,
-			dates: [],
+			dateTimes: [],
 			refDate,
 			refWeekday: dateRangeDefaults.refWeekday,
 			endOffset,
@@ -798,7 +798,7 @@ export class DateRange {
 			lastDayOfMonth = refDate.endOf("month");
 		}
 
-		const dates = dateRangeMembers.dates;
+		const dates = dateRangeMembers.dateTimes;
 
 		let currentDay = firstDayOfMonth;
 		while (currentDay.valueOf() < lastDayOfMonth.valueOf()) {
@@ -818,7 +818,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...adjustedDateRange],
+				dateTimes: [...adjustedDateRange],
 			});
 
 			return this;
@@ -891,7 +891,7 @@ export class DateRange {
 
 		const dateRangeMembers: DateRangeMembers = {
 			rangeType: RANGE_TYPE.Days,
-			dates: [],
+			dateTimes: [],
 			refDate,
 			refWeekday: dateRangeDefaults.refWeekday,
 			endOffset,
@@ -908,18 +908,18 @@ export class DateRange {
 			firstDayOfRange = refDate.startOf("day");
 		}
 
-		const dates = dateRangeMembers.dates;
+		const dateTimes = dateRangeMembers.dateTimes;
 
 		let currentDay = firstDayOfRange;
-		while (dates.length < daysCount) {
-			dates.push(currentDay);
+		while (dateTimes.length < daysCount) {
+			dateTimes.push(currentDay);
 			currentDay = currentDay.plus({ day: 1 });
 		}
 
 		// apply offset if specified
 		if (startOffset || endOffset) {
 			const adjustedDateRange = applyOffset({
-				rangeToAdjust: dates,
+				rangeToAdjust: dateTimes,
 				timeUnit: "days",
 				startOffset,
 				endOffset,
@@ -927,7 +927,7 @@ export class DateRange {
 
 			this._setMembers({
 				...dateRangeMembers,
-				dates: [...adjustedDateRange],
+				dateTimes: [...adjustedDateRange],
 			});
 
 			return this;
@@ -965,10 +965,10 @@ export class DateRange {
 	 * ```
 	 * // example with a "WEEK" range
 	 * const week = new DateRange().getWeek({ refDate: new Date("2023-01-10") });
-	 * week.dates; // dates from Mon, 01/09/2023 to Sun, 01/15/2023
+	 * week.dateTimes; // dates from Mon, 01/09/2023 to Sun, 01/15/2023
 	 *
 	 * const weekNext = new DateRange().getNext(week);
-	 * weekNext.dates; // dates from Mon, 01/16/2023 to Sun, 01/22/2023
+	 * weekNext.dateTimes; // dates from Mon, 01/16/2023 to Sun, 01/22/2023
 	 * ```
 	 */
 	public getNext(dateRange: DateRange): DateRange {
@@ -1089,10 +1089,10 @@ export class DateRange {
 	 * ```
 	 * // example with a "WEEK" range
 	 * const week = new DateRange().getWeek({ refDate: new Date("2023-01-10") });
-	 * week.dates; // dates from Mon, 01/09/2023, to Sun, 01/15/2023
+	 * week.dateTimes; // dates from Mon, 01/09/2023, to Sun, 01/15/2023
 	 *
 	 * const weekPrevious = new DateRange().getPrevious(week);
-	 * weekPrev.dates; // dates from Mon, 01/02/2023 to Sun, 01/08/2023
+	 * weekPrev.dateTimes; // dates from Mon, 01/02/2023 to Sun, 01/08/2023
 	 * ```
 	 */
 	public getPrevious(dateRange: DateRange) {

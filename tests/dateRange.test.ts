@@ -8,7 +8,7 @@ import { weekdayTestValues } from "./testUtils";
 
 describe("dateRange instance", () => {
 	const dateRangeMembersKeys: (keyof DateRangeMembers)[] = [
-		"dates",
+		"dateTimes",
 		"daysCount",
 		"endOffset",
 		"isNext",
@@ -73,7 +73,7 @@ describe("dateRange instance", () => {
 
 		describe.each(testValues)("$methodName", ({ dateRange, rangeType }) => {
 			const members: DateRangeMembers = {
-				dates: dateRange.dates,
+				dateTimes: dateRange.dateTimes,
 				daysCount: dateRange.daysCount,
 				endOffset: dateRange.endOffset,
 				isNext: dateRange.isNext,
@@ -99,7 +99,7 @@ describe("dateRange instance", () => {
 					const dr = new DateRange().getNext(dateRange);
 
 					const members: DateRangeMembers = {
-						dates: dr.dates,
+						dateTimes: dr.dateTimes,
 						daysCount: dr.daysCount,
 						endOffset: dr.endOffset,
 						isNext: dr.isNext,
