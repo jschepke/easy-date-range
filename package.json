@@ -1,7 +1,19 @@
 {
-  "name": "calendar-range",
+  "name": "easy-date-range",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/easy-date-range.umd.cjs",
+  "module": "./dist/easy-date-range.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/easy-date-range.js",
+      "require": "./dist/easy-date-range.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
