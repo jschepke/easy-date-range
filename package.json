@@ -1,6 +1,17 @@
 {
   "name": "easy-date-range",
+  "description": "Simple, easy to use library for creating date ranges which can be used as a foundation for building all sorts of calendars, schedulers, date lists and more.",
   "version": "0.0.0",
+  "author": "Jakub Schepke",
+  "license": "MIT",
+  "homepage": "https://github.com/jschepke/easy-date-range",
+  "keywords": [
+    "date",
+    "dates",
+    "calendar",
+    "date-range",
+    "range"
+  ],
   "type": "module",
   "main": "./dist/easy-date-range.umd.cjs",
   "module": "./dist/easy-date-range.js",
