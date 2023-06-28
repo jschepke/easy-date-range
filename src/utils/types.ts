@@ -30,5 +30,5 @@
  * ```
  */
 export type PropertiesMap<T> = {
-  [Key in keyof Required<T>]: Key;
+	[Key in keyof Required<T>]: Key;
 };

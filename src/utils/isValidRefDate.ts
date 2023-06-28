@@ -1,5 +1,5 @@
-import { isValidDate } from './isValidDate';
-import { isValidDateTime } from './isValidDateTime';
+import { isValidDate } from "./isValidDate";
+import { isValidDateTime } from "./isValidDateTime";
 
 /**
  * Checks if a given value is a valid reference date.
@@ -9,9 +9,9 @@ import { isValidDateTime } from './isValidDateTime';
  * @returns True if the value is a valid reference date, false otherwise.
  */
 export function isValidRefDate(refDate: unknown): boolean {
-  if (isValidDate(refDate) || isValidDateTime(refDate)) {
-    return true;
-  } else {
-    return false;
-  }
+	if (isValidDate(refDate) || isValidDateTime(refDate)) {
+		return true;
+	} else {
+		return false;
+	}
 }

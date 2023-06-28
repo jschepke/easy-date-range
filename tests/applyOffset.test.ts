@@ -138,7 +138,7 @@ describe("applyOffset", () => {
 						({ rangeToAdjust, startOffset }) => {
 							expect(() =>
 								applyOffset({
-									rangeToAdjust: rangeToAdjust,
+									rangeToAdjust,
 									startOffset,
 									endOffset: 0,
 									timeUnit: "day",
@@ -209,7 +209,7 @@ describe("applyOffset", () => {
 						({ rangeToAdjust, endOffset }) => {
 							expect(() =>
 								applyOffset({
-									rangeToAdjust: rangeToAdjust,
+									rangeToAdjust,
 									endOffset,
 									startOffset: 0,
 									timeUnit: "day",
@@ -252,7 +252,7 @@ describe("applyOffset", () => {
 							applyOffset({
 								startOffset,
 								endOffset,
-								rangeToAdjust: rangeToAdjust,
+								rangeToAdjust,
 								timeUnit: "day",
 							}),
 						).toThrowError("Negative values of startOffset");
@@ -302,7 +302,7 @@ describe("applyOffset", () => {
 
 						// act
 						const adjustedRange = applyOffset({
-							rangeToAdjust: rangeToAdjust,
+							rangeToAdjust,
 							timeUnit,
 							startOffset,
 							endOffset,
@@ -372,13 +372,13 @@ describe("applyOffset", () => {
 				({
 					endOffset,
 					timeUnit,
-					rangeToAdjust: rangeToAdjust,
+					rangeToAdjust,
 					startOffset,
 					expectedLength,
 					expectedRange,
 				}) => {
 					const adjustedRange = applyOffset({
-						rangeToAdjust: rangeToAdjust,
+						rangeToAdjust,
 						timeUnit,
 						startOffset,
 						endOffset,
@@ -441,12 +441,12 @@ describe("applyOffset", () => {
 					endOffset,
 					expectedLength,
 					expectedRange,
-					rangeToAdjust: rangeToAdjust,
+					rangeToAdjust,
 					startOffset,
 					timeUnit,
 				}) => {
 					const adjustedRange = applyOffset({
-						rangeToAdjust: rangeToAdjust,
+						rangeToAdjust,
 						timeUnit,
 						startOffset,
 						endOffset,
@@ -544,12 +544,12 @@ describe("applyOffset", () => {
 						endOffset,
 						expectedLength,
 						expectedRange,
-						rangeToAdjust: rangeToAdjust,
+						rangeToAdjust,
 						startOffset,
 						timeUnit,
 					}) => {
 						const adjustedRange = applyOffset({
-							rangeToAdjust: rangeToAdjust,
+							rangeToAdjust,
 							timeUnit,
 							startOffset,
 							endOffset,
@@ -619,16 +619,11 @@ describe("applyOffset", () => {
 
 				describe.each(testData)(
 					"Given options: endOffset: $endOffset, startOffset: $startOffset, length: $rangeToAdjust.length",
-					({
-						endOffset,
-						rangeToAdjust: rangeToAdjust,
-						startOffset,
-						timeUnit,
-					}) => {
+					({ endOffset, rangeToAdjust, startOffset, timeUnit }) => {
 						test("throws an error", () => {
 							expect(() =>
 								applyOffset({
-									rangeToAdjust: rangeToAdjust,
+									rangeToAdjust,
 									timeUnit,
 									startOffset,
 									endOffset,

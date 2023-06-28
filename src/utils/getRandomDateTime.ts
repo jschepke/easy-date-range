@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 /**
  * Returns a random luxon DateTime object within a given range.
@@ -9,20 +9,20 @@ import { DateTime } from 'luxon';
  * @throws Error if the start or end date are invalid or if the start date is after the end date.
  */
 export function getRandomDateTime(
-  start: DateTime = DateTime.fromMillis(0),
-  end: DateTime = DateTime.fromISO('2100-12-31')
+	start: DateTime = DateTime.fromMillis(0),
+	end: DateTime = DateTime.fromISO("2100-12-31"),
 ): DateTime {
-  if (!start.isValid || !end.isValid) {
-    throw new Error('Invalid start or end date');
-  }
-  if (start > end) {
-    throw new Error('Start date must be before or equal to end date');
-  }
+	if (!start.isValid || !end.isValid) {
+		throw new Error("Invalid start or end date");
+	}
+	if (start > end) {
+		throw new Error("Start date must be before or equal to end date");
+	}
 
-  const randomMillis =
-    start.toMillis() + Math.random() * (end.toMillis() - start.toMillis());
+	const randomMillis =
+		start.toMillis() + Math.random() * (end.toMillis() - start.toMillis());
 
-  const randomDate = DateTime.fromMillis(randomMillis);
+	const randomDate = DateTime.fromMillis(randomMillis);
 
-  return randomDate;
+	return randomDate;
 }
