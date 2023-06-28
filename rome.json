@@ -7,7 +7,16 @@
     "enabled": true,
     "rules": {
       "recommended": true
-    },
-    "ignore": ["dist", "notes"]
+    }
+  },
+  "files": {
+    "ignore": [
+      "dist",
+      "notes",
+      "tsconfig.json",
+      "node_modules",
+      "html",
+      "coverage"
+    ]
   }
 }
