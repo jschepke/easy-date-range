@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Vitest reporters
+coverage
+html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
