@@ -28,6 +28,7 @@ export interface DateRangeMembers extends Required<OptionsAll> {
 	rangeType: RANGE_TYPE;
 	dateTimes: DateTime[];
 	isNext: boolean;
+	isPrevious: boolean;
 }
 // DateRangeDefaults inherits DateRangeMembers but makes ‘rangeType’ optional.
 interface DateRangeDefaults
@@ -45,6 +46,7 @@ const dateRangeDefaults: DateRangeDefaults = {
 	startOffset: 0,
 	dateTimes: [],
 	isNext: false,
+	isPrevious: false,
 };
 
 export interface Offset {
@@ -375,7 +377,7 @@ export class DateRange {
 				"You try to access isPrevious property before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
 			);
 		}
-		return this._isNext;
+		return this._isPrevious;
 	}
 
 	/**
@@ -394,6 +396,7 @@ export class DateRange {
 			daysCount,
 			dateTimes,
 			isNext,
+			isPrevious,
 		} = members;
 
 		// Update instance members if different from current one
@@ -419,6 +422,9 @@ export class DateRange {
 		}
 		if (isNext !== this._isNext) {
 			this._isNext = isNext;
+		}
+		if (isPrevious !== this._isPrevious) {
+			this._isPrevious = isPrevious;
 		}
 
 		this._dateTimes = dateTimes;
@@ -541,6 +547,7 @@ export class DateRange {
 			endOffset,
 			startOffset,
 			isNext: dateRangeDefaults.isNext,
+			isPrevious: dateRangeDefaults.isPrevious,
 			daysCount: dateRangeDefaults.daysCount,
 		};
 
@@ -650,6 +657,7 @@ export class DateRange {
 			endOffset,
 			startOffset,
 			isNext: dateRangeDefaults.isNext,
+			isPrevious: dateRangeDefaults.isPrevious,
 			daysCount: dateRangeDefaults.daysCount,
 		};
 
@@ -783,6 +791,7 @@ export class DateRange {
 			endOffset,
 			startOffset,
 			isNext: dateRangeDefaults.isNext,
+			isPrevious: dateRangeDefaults.isPrevious,
 			daysCount: dateRangeDefaults.daysCount,
 		};
 
@@ -897,6 +906,7 @@ export class DateRange {
 			endOffset,
 			startOffset,
 			isNext: dateRangeDefaults.isNext,
+			isPrevious: dateRangeDefaults.isPrevious,
 			daysCount,
 		};
 
