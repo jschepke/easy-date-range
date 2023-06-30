@@ -49,6 +49,9 @@ describe("dateRange instance", () => {
 		it("throws an error if any parameters are passed to the constructor", () => {
 			// @ts-expect-error: testing invalid input
 			expect(() => new DateRange("2022-01-01")).toThrowError();
+			// test for more then one argument
+			// @ts-expect-error: testing invalid input
+			expect(() => new DateRange(1, 2)).toThrowError();
 		});
 
 		it("creates a DateRange instance", () => {

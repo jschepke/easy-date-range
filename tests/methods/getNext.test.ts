@@ -56,6 +56,8 @@ describe("getNext method", () => {
 		});
 
 		describe("Functionality", () => {
+			const dateRange = new DateRange();
+
 			// set mocked time
 			beforeEach(() => {
 				vi.useFakeTimers();
@@ -67,7 +69,21 @@ describe("getNext method", () => {
 				vi.useRealTimers();
 			});
 
-			const dateRange = new DateRange();
+			test("throws an error if the RangeType is not valid", () => {
+				// mock a setter method 'rangeType' to prototype of DateRange
+				Object.defineProperty(DateRange.prototype, "rangeType", {
+					set(value) {
+						this._rangeType = value;
+					},
+				});
+				const dr = new DateRange().getDays();
+
+				// @ts-ignore
+				dr.rangeType = "invalid";
+				expect(() => new DateRange().getNext(dr)).toThrowError(
+					"not implemented",
+				);
+			});
 
 			describe(`with DateRange of type ${RANGE_TYPE.Days}`, () => {
 				describe.each([
