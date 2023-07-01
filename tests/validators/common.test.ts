@@ -19,8 +19,6 @@ describe("Common validators", () => {
 
 		describe("Given valid argument", () => {
 			const rangeTypes = Object.values(RANGE_TYPE);
-			console.log(rangeTypes);
-
 			test.each(rangeTypes)(
 				"doesn't return anything for valid rangeType: %s",
 				(rangeType) => {
