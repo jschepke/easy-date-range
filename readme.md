@@ -1,5 +1,7 @@
 # easy-date-range
 
+[![codecov](https://codecov.io/gh/jschepke/easy-date-range/branch/main/graph/badge.svg?token=EZ7VEPC9UE)](https://codecov.io/gh/jschepke/easy-date-range)
+
 easy-date-range is a simple, easy to use library for creating date ranges which can be used as a foundation for building all sorts of calendars, schedulers, date lists and more.
 
 ## Features
