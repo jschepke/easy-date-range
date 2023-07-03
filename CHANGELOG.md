@@ -1,0 +1,39 @@
+# 1.0.0 (2023-07-03)
+
+
+### Bug Fixes
+
+* add integer check to isValidWeekday function ([272dd8f](https://github.com/jschepke/easy-date-range/commit/272dd8ff6f06207ee02397516d70ee1500ef3717))
+* correct typo in findDateTime.test.ts ([18b56fb](https://github.com/jschepke/easy-date-range/commit/18b56fbc5f8641590df3c6a6e52d4c3adcb61bcd))
+* getPrevious and isPrevious ([ee3e94f](https://github.com/jschepke/easy-date-range/commit/ee3e94f70aeef2cfa2ede628c19c74c8394d6084))
+
+
+* feat(dateRange)!: update DateRange class ([0e4b847](https://github.com/jschepke/easy-date-range/commit/0e4b847f4e032f33dc463b44ff1e661ebbac7a44))
+
+
+### Features
+
+* add commitlint and husky ([1a757d9](https://github.com/jschepke/easy-date-range/commit/1a757d9469e7411303b34c07c35d48eca44697b2))
+* add exports to index.ts ([d93aa30](https://github.com/jschepke/easy-date-range/commit/d93aa3058922a93910b2df118fa555ccdf1bb2b8))
+* add findDateTime function and test suite ([3515619](https://github.com/jschepke/easy-date-range/commit/35156196a75636d19396c617bfd8bae2f5283eac))
+* add new validation errors ([1f10401](https://github.com/jschepke/easy-date-range/commit/1f104016f58ac38ee46be4afae6cf0142868d44a))
+* add range type to constants ([eefff58](https://github.com/jschepke/easy-date-range/commit/eefff58a036635222a2214106db6543c86b9152d))
+* add zod library ([9434325](https://github.com/jschepke/easy-date-range/commit/94343251dd71680cb86e76ce42b57d21aaaf526b))
+* **DateRange:** constructor and methods update ([23ba093](https://github.com/jschepke/easy-date-range/commit/23ba09394d0e674cc948de2c4e5546714b39ee99))
+* **errors:** add more custom errors ([58c327b](https://github.com/jschepke/easy-date-range/commit/58c327bef104e97b812803c3826eef0a83fc5bbd))
+* **extendRange:** implement negative offsets ([c6cf56f](https://github.com/jschepke/easy-date-range/commit/c6cf56f6cc52ec58752a72418a3337cd44d5b047))
+* implement TestValues class ([f9706a1](https://github.com/jschepke/easy-date-range/commit/f9706a15f2fa711fe78038760a29e0268ef492d3))
+* rename function and interface ([0045919](https://github.com/jschepke/easy-date-range/commit/00459193e097d58686515913a967657ec3ef9054))
+* update testUtils.ts ([81e3f95](https://github.com/jschepke/easy-date-range/commit/81e3f95f537b7a4966a5b95d739f03f853be5806))
+* **utils:** add hasExpectedKeys utility function ([322bc08](https://github.com/jschepke/easy-date-range/commit/322bc08e9698429fee1f4b57f83d54cec5edc6bd))
+* **utils:** add validateObjectArgument function ([9fdb066](https://github.com/jschepke/easy-date-range/commit/9fdb06673bb515d6acf3b09ffc32ba1823c4df07))
+* **utils:** change isValidOffset function ([026ba07](https://github.com/jschepke/easy-date-range/commit/026ba0775eccb468611850fc83e1c0e9ac91d3b1))
+* **validators:** add common validators ([a11244d](https://github.com/jschepke/easy-date-range/commit/a11244d9c9c984b6a5708b3664d5a84909d9f0a6))
+* **validators:** add new validator function ([e2b6cd6](https://github.com/jschepke/easy-date-range/commit/e2b6cd69a554f272847b0b6704d1fadfdbd00f96))
+* **validators:** add validateDaysCount ([0ac3f36](https://github.com/jschepke/easy-date-range/commit/0ac3f36523a3760c7f3ac4fcd6c2d814c605d4da))
+
+
+### BREAKING CHANGES
+
+* Renamed methods eachDayOfMonth() and eachDayOfWeek()
+to getMonth() and getWeek(), respectively.
