@@ -1,6 +1,6 @@
 # easy-date-range
 
-[![codecov](https://codecov.io/gh/jschepke/easy-date-range/branch/main/graph/badge.svg?token=EZ7VEPC9UE)](https://codecov.io/gh/jschepke/easy-date-range)
+[![Test Status][github-action-image]][github-action-url] [![Coverage Status][test-coverage-image]][test-coverage-url] [![MIT License][license-image]][license]
 
 easy-date-range is a simple, easy to use library for creating date ranges which can be used as a foundation for building all sorts of calendars, schedulers, date lists and more.
 
@@ -795,7 +795,20 @@ export enum WEEKDAY {
 
 easy-date-range is licensed under the MIT license.
 
+<!-- prettier-ignore-start -->
+
 [DateTime]: https://moment.github.io/luxon/api-docs/index.html#datetime
 [Date]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
 [TypeScript]: https://www.typescriptlang.org/
 [Luxon]: https://moment.github.io/luxon
+
+[test-coverage-url]: https://codecov.io/gh/jschepke/easy-date-range
+[test-coverage-image]: https://codecov.io/gh/jschepke/easy-date-range/branch/main/graph/badge.svg?token=EZ7VEPC9UE
+
+[github-action-url]: https://github.com/jschepke/easy-date-range/actions/workflows/test.yml
+[github-action-image]: https://github.com/jschepke/easy-date-range/actions/workflows/test.yml/badge.svg
+
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
+[license]: LICENSE
+
+<!-- prettier-ignore-end -->
