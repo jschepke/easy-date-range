@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/jschepke/easy-date-range/compare/v1.0.0...v1.1.0) (2023-07-03)
+
+
+### Features
+
+* add build to workflow ([44bcf5f](https://github.com/jschepke/easy-date-range/commit/44bcf5ff04770164f86291210656c06923ca74a6))
+
 # 1.0.0 (2023-07-03)
 
 
