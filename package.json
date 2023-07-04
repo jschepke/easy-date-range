@@ -5,6 +5,10 @@
   "author": "Jakub Schepke",
   "license": "MIT",
   "homepage": "https://github.com/jschepke/easy-date-range",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jschepke/easy-date-range.git"
+  },
   "keywords": [
     "date",
     "dates",
