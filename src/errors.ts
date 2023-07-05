@@ -5,7 +5,7 @@ enum ErrorCode {
 	// Add more codes as needed
 }
 
-class CalendarGridError extends Error {
+class DateRangeError extends Error {
 	code: string;
 
 	/**
@@ -18,11 +18,10 @@ class CalendarGridError extends Error {
 		super(message);
 		this.name = this.constructor.name;
 		this.code = code;
-		Error.captureStackTrace(this, this.constructor);
 	}
 }
 
-export class InvalidParameterError extends CalendarGridError {
+export class InvalidParameterError extends DateRangeError {
 	paramName: string;
 	paramValue: unknown;
 	expected: string;
@@ -69,7 +68,7 @@ export class InvalidParameterError extends CalendarGridError {
 	}
 }
 
-export class MissingArgumentError extends CalendarGridError {
+export class MissingArgumentError extends DateRangeError {
 	/**
 	 * The name of the missing argument.
 	 */
@@ -100,7 +99,7 @@ export class MissingArgumentError extends CalendarGridError {
 	}
 }
 
-export class EmptyDateRangeError extends CalendarGridError {
+export class EmptyDateRangeError extends DateRangeError {
 	funcName: string;
 
 	/**
