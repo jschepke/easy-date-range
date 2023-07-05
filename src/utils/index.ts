@@ -11,4 +11,3 @@ export { isValidWeekday } from "./isValidWeekday";
 export type { PropertiesMap } from "./types";
 export { getRandomDateTime } from "./getRandomDateTime";
 export { getRandomWeekday } from "./getRandomWeekday";
-export { hasExpectedKeys } from "./hasExpectedKeys";
