@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/jschepke/easy-date-range/compare/v1.1.0...v1.2.0) (2023-07-05)
+
+
+### Bug Fixes
+
+* include types in exports in package.json ([f666e3d](https://github.com/jschepke/easy-date-range/commit/f666e3d935414189e3230ca2ce05c6080a177f2c))
+
+
+### Features
+
+* add emptyDir function to vite config ([84a155a](https://github.com/jschepke/easy-date-range/commit/84a155ac8d4ff3502c4bb1d5f48f0678c8bbf2db))
+
 # [1.1.0](https://github.com/jschepke/easy-date-range/compare/v1.0.0...v1.1.0) (2023-07-03)
 
 
