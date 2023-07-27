@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/jschepke/easy-date-range/compare/v1.2.0...v1.2.1) (2023-07-27)
+
+
+### chore
+
+* add semantic-release to scripts and config ([bddb82b](https://github.com/jschepke/easy-date-range/commit/bddb82b8dcdaa0d2aa41e24a896b930324a65b1a))
+* update release config ([b241202](https://github.com/jschepke/easy-date-range/commit/b241202c7bf5f53ba81f630fee0dce376c94115f))
+
 # [1.2.0](https://github.com/jschepke/easy-date-range/compare/v1.1.0...v1.2.0) (2023-07-05)
 
 
