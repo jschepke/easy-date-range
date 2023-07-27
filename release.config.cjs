@@ -1,5 +1,9 @@
 const config = {
   branches: ['main'],
+  ci: false,
+  dryRun: false,
+  debug: false,
+  extends: 'semantic-release-npm-github-publish',
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
