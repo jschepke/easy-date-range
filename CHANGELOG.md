@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/jschepke/easy-date-range/compare/v1.2.1...v1.3.0) (2023-07-28)
+
+
+### feat
+
+* introduce chunkMonthExtended util function ([9e8a51b](https://github.com/jschepke/easy-date-range/commit/9e8a51bffdf6034f52da3444a825cae0dc92e85c))
+
 ## [1.2.1](https://github.com/jschepke/easy-date-range/compare/v1.2.0...v1.2.1) (2023-07-27)
 
 
