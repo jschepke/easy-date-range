@@ -1,2 +1,4 @@
+import { RANGE_TYPE, WEEKDAY } from "./constants";
 import { DateRange } from "./dateRange";
-export { DateRange };
+import { chunkMonthExtended } from "./utils/chunkMonthExtended";
+export { DateRange, RANGE_TYPE, WEEKDAY, chunkMonthExtended };
