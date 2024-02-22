@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/jschepke/easy-date-range/compare/v1.3.0...v1.3.1) (2024-02-22)
+
+
+### chore
+
+* **deps:** bump peer dependency luxon from 3.3 to 3.4 ([fde57f1](https://github.com/jschepke/easy-date-range/commit/fde57f10d82bdb7d7e482a31f5a1e5d0bdb9a267))
+
 # [1.3.0](https://github.com/jschepke/easy-date-range/compare/v1.2.1...v1.3.0) (2023-07-28)
 
 
