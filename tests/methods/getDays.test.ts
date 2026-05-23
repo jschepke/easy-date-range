@@ -16,6 +16,7 @@ describe("getDays", () => {
 			const values = new TestValues().excludeByName([
 				"undefined",
 				"object { a: 1, b: 'foo' }",
+				"empty object {}",
 			]);
 			test.each(values)("throws an error for value: $name", ({ value }) => {
 				expect(() => new DateRange().getDays(value)).toThrowError();
@@ -73,7 +74,6 @@ describe("getDays", () => {
 				describe("Given non-valid daysCount property", () => {
 					const testValues = new TestValues().excludeByName([
 						"undefined",
-						"integer 0",
 						"integer 1",
 					]);
 					test.each(testValues)(
@@ -86,7 +86,7 @@ describe("getDays", () => {
 					);
 				});
 				describe("Given valid daysCount property", () => {
-					test.each([0, 1, 123, 999])(
+					test.each([1, 123, 999])(
 						"doesn't throw error for value: %d",
 						(num) => {
 							expect(() =>

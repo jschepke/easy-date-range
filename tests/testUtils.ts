@@ -953,17 +953,6 @@ const monthExact_endOffset_testValues: DateRangeTestSet[] = [
 ];
 
 export const monthTestValues = {
-	invalid: {
-		arbitraryParams: getTestValues(["undefined"]),
-		refDate: getTestValues([
-			"undefined",
-			"Date object - new Date()",
-			"DateTime object - DateTime.now()",
-		]),
-		refWeekday: getTestValues(["undefined", "integer 1"]),
-		startOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
-		endOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
-	},
 	valid: {
 		refDate: monthDefault_refDate_testValues,
 		refWeekday: monthDefault_refWeekday_testValues,
@@ -973,16 +962,6 @@ export const monthTestValues = {
 };
 
 export const monthExactTestValues = {
-	invalid: {
-		arbitraryParams: getTestValues(["undefined"]),
-		refDate: getTestValues([
-			"undefined",
-			"Date object - new Date()",
-			"DateTime object - DateTime.now()",
-		]),
-		startOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
-		endOffset: getTestValues(["undefined", "integer 0", "integer 1"]),
-	},
 	valid: {
 		refDate: monthExact_refDate_testValues,
 		startOffset: monthExact_startOffset_testValues,

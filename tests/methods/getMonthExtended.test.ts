@@ -15,6 +15,7 @@ describe("getMonthExtended", () => {
 			test.each(
 				new TestValues().excludeByName([
 					"object { a: 1, b: 'foo' }",
+					"empty object {}",
 					"undefined",
 				]),
 			)("throws an error for value: $name", ({ value }) => {

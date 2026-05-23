@@ -1,4 +1,4 @@
-import { describe, expect, it, test, vi } from "vitest";
+import { describe, expect, expectTypeOf, it, test, vi } from "vitest";
 
 import { DateRange, DateRangeMembers } from "../src/dateRange";
 import { DateTime } from "luxon";
@@ -99,6 +99,77 @@ describe("dateRange instance", () => {
 				});
 			},
 		);
+	});
+
+	describe("v2 public API contract", () => {
+		test("dateTimes and toDateTimes expose readonly arrays", () => {
+			const dateRange = new DateRange().getWeek({
+				refDate: DateTime.fromISO("2023-01-04"),
+			});
+
+			expectTypeOf(dateRange.dateTimes).toEqualTypeOf<readonly DateTime[]>();
+			expectTypeOf(dateRange.toDateTimes()).toEqualTypeOf<
+				readonly DateTime[]
+			>();
+		});
+
+		test("dateTimes returns a copy and cannot mutate instance storage", () => {
+			const dateRange = new DateRange().getWeek({
+				refDate: DateTime.fromISO("2023-01-04"),
+			});
+			const dateTimes = dateRange.dateTimes as DateTime[];
+
+			dateTimes.pop();
+
+			expect(dateTimes.length).toBe(6);
+			expect(dateRange.dateTimes.length).toBe(7);
+		});
+
+		test("toDateTimes returns a copy and cannot mutate instance storage", () => {
+			const dateRange = new DateRange().getWeek({
+				refDate: DateTime.fromISO("2023-01-04"),
+			});
+			const dateTimes = dateRange.toDateTimes() as DateTime[];
+
+			dateTimes.pop();
+
+			expect(dateTimes.length).toBe(6);
+			expect(dateRange.toDateTimes().length).toBe(7);
+		});
+
+		test("range generator options allow empty objects", () => {
+			expect(() => new DateRange().getDays({})).not.toThrowError();
+			expect(() => new DateRange().getWeek({})).not.toThrowError();
+			expect(() => new DateRange().getMonthExact({})).not.toThrowError();
+			expect(() => new DateRange().getMonthExtended({})).not.toThrowError();
+		});
+
+		test("range generator options reject unknown properties", () => {
+			expect(() =>
+				new DateRange().getDays({
+					// @ts-expect-error: testing runtime validation
+					refDat: DateTime.fromISO("2023-01-04"),
+				}),
+			).toThrowError("Unknown properties: refDat");
+			expect(() =>
+				new DateRange().getWeek({
+					// @ts-expect-error: testing runtime validation
+					refDat: DateTime.fromISO("2023-01-04"),
+				}),
+			).toThrowError("Unknown properties: refDat");
+			expect(() =>
+				new DateRange().getMonthExact({
+					// @ts-expect-error: testing runtime validation
+					refDat: DateTime.fromISO("2023-01-04"),
+				}),
+			).toThrowError("Unknown properties: refDat");
+			expect(() =>
+				new DateRange().getMonthExtended({
+					// @ts-expect-error: testing runtime validation
+					refDat: DateTime.fromISO("2023-01-04"),
+				}),
+			).toThrowError("Unknown properties: refDat");
+		});
 	});
 
 	describe("getNext and getPrevious methods", () => {

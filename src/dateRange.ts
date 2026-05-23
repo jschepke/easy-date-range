@@ -10,6 +10,7 @@ import {
 } from "./errors";
 import { isValidOffset, isValidRefDate, isValidWeekday } from "./utils";
 import {
+	validateAllowedProperties,
 	validateDaysCount,
 	validateEndOffset,
 	validateObjectArgument,
@@ -26,10 +27,13 @@ interface OptionsAll
 
 export interface DateRangeMembers extends Required<OptionsAll> {
 	rangeType: RANGE_TYPE;
-	dateTimes: DateTime[];
+	dateTimes: readonly DateTime[];
 	isNext: boolean;
 	isPrevious: boolean;
 }
+type MutableDateRangeMembers = Omit<DateRangeMembers, "dateTimes"> & {
+	dateTimes: DateTime[];
+};
 // DateRangeDefaults inherits DateRangeMembers but makes ‘rangeType’ optional.
 interface DateRangeDefaults
 	extends Pick<Partial<DateRangeMembers>, "rangeType">,
@@ -48,6 +52,13 @@ const dateRangeDefaults: DateRangeDefaults = {
 	isNext: false,
 	isPrevious: false,
 };
+
+const optionsKeys = {
+	week: ["refDate", "refWeekday", "startOffset", "endOffset"],
+	monthExtended: ["refDate", "refWeekday", "startOffset", "endOffset"],
+	monthExact: ["refDate", "startOffset", "endOffset"],
+	days: ["refDate", "daysCount", "startOffset", "endOffset"],
+} as const;
 
 export interface Offset {
 	/**
@@ -286,14 +297,14 @@ export class DateRange {
 	 * @remarks
 	 * To get JS Dates use `toJSDates()` method.
 	 */
-	get dateTimes(): DateTime[] {
+	get dateTimes(): readonly DateTime[] {
 		if (this._dateTimes === undefined) {
 			// Todo: Refactor to custom error
 			throw new Error(
 				"You try to access dates before it has been initialized. Call one of the getMethods to generate the range and set instance members.",
 			);
 		}
-		return this._dateTimes;
+		return [...this._dateTimes];
 	}
 
 	/**
@@ -427,7 +438,7 @@ export class DateRange {
 			this._isPrevious = isPrevious;
 		}
 
-		this._dateTimes = dateTimes;
+		this._dateTimes = [...dateTimes];
 	}
 
 	/*================================ Utility METHODS ==============================*/
@@ -455,10 +466,10 @@ export class DateRange {
 	}
 
 	/**
-	 * Checks if a given value is a valid offset (non-negative integer).
+	 * Checks if a given value is a valid offset integer.
 	 *
 	 * @param offset - The value to check.
-	 * @returns True if the value is a non-negative integer, false otherwise.
+	 * @returns True if the value is an integer, false otherwise.
 	 */
 	public isValidOffset(offset: unknown): boolean {
 		return isValidOffset(offset);
@@ -469,7 +480,7 @@ export class DateRange {
 	/**
 	 * Returns an array of dates generated for the instance as Luxon DateTime objects.
 	 */
-	public toDateTimes(): DateTime[] {
+	public toDateTimes(): readonly DateTime[] {
 		return this.dateTimes;
 	}
 
@@ -523,6 +534,7 @@ export class DateRange {
 		if (options !== undefined) {
 			// Check if 'options' argument is an object
 			validateObjectArgument(options);
+			validateAllowedProperties(options, [...optionsKeys.week]);
 
 			// Validate specified properties in 'options' object
 			const { refDate, refWeekday, endOffset, startOffset } = options;
@@ -539,7 +551,7 @@ export class DateRange {
 			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		const dateRangeMembers: DateRangeMembers = {
+		const dateRangeMembers: MutableDateRangeMembers = {
 			rangeType: RANGE_TYPE.Week,
 			dateTimes: [],
 			refDate,
@@ -633,6 +645,7 @@ export class DateRange {
 		if (options !== undefined) {
 			// Check if 'options' argument is an object
 			validateObjectArgument(options);
+			validateAllowedProperties(options, [...optionsKeys.monthExtended]);
 
 			// Validate specified properties in 'options' object
 			const { refDate, refWeekday, endOffset, startOffset } = options;
@@ -649,7 +662,7 @@ export class DateRange {
 			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		const dateRangeMembers: DateRangeMembers = {
+		const dateRangeMembers: MutableDateRangeMembers = {
 			rangeType: RANGE_TYPE.MonthExtended,
 			dateTimes: [],
 			refDate,
@@ -769,6 +782,7 @@ export class DateRange {
 		if (options !== undefined) {
 			// Check if 'options' argument is an object
 			validateObjectArgument(options);
+			validateAllowedProperties(options, [...optionsKeys.monthExact]);
 
 			// Validate specified properties in 'options' object
 			const { refDate, endOffset, startOffset } = options;
@@ -783,7 +797,7 @@ export class DateRange {
 			endOffset = dateRangeDefaults.endOffset,
 		} = options || {};
 
-		const dateRangeMembers: DateRangeMembers = {
+		const dateRangeMembers: MutableDateRangeMembers = {
 			rangeType: RANGE_TYPE.MonthExact,
 			dateTimes: [],
 			refDate,
@@ -882,6 +896,7 @@ export class DateRange {
 		if (options !== undefined) {
 			// Check if 'options' argument is an object
 			validateObjectArgument(options);
+			validateAllowedProperties(options, [...optionsKeys.days]);
 
 			// Validate specified properties in 'options' object
 			const { refDate, endOffset, startOffset, daysCount } = options;
@@ -898,7 +913,7 @@ export class DateRange {
 			daysCount = 1,
 		} = options || {};
 
-		const dateRangeMembers: DateRangeMembers = {
+		const dateRangeMembers: MutableDateRangeMembers = {
 			rangeType: RANGE_TYPE.Days,
 			dateTimes: [],
 			refDate,

@@ -125,7 +125,7 @@ export class InvalidStartOffsetError extends InvalidParameterError {
 	 */
 	constructor(paramValue: unknown) {
 		const paramName = "startOffset";
-		const expected = "a number >= 0";
+		const expected = "an integer";
 		super(paramName, paramValue, expected);
 	}
 }
@@ -137,7 +137,7 @@ export class InvalidEndOffsetError extends InvalidParameterError {
 	 */
 	constructor(paramValue: unknown) {
 		const paramName = "endOffset";
-		const expected = "a number >= 0";
+		const expected = "an integer";
 		super(paramName, paramValue, expected);
 	}
 }

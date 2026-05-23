@@ -7,7 +7,6 @@ import {
 	InvalidStartOffsetError,
 } from "../errors";
 import {
-	isEmptyObject,
 	isObject,
 	isValidOffset,
 	isValidRefDate,
@@ -18,15 +17,35 @@ import {
  * Validates an object argument.
  *
  * @remarks
- * Throws an {@link InvalidParameterError} if the input is not an object or an empty object.
+ * Throws an {@link InvalidParameterError} if the input is not an object.
  *
  * @param input - The input to be validated.
  * @throws {@link InvalidParameterError}
  * @returns void
  */
 export const validateObjectArgument = (input: unknown): void => {
-	if (!isObject(input) || isEmptyObject(input)) {
-		throw new InvalidParameterError("provided argument", input, "a non object");
+	if (!isObject(input)) {
+		throw new InvalidParameterError("provided argument", input, "an object");
+	}
+};
+
+export const validateAllowedProperties = (
+	input: object,
+	allowedProperties: string[],
+): void => {
+	const unknownProperties = Object.keys(input).filter(
+		(prop) => !allowedProperties.includes(prop),
+	);
+
+	if (unknownProperties.length > 0) {
+		throw new InvalidParameterError(
+			"provided argument",
+			input,
+			`an object with only the following properties: ${allowedProperties.join(
+				", ",
+			)}`,
+			`Unknown properties: ${unknownProperties.join(", ")}`,
+		);
 	}
 };
 
@@ -55,7 +74,6 @@ export const validateRefDate = (refDate: unknown): void => {
 };
 
 export const validateRangeType = (rangeType: unknown) => {
-	// Check if the rangeType param is a string
 	if (typeof rangeType !== "string") {
 		throw new InvalidParameterError("rangeType param", rangeType, "a string");
 	}
@@ -73,16 +91,15 @@ export const validateRangeType = (rangeType: unknown) => {
 };
 
 export const validateDaysCount = (daysCount: unknown) => {
-	// Check if the rangeType param is a string
 	if (typeof daysCount !== "number") {
 		throw new InvalidParameterError("daysCount param", daysCount, "a number");
 	}
 
-	if (!Number.isInteger(daysCount) || daysCount < 0) {
+	if (!Number.isInteger(daysCount) || daysCount < 1) {
 		throw new InvalidParameterError(
 			"daysCount param",
 			daysCount,
-			"a non-negative integer",
+			"a positive integer",
 		);
 	}
 };

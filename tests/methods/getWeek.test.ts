@@ -18,6 +18,7 @@ describe("getWeek", () => {
 		describe("Given invalid arbitrary parameters", () => {
 			const values = new TestValues().excludeByName([
 				"object { a: 1, b: 'foo' }",
+				"empty object {}",
 				"undefined",
 			]);
 			test.each(values)("throws an error for value: $name", ({ value }) => {

@@ -1,5 +1,6 @@
 import { RANGE_TYPE } from "../../src/constants";
 import {
+	validateAllowedProperties,
 	validateObjectArgument,
 	validateRangeType,
 } from "../../src/validators/common";
@@ -30,20 +31,39 @@ describe("Common validators", () => {
 
 	describe("validateObjectArgument", () => {
 		describe("Given non valid argument", () => {
-			test.each(new TestValues().excludeByName(["object { a: 1, b: 'foo' }"]))(
-				"throw an error for argument: $name",
-				({ value }) => {
-					expect(() => validateObjectArgument(value)).toThrowError();
-				},
-			);
+			test.each(
+				new TestValues().excludeByName([
+					"object { a: 1, b: 'foo' }",
+					"empty object {}",
+				]),
+			)("throw an error for argument: $name", ({ value }) => {
+				expect(() => validateObjectArgument(value)).toThrowError();
+			});
 		});
 		describe("Given valid argument", () => {
-			test.each([{ a: "test" }, { 1: 1 }, { test: () => "test" }])(
+			test.each([{}, { a: "test" }, { 1: 1 }, { test: () => "test" }])(
 				"doesn't throw or return anything for argument: %s",
 				(obj) => {
 					expect(validateObjectArgument(obj)).toBeUndefined();
 				},
 			);
+		});
+	});
+
+	describe("validateAllowedProperties", () => {
+		test("throws an error when unknown properties are present", () => {
+			expect(() =>
+				validateAllowedProperties({ refDate: new Date(), refDat: new Date() }, [
+					"refDate",
+				]),
+			).toThrowError("Unknown properties: refDat");
+		});
+
+		test("doesn't throw for an empty object or known properties", () => {
+			expect(validateAllowedProperties({}, ["refDate"])).toBeUndefined();
+			expect(
+				validateAllowedProperties({ refDate: new Date() }, ["refDate"]),
+			).toBeUndefined();
 		});
 	});
 });
